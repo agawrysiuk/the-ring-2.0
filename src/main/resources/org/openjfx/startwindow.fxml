@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.TextFlow?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="startWindowPane">
+    <center>
+        <!--        list of decks-->
+        <GridPane fx:id="deckView" vgap="25" hgap="25">
+            <padding><Insets top="50" right="50" bottom="50" left="50" /></padding>
+        </GridPane>
+    </center>
+
+    <bottom>
+        <!--        list of buttons-->
+        <HBox alignment="BASELINE_CENTER">
+            <padding><Insets top="25" right="25" bottom="25" left="25" /></padding>
+            <Button text="Add deck..." onAction="#addDeckToApp"/>
+            <AnchorPane prefWidth="10" />
+            <Button fx:id="changeTitleButton" text="Rename deck" onAction="#changeTitleDeck"/>
+            <AnchorPane prefWidth="10" />
+            <Button fx:id="removeDeckButton" text="Delete deck" onAction="#removeDeckFromApp"/>
+            <AnchorPane prefWidth="40" />
+            <Button text="Sort by name" onAction="#placeDecksName"/>
+            <AnchorPane prefWidth="10" />
+            <Button text="Sort by date" onAction="#placeDecksDate"/>
+            <AnchorPane prefWidth="10" />
+            <Button text="Filter" onAction="#filterDialog"/>
+            <AnchorPane prefWidth="40" />
+            <Text text="Rows:"/>
+            <AnchorPane prefWidth="5" />
+            <ComboBox fx:id="comboBoxRows"/>
+            <Region prefWidth="10" HBox.hgrow="ALWAYS" />
+            <Button text="Redownload" onAction="#redownloadCardImages"/>
+            <AnchorPane prefWidth="10" />
+            <Button text="Collection" onAction="#checkCollection"/>
+            <AnchorPane prefWidth="10" />
+            <Button text="Save" onAction="#saveDatabase"/>
+            <AnchorPane prefWidth="10" />
+            <Button text="Exit" onAction="#exitGame"/>
+        </HBox>
+    </bottom>
+
+    <right>
+        <!--        play options-->
+        <VBox prefWidth="300" alignment="TOP_CENTER" style="-fx-background-color: #FAFAFA">
+            <padding><Insets top="25" right="25" bottom="25" left="25" /></padding>
+            <VBox prefHeight="130" alignment="CENTER">
+                <ImageView fx:id="highlightedDeck" />
+            </VBox>
+            <AnchorPane prefHeight="0" />
+            <Text fx:id="highlightedName" style="-fx-font-weight: bold"/>
+            <AnchorPane prefHeight="10" />
+            <TextFlow prefWidth="300" style="-fx-text-alignment: center;">
+                <Text text="Type: " />
+                <Text fx:id="highlightedType" style="-fx-font-weight: bold"/>
+            </TextFlow>
+            <AnchorPane prefHeight="10" />
+            <Button fx:id="showVisualButton" text="Show visual" onAction="#lookUpDeck" />
+            <AnchorPane prefHeight="10" />
+            <TextArea fx:id="highlightedCards" wrapText="true"/>
+            <AnchorPane prefHeight="40" />
+            <HBox alignment="CENTER">
+                <Text text="Choose opponent:"/>
+                <AnchorPane prefWidth="5" />
+                <ComboBox fx:id="chooseOppBox" prefWidth="100"/>
+            </HBox>
+            <AnchorPane prefHeight="10" />
+            <Button fx:id="playButton" text="PLAY" prefWidth="125" prefHeight="50" onAction="#playButtonClicked">
+                <font>
+                    <Font name="System bold" size="32" />
+                </font>
+            </Button>
+        </VBox>
+    </right>
+
+</BorderPane>
