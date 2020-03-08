@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

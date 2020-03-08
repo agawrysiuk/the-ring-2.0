@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;

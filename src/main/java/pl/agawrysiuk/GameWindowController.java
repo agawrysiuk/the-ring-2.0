@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;

@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;

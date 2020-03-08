@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 import javafx.scene.image.Image;
 import org.json.JSONObject;

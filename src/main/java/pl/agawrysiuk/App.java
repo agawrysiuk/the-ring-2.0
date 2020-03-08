@@ -1,4 +1,4 @@
-package org.openjfx;
+package pl.agawrysiuk;
 
 public class App {
 
