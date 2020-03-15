@@ -9,14 +9,11 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
@@ -24,6 +21,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -42,6 +40,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 
@@ -54,7 +54,12 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class GameWindowController {
-    @FXML
+
+    @Getter
+    @Setter
+    private Stage primaryStage;
+
+    @Getter
     private Pane gamePane;
 
     private List<ViewCard> listCastingStack = new ArrayList<>();
@@ -259,6 +264,9 @@ public class GameWindowController {
     }
 
     public void initialize() {
+        gamePane = new Pane();
+        gamePane.prefWidth(1920);
+        gamePane.prefHeight(1080);
         //checking mouse position
 //        gamePane.setOnMouseClicked(e -> {
 //            System.out.println(e.getSceneX());
@@ -3040,16 +3048,14 @@ public class GameWindowController {
     }
 
     private void goToSideboard() {
-        try {
-            Sideboard sideboardController = new Sideboard(yourDeck, clientSender, clientReceiver, socket);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setController(sideboardController);
-            loader.setLocation(getClass().getResource("sideboard.fxml"));
-            Parent p = loader.load();
-            gamePane.getScene().setRoot(p);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+        Sideboard sideboardController = new Sideboard(yourDeck, clientSender, clientReceiver, socket);
+        sideboardController.setPrimaryStage(this.primaryStage);
+        sideboardController.initialize();
+        this.primaryStage.setScene(new Scene(sideboardController.getSidePane(),488,720));
+        primaryStage.setMaximized(true);
+        primaryStage.setFullScreenExitHint("");//no hint on the screen
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
+        primaryStage.setFullScreen(true); //full screen without borders
     }
 
     private String changeType(ViewCard viewCard) {

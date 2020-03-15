@@ -2,18 +2,20 @@ package pl.agawrysiuk;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +27,11 @@ import java.util.List;
 
 public class Sideboard {
 
-    @FXML
+    @Getter
+    @Setter
+    private Stage primaryStage;
+
+    @Getter
     private Pane sidePane;
     private Socket socket;
     private PrintWriter clientSender;
@@ -67,6 +73,10 @@ public class Sideboard {
     }
 
     public void initialize() {
+        sidePane = new Pane();
+        sidePane.prefWidth(1920);
+        sidePane.prefHeight(1080);
+
         textMain.relocate(25* StartWindowController.X_WINDOW, 5* StartWindowController.X_WINDOW);
         textSide.relocate(1325* StartWindowController.X_WINDOW, 5* StartWindowController.X_WINDOW);
         quitBtn.relocate(1550* StartWindowController.X_WINDOW, 980* StartWindowController.X_WINDOW);
@@ -232,28 +242,27 @@ public class Sideboard {
         try {
             socket.close();
             StartWindowController startWindowController = new StartWindowController(false);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setController(startWindowController);
-            loader.setLocation(getClass().getResource("startwindow.fxml"));
-            Parent p = loader.load();
-            sidePane.getScene().setRoot(p);
-        } catch (IOException ioe) {
+            startWindowController.initialize();
+            startWindowController.setPrimaryStage(this.primaryStage);
+            this.primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(),488,720));
+            primaryStage.setMaximized(true);
+            primaryStage.setFullScreenExitHint("");//no hint on the screen
+            primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
+            primaryStage.setFullScreen(true); //full screen without borders
+            } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
     }
 
     private void startTheGameAgain() {
-        try {
-            GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setController(controller);
-            loader.setLocation(getClass().getResource("gamewindow.fxml"));
-            Parent p = loader.load();
-            sidePane.getScene().setRoot(p);
-        } catch (IOException e) {
-            System.out.println("Couldn't start the game");
-            e.printStackTrace();
-        }
+        GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
+        controller.setPrimaryStage(this.primaryStage);
+        controller.initialize();
+        this.primaryStage.setScene(new Scene(controller.getGamePane(),488,720));
+        primaryStage.setMaximized(true);
+        primaryStage.setFullScreenExitHint("");//no hint on the screen
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
+        primaryStage.setFullScreen(true); //full screen without borders
     }
 }

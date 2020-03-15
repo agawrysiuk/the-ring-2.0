@@ -11,12 +11,10 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -27,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -35,6 +34,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.*;
 import javafx.util.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -51,32 +52,25 @@ public class StartWindowController {
 
     public static final double X_WINDOW = Screen.getPrimary().getVisualBounds().getWidth() / 1920;
 
+    @Getter
+    @Setter
+    private Stage primaryStage;
+
     private List<Deck> deckList;
     private Deck activeDeck;
     private Deck opponentDeck;
-    @FXML
     private GridPane deckView;
-    @FXML
     private ImageView highlightedDeck;
-    @FXML
     private javafx.scene.control.TextArea highlightedCards;
-    @FXML
     private Text highlightedName;
-    @FXML
     private Text highlightedType;
-    @FXML
     private Button playButton;
-    @FXML
     private Button showVisualButton;
-    @FXML
+    @Getter
     private BorderPane startWindowPane;
-    @FXML
     private Button removeDeckButton;
-    @FXML
     private Button changeTitleButton;
-    @FXML
     private ComboBox<String> chooseOppBox;
-    @FXML
     private ComboBox<Integer> comboBoxRows;
     private ObservableList<String> chooseOppList;
     private int columnDrawIndex = 0;
@@ -103,6 +97,8 @@ public class StartWindowController {
     }
 
     public void initialize() {
+        startWindowPane = new BorderPane();
+
         //defining center
         deckView = new GridPane();
         deckView.setVgap(25);
@@ -367,7 +363,6 @@ public class StartWindowController {
         changeTitleButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
 
         //setting up scrollview
-        //yup, i know that it defies the meaning of center in startwindow.fxml
         ScrollPane scrollPane = new ScrollPane(deckView);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
@@ -840,66 +835,65 @@ public class StartWindowController {
             return;
         }
         Database.getInstance().saveToDatabase();
-        try {
-            checkingListThread.interrupt();
-            clientSender.println("READY:" + chooseOppBox.getValue());
+        checkingListThread.interrupt();
+        clientSender.println("READY:" + chooseOppBox.getValue());
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Waiting for the opponent");
-            alert.setHeaderText(null);
-            alert.setContentText("Waiting for the opponent...");
-            alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
-            ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Play");
-            alert.initOwner(startWindowPane.getScene().getWindow());
-            alert.initStyle(StageStyle.UNDECORATED);
-            Thread gettingReadyThread =
-                    new Thread(new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            boolean oppIsFound = false;
-                            while (!oppIsFound) {
-                                String incoming = clientReceiver.readLine();
-                                System.out.println(incoming);
-                                if (incoming.contains("OPPREADY")) { //here, we have our opponent
-                                    oppIsFound = true;
-                                    clientSender.println("DECK_TIME");
-                                    Platform.runLater(() -> { //here, we are preparing to launch the game
-                                        alert.setContentText("Opponent found!\nSending and receiving decks...");
-                                        clientSender.println("DECK:" + activeDeck.getDeckInfo().replaceAll("\\R", ";"));
-                                        String deckInfoOpp = "";
-                                        try {
-                                            deckInfoOpp = clientReceiver.readLine().replaceAll(";", System.lineSeparator()).replaceAll("DECK:", "");
-                                        } catch (IOException e) {
-                                            e.printStackTrace(); //to fix
-                                        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Waiting for the opponent");
+        alert.setHeaderText(null);
+        alert.setContentText("Waiting for the opponent...");
+        alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Play");
+        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initStyle(StageStyle.UNDECORATED);
+        Thread gettingReadyThread =
+                new Thread(new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        boolean oppIsFound = false;
+                        while (!oppIsFound) {
+                            String incoming = clientReceiver.readLine();
+                            System.out.println(incoming);
+                            if (incoming.contains("OPPREADY")) { //here, we have our opponent
+                                oppIsFound = true;
+                                clientSender.println("DECK_TIME");
+                                Platform.runLater(() -> { //here, we are preparing to launch the game
+                                    alert.setContentText("Opponent found!\nSending and receiving decks...");
+                                    clientSender.println("DECK:" + activeDeck.getDeckInfo().replaceAll("\\R", ";"));
+                                    String deckInfoOpp = "";
+                                    try {
+                                        deckInfoOpp = clientReceiver.readLine().replaceAll(";", System.lineSeparator()).replaceAll("DECK:", "");
+                                    } catch (IOException e) {
+                                        e.printStackTrace(); //to fix
+                                    }
 //                                System.out.println(deckInfoOpp);
-                                        Deck oppDeck = new Deck("Opp", deckInfoOpp);
-                                        alert.setContentText("Opponent found!\nLoading opponent's deck...");
-                                        System.out.println("Loading deck: " + Database.getInstance().loadDeckFromTXT(oppDeck,true));
-                                        opponentDeck = oppDeck;
-                                        alert.setContentText("Opponent found!\nDeck loaded! Hit \"Play\" to enter the battlefield!");
-                                        alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-                                        alert.getDialogPane().lookupButton(ButtonType.CANCEL).setDisable(true);
-                                    });
-                                }
+                                    Deck oppDeck = new Deck("Opp", deckInfoOpp);
+                                    alert.setContentText("Opponent found!\nLoading opponent's deck...");
+                                    System.out.println("Loading deck: " + Database.getInstance().loadDeckFromTXT(oppDeck,true));
+                                    opponentDeck = oppDeck;
+                                    alert.setContentText("Opponent found!\nDeck loaded! Hit \"Play\" to enter the battlefield!");
+                                    alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
+                                    alert.getDialogPane().lookupButton(ButtonType.CANCEL).setDisable(true);
+                                });
                             }
-                            return null;
                         }
-                    });
-            gettingReadyThread.start();
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-                gettingReadyThread.interrupt();
-                try {
-                    socket.close();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                connectToServer();
-                checkingListThread = new Thread(checkingListTask);
-                checkingListThread.start();
-                return;
+                        return null;
+                    }
+                });
+        gettingReadyThread.start();
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+            gettingReadyThread.interrupt();
+            try {
+                socket.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
+            connectToServer();
+            checkingListThread = new Thread(checkingListTask);
+            checkingListThread.start();
+            return;
+        }
 //            GridPane p = new GridPane(); -> to remember: just use this for
 //            https://stackoverflow.com/questions/43761138/how-to-properly-switch-scenes-change-root-node-of-scene-in-javafx-without-fxml
 
@@ -908,19 +902,16 @@ public class StartWindowController {
 //            ft.setToValue(1);
 //            ft.play();
 
-            Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
-            Database.getInstance().loadDeckFromTXT(yourDeck,true);
-            GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setController(controller);
-            loader.setLocation(getClass().getResource("gamewindow.fxml"));
-            Parent p = loader.load();
-            ((Node) event.getSource()).getScene().setRoot(p);
-        } catch (IOException e) {
-            System.out.println("Couldn't start the game");
-            e.printStackTrace();
-        }
-
+        Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
+        Database.getInstance().loadDeckFromTXT(yourDeck,true);
+        GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
+        controller.setPrimaryStage(this.primaryStage);
+        controller.initialize();
+        this.primaryStage.setScene(new Scene(controller.getGamePane(),488,720));
+        primaryStage.setMaximized(true);
+        primaryStage.setFullScreenExitHint("");//no hint on the screen
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
+        primaryStage.setFullScreen(true); //full screen without borders
     }
 
     public void placeDecksName() {
