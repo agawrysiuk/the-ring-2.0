@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -31,6 +32,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.*;
 import javafx.util.Duration;
 import org.json.JSONObject;
@@ -101,6 +103,132 @@ public class StartWindowController {
     }
 
     public void initialize() {
+        //defining center
+        deckView = new GridPane();
+        deckView.setVgap(25);
+        deckView.setHgap(25);
+        deckView.setPadding(new Insets(50,50,50,50));
+        startWindowPane.centerProperty().set(deckView);
+
+        //defining bottom
+        HBox bottomHbox = new HBox(10);
+        bottomHbox.setAlignment(Pos.BASELINE_CENTER);
+        bottomHbox.setPadding(new Insets(25,25,25,25));
+
+        Button addDeckButton = new Button("Add deck...");
+        addDeckButton.setOnAction(this::addDeckToApp);
+        bottomHbox.getChildren().add(addDeckButton);
+
+        changeTitleButton = new Button("Rename deck");
+        changeTitleButton.setOnAction(actionEvent -> changeTitleDeck());
+        bottomHbox.getChildren().add(changeTitleButton);
+
+        removeDeckButton = new Button("Rename deck");
+        removeDeckButton.setOnAction(actionEvent -> removeDeckFromApp());
+        HBox.setMargin(removeDeckButton,new Insets(0,30,0,0));
+        bottomHbox.getChildren().add(removeDeckButton);
+
+        Button sortName = new Button("Sort by name");
+        sortName.setOnAction(actionEvent -> placeDecksName());
+        bottomHbox.getChildren().add(sortName);
+
+        Button sortDate = new Button("Sort by date");
+        sortDate.setOnAction(actionEvent -> placeDecksDate());
+        bottomHbox.getChildren().add(sortDate);
+
+        Button filter = new Button("Filter");
+        filter.setOnAction(actionEvent -> filterDialog());
+        HBox.setMargin(filter,new Insets(0,30,0,0));
+        bottomHbox.getChildren().add(filter);
+
+        Text rows = new Text("Rows");
+        bottomHbox.getChildren().add(rows);
+
+        comboBoxRows = new ComboBox<>();
+        bottomHbox.getChildren().add(comboBoxRows);
+
+        Region region = new Region();
+        region.prefWidth(10);
+        HBox.setHgrow(region, Priority.ALWAYS);
+        bottomHbox.getChildren().add(region);
+
+        Button redownload = new Button("Redownload");
+        redownload.setOnAction(actionEvent -> redownloadCardImages());
+        bottomHbox.getChildren().add(redownload);
+
+        Button collection = new Button("Collection");
+        collection.setOnAction(actionEvent -> checkCollection());
+        bottomHbox.getChildren().add(collection);
+
+        Button saveDatabase = new Button("Save");
+        saveDatabase.setOnAction(actionEvent -> saveDatabase());
+        bottomHbox.getChildren().add(saveDatabase);
+
+        Button exit = new Button("Exit");
+        exit.setOnAction(actionEvent -> exitGame());
+        bottomHbox.getChildren().add(exit);
+
+        startWindowPane.bottomProperty().set(bottomHbox);
+
+        //defining right
+        VBox rightBox = new VBox();
+        rightBox.prefWidth(300);
+        rightBox.setMaxWidth(300);
+        rightBox.setAlignment(Pos.TOP_CENTER);
+        rightBox.setStyle("-fx-background-color: #FAFAFA");
+        rightBox.setPadding(new Insets(25,25,25,25));
+        rightBox.setSpacing(10);
+
+        VBox ivBox = new VBox();
+        ivBox.prefHeight(130);
+        ivBox.setAlignment(Pos.CENTER);
+        highlightedDeck = new ImageView();
+        ivBox.getChildren().add(highlightedDeck);
+        VBox.setMargin(ivBox,new Insets(0,-10,0,0));
+        rightBox.getChildren().add(ivBox);
+
+        highlightedName = new Text();
+        highlightedName.setStyle("-fx-font-weight: bold");
+        rightBox.getChildren().add(highlightedName);
+
+        TextFlow textFlow = new TextFlow();
+        textFlow.prefWidth(300);
+        textFlow.setStyle("-fx-text-alignment: center");
+        textFlow.getChildren().add(new Text("Type: "));
+        highlightedType = new Text();
+        highlightedType.setStyle("-fx-font-weight: bold");
+        textFlow.getChildren().add(highlightedType);
+        rightBox.getChildren().add(textFlow);
+
+        showVisualButton = new Button("Show visual");
+        showVisualButton.setOnAction(actionEvent -> lookUpDeck());
+        rightBox.getChildren().add(showVisualButton);
+
+        highlightedCards = new TextArea();
+        highlightedCards.setWrapText(true);
+        rightBox.getChildren().add(highlightedCards);
+        VBox.setMargin(highlightedCards, new Insets(0, 30, 0, 0));
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER);
+        Text opponentText = new Text("Choose opponent: ");
+        HBox.setMargin(opponentText, new Insets(0,0,5,0));
+        hBox.getChildren().add(opponentText);
+        chooseOppBox = new ComboBox<>();
+        chooseOppBox.prefWidth(100);
+        hBox.getChildren().add(chooseOppBox);
+        rightBox.getChildren().add(hBox);
+
+        playButton = new Button("PLAY");
+        playButton.prefWidth(125);
+        playButton.prefHeight(50);
+        playButton.setOnAction(this::playButtonClicked);
+        playButton.setStyle("-fx-font-size: 32");
+        rightBox.getChildren().add(playButton);
+
+        startWindowPane.setRight(rightBox);
+
+        //old code
         listTypes.addAll("Standard","Standard BO1","Historic","Modern","Legacy","Vintage","Commander","Oathbreaker","Pauper","Singleton","Old School");
         String[] listTypesSelected = Database.getInstance().getSettings().get(4).split("");
         for (int i = 0; i<listTypes.size(); i ++) {
