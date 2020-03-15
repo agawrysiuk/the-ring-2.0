@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.game;
 
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -44,6 +44,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
+import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.game.components.Ability;
+import pl.agawrysiuk.game.components.Token;
+import pl.agawrysiuk.game.components.ViewCard;
+import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.model.Card;
+import pl.agawrysiuk.model.Deck;
+import pl.agawrysiuk.sideboard.Sideboard;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -217,7 +225,7 @@ public class GameWindowController {
         highlightBorder.setSpread(1); //0.9
     }
 
-    GameWindowController(Deck deck, Deck opponentDeck, PrintWriter clientSender, BufferedReader clientReceiver, Socket socket) {
+    public GameWindowController(Deck deck, Deck opponentDeck, PrintWriter clientSender, BufferedReader clientReceiver, Socket socket) {
 //    GameWindowController(Deck deck, Deck opponentDeck) { //single player version
 
         //importing deck to the game

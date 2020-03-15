@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

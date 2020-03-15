@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.menu.StartWindowController;
 
 /** THE GAME:
  * - "Play" button returns a copy of the deck, not it's immediate instance

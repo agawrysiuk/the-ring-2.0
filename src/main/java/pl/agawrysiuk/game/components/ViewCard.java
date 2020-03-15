@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -11,11 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
+import pl.agawrysiuk.model.Card;
+import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.menu.StartWindowController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-class ViewCard extends ImageView {
+public class ViewCard extends ImageView {
     private String title;
     private String type;
     private String cardPath;
@@ -78,7 +81,7 @@ class ViewCard extends ImageView {
         this.opponentsCard = false;
 
         BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImg, null)).getSubimage(25, 25, 430, 357); //15,15,450,370
-        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120*StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
         this.smallCard = SwingFXUtils.toFXImage(artImg, null);
 
         JSONObject thisCard = new JSONObject(this.json);

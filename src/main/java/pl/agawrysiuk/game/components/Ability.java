@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -15,6 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
+import pl.agawrysiuk.menu.StartWindowController;
 
 public class Ability extends ViewCard {
     private ViewCard viewCard;
@@ -43,7 +44,7 @@ public class Ability extends ViewCard {
         pane.getChildren().add(iv);
 
         Text textOnImg = new Text(this.text);
-        textOnImg.setWrappingWidth(480*StartWindowController.X_WINDOW);
+        textOnImg.setWrappingWidth(480* StartWindowController.X_WINDOW);
         textOnImg.prefWidth(480*StartWindowController.X_WINDOW);
         textOnImg.setTextAlignment(TextAlignment.CENTER);
         textOnImg.setFill(Color.WHITE);

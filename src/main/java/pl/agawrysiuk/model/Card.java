@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.model;
 
 import javafx.scene.image.Image;
 import org.json.JSONObject;

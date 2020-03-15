@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -17,6 +17,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
+import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.menu.StartWindowController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -50,7 +52,7 @@ public class Token extends ViewCard {
         Rectangle previewBack = new Rectangle();
         previewBack.setX(0);
         previewBack.setY(0);
-        previewBack.setArcHeight(40*StartWindowController.X_WINDOW);
+        previewBack.setArcHeight(40* StartWindowController.X_WINDOW);
         previewBack.setArcWidth(40*StartWindowController.X_WINDOW);
         previewBack.setWidth(480*StartWindowController.X_WINDOW);
         previewBack.setHeight(680*StartWindowController.X_WINDOW);

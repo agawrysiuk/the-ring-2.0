@@ -1,4 +1,4 @@
-package pl.agawrysiuk;
+package pl.agawrysiuk.menu;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -10,7 +10,6 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,6 +36,10 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
+import pl.agawrysiuk.model.Card;
+import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.model.Deck;
+import pl.agawrysiuk.game.GameWindowController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -1185,10 +1188,5 @@ public class StartWindowController {
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-    @FXML
-    public void testButtonClicked() {
-
     }
 }
