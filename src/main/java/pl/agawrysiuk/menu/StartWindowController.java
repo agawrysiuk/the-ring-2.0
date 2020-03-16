@@ -20,7 +20,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -36,10 +35,10 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
-import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.model.Deck;
 import pl.agawrysiuk.game.GameWindowController;
+import pl.agawrysiuk.model.Card;
+import pl.agawrysiuk.model.Deck;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -91,13 +90,8 @@ public class StartWindowController {
     private Task<ObservableList<String>> checkingListTask;
     private Thread checkingListThread;
     private String host;
-    private boolean firstConnection;
     private ObservableList<String> listTypes = FXCollections.observableArrayList();
     private ObservableList<CheckBox> listCheckBox = FXCollections.observableArrayList();
-
-    public StartWindowController(boolean firstConnection) {
-        this.firstConnection = firstConnection;
-    }
 
     public void initialize() {
         startWindowPane = new BorderPane();
@@ -278,47 +272,6 @@ public class StartWindowController {
 //            Optional<String> result = setName.showAndWait();
 //            result.ifPresent(name -> playersName=name);
 //        }
-
-        if(firstConnection) {
-            do {
-                Dialog<ButtonType> dialog = new Dialog<>();
-                dialog.setTitle("Choose your name and connect to server");
-                dialog.setHeaderText(null);
-
-                dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-
-                GridPane grid = new GridPane();
-                grid.setHgap(10);
-                grid.setVgap(10);
-                grid.setPadding(new Insets(20, 150, 10, 10));
-
-                TextField name = new TextField();
-                name.setText(playersName);
-                name.setPromptText("Your nickname");
-                TextField serverIP = new TextField();
-                serverIP.setText(host);
-                serverIP.setPromptText("IP of the server");
-
-                grid.add(new Label("Username:"), 0, 0);
-                grid.add(name, 1, 0);
-                grid.add(new Label("Server IP:"), 0, 1);
-                grid.add(serverIP, 1, 1);
-
-                dialog.getDialogPane().setContent(grid);
-
-                Platform.runLater(name::requestFocus);
-
-                Optional<ButtonType> result = dialog.showAndWait();
-                result.ifPresent(nameIP -> {
-                    playersName = name.getText();
-                    host = serverIP.getText();
-                });
-            } while (playersName == null || playersName.equals(""));
-
-            //saving name and host for the future
-            Database.getInstance().setSettings(0,playersName);
-            Database.getInstance().setSettings(1,host);
-        }
 
         //setting up connection
         connectToServer();

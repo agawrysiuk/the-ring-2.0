@@ -1,11 +1,9 @@
 package pl.agawrysiuk;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.init.InitWindow;
 
 /** THE GAME:
  * - "Play" button returns a copy of the deck, not it's immediate instance
@@ -58,18 +56,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        StartWindowController startWindowController = new StartWindowController(true);
-        startWindowController.setPrimaryStage(primaryStage);
-        startWindowController.initialize();
         primaryStage.setTitle("The Ring");
-        primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(), 488, 720));
-        primaryStage.setMaximized(true);
-        primaryStage.setFullScreenExitHint("");//no hint on the screen
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
-//        primaryStage.setAlwaysOnTop(true); //setting on top
-        primaryStage.show();
-
+        InitWindow initWindow = new InitWindow();
+        initWindow.setPrimaryStage(primaryStage);
+        initWindow.initialize();
     }
 
     @Override

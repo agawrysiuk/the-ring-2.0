@@ -246,7 +246,7 @@ public class Sideboard {
     private void quitTheGame() {
         try {
             socket.close();
-            StartWindowController startWindowController = new StartWindowController(false);
+            StartWindowController startWindowController = new StartWindowController();
             startWindowController.initialize();
             startWindowController.setPrimaryStage(this.primaryStage);
             this.primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(),488,720));
