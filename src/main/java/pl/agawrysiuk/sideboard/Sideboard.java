@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.model.Card;
-import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.model.Deck;
 import pl.agawrysiuk.game.GameWindowController;
 import pl.agawrysiuk.menu.StartWindowController;

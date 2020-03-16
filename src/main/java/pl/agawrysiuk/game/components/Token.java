@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
-import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.menu.StartWindowController;
 
 import java.awt.*;

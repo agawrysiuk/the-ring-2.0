@@ -44,7 +44,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
-import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.game.components.Ability;
 import pl.agawrysiuk.game.components.Token;
 import pl.agawrysiuk.game.components.ViewCard;

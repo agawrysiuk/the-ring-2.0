@@ -37,7 +37,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 import pl.agawrysiuk.model.Card;
-import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.model.Deck;
 import pl.agawrysiuk.game.GameWindowController;
 

@@ -12,7 +12,7 @@ import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.model.Card;
-import pl.agawrysiuk.database.Database;
+import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.menu.StartWindowController;
 
 import java.awt.*;
