@@ -23,7 +23,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -36,6 +35,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
+import pl.agawrysiuk.display.DisplayContext;
+import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.game.GameWindowController;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
@@ -50,7 +51,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class StartWindowController {
+public class StartWindowController implements DisplayWindow {
 
     public static final double X_WINDOW = Screen.getPrimary().getVisualBounds().getWidth() / 1920;
 
@@ -69,7 +70,7 @@ public class StartWindowController {
     private Button playButton;
     private Button showVisualButton;
     @Getter
-    private BorderPane startWindowPane;
+    private BorderPane mainPane;
     private Button removeDeckButton;
     private Button changeTitleButton;
     private ComboBox<String> chooseOppBox;
@@ -94,14 +95,14 @@ public class StartWindowController {
     private ObservableList<CheckBox> listCheckBox = FXCollections.observableArrayList();
 
     public void initialize() {
-        startWindowPane = new BorderPane();
+        mainPane = new BorderPane();
 
         //defining center
         deckView = new GridPane();
         deckView.setVgap(25);
         deckView.setHgap(25);
         deckView.setPadding(new Insets(50,50,50,50));
-        startWindowPane.centerProperty().set(deckView);
+        mainPane.centerProperty().set(deckView);
 
         //defining bottom
         HBox bottomHbox = new HBox(10);
@@ -161,7 +162,7 @@ public class StartWindowController {
         exit.setOnAction(actionEvent -> exitGame());
         bottomHbox.getChildren().add(exit);
 
-        startWindowPane.bottomProperty().set(bottomHbox);
+        mainPane.bottomProperty().set(bottomHbox);
 
         //defining right
         VBox rightBox = new VBox();
@@ -219,7 +220,7 @@ public class StartWindowController {
         playButton.setStyle("-fx-font-size: 32");
         rightBox.getChildren().add(playButton);
 
-        startWindowPane.setRight(rightBox);
+        mainPane.setRight(rightBox);
 
         //old code
         listTypes.addAll("Standard","Standard BO1","Historic","Modern","Legacy","Vintage","Commander","Oathbreaker","Pauper","Singleton","Old School");
@@ -256,7 +257,7 @@ public class StartWindowController {
         highlightedCards.setDisable(true);
         highlightedCards.setPrefHeight(500*X_WINDOW);
         highlightedName.setFont(new Font(20));
-        startWindowPane.getCenter().setManaged(false); //center will not move other space
+        mainPane.getCenter().setManaged(false); //center will not move other space
 
         for (Deck deck : deckList) {
             placeDeckOnScreen(deck);
@@ -322,7 +323,7 @@ public class StartWindowController {
         ScrollPane scrollPane = new ScrollPane(deckView);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
-        startWindowPane.setCenter(scrollPane);
+        mainPane.setCenter(scrollPane);
         //making scrollbar scroll faster
         deckView.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
@@ -451,7 +452,7 @@ public class StartWindowController {
         }
 
         secondStage.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        secondStage.initOwner(startWindowPane.getScene().getWindow());
+        secondStage.initOwner(mainPane.getScene().getWindow());
         secondStage.show();
     }
 
@@ -518,7 +519,7 @@ public class StartWindowController {
             alert.setHeaderText("Deck already exists");
             alert.setContentText("The deck with that name already exists in the database.\nTry changing deck's file name or upload a different deck.");
 
-            alert.initOwner(startWindowPane.getScene().getWindow());
+            alert.initOwner(mainPane.getScene().getWindow());
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
 
@@ -581,7 +582,7 @@ public class StartWindowController {
             ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().add(cancelButton);
 
-            alert.initOwner(startWindowPane.getScene().getWindow());
+            alert.initOwner(mainPane.getScene().getWindow());
             alert.initModality(Modality.APPLICATION_MODAL);
 
             Optional<ButtonType> result = alert.showAndWait();
@@ -604,7 +605,7 @@ public class StartWindowController {
                 buttonBox.getChildren().addAll(okBtn, cancelBtn);
                 importingScene.getChildren().add(buttonBox);
 
-                importingStage.initOwner(startWindowPane.getScene().getWindow());
+                importingStage.initOwner(mainPane.getScene().getWindow());
                 importingStage.initModality(Modality.APPLICATION_MODAL);
                 importingStage.setScene(new Scene(importingScene, 250, 150));
 
@@ -618,7 +619,7 @@ public class StartWindowController {
                     warning.setTitle("Cancelled");
                     warning.setHeaderText(null);
                     warning.setContentText("You cancelled downloading.\nDeck will not be added to the list.");
-                    warning.initOwner(startWindowPane.getScene().getWindow());
+                    warning.initOwner(mainPane.getScene().getWindow());
                     warning.initModality(Modality.APPLICATION_MODAL);
                     warning.showAndWait();
                     importingStage.close();
@@ -709,7 +710,7 @@ public class StartWindowController {
 
         confirm.setOnAction(e -> addingDeckImage.close());
 
-        addingDeckImage.initOwner(startWindowPane.getScene().getWindow());
+        addingDeckImage.initOwner(mainPane.getScene().getWindow());
         addingDeckImage.initModality(Modality.APPLICATION_MODAL);
         addingDeckImage.showAndWait();
 
@@ -727,7 +728,7 @@ public class StartWindowController {
         alert.setTitle("Success");
         alert.setHeaderText("Deck successfully added");
         alert.setContentText("Now you can play with your deck!");
-        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initOwner(mainPane.getScene().getWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.show();
     }
@@ -744,7 +745,7 @@ public class StartWindowController {
         alert.setHeaderText("Are you sure you want to delete deck " + deckName + "?");
         alert.setContentText("This operation cannot be undone.\nMake sure to have a backup of this deck before you delete it.");
 
-        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initOwner(mainPane.getScene().getWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.getButtonTypes().clear();
         alert.getButtonTypes().addAll(ButtonType.YES, ButtonType.CANCEL);
@@ -800,7 +801,7 @@ public class StartWindowController {
         alert.setContentText("Waiting for the opponent...");
         alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
         ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Play");
-        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initOwner(mainPane.getScene().getWindow());
         alert.initStyle(StageStyle.UNDECORATED);
         Thread gettingReadyThread =
                 new Thread(new Task<Void>() {
@@ -860,14 +861,9 @@ public class StartWindowController {
 
         Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
         Database.getInstance().loadDeckFromTXT(yourDeck,true);
-        GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
-        controller.setPrimaryStage(this.primaryStage);
-        controller.initialize();
-        this.primaryStage.setScene(new Scene(controller.getGamePane(),488,720));
-        primaryStage.setMaximized(true);
-        primaryStage.setFullScreenExitHint("");//no hint on the screen
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
+        DisplayContext context = new DisplayContext();
+        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket));
+        context.showNewWindow(this);
     }
 
     public void placeDecksName() {
@@ -887,7 +883,7 @@ public class StartWindowController {
         setName.setTitle("Choose new name");
         setName.setContentText(null);
         setName.setHeaderText(null);
-        setName.initOwner(startWindowPane.getScene().getWindow());
+        setName.initOwner(mainPane.getScene().getWindow());
         setName.initModality(Modality.APPLICATION_MODAL);
 
         Optional<String> result = setName.showAndWait();
@@ -904,7 +900,7 @@ public class StartWindowController {
         alert.setTitle("Success");
         alert.setHeaderText(null);
         alert.setContentText("Changes saved to the database.");
-        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initOwner(mainPane.getScene().getWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.show();
     }
@@ -939,7 +935,7 @@ public class StartWindowController {
         ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().add(cancelButton);
 
-        alert.initOwner(startWindowPane.getScene().getWindow());
+        alert.initOwner(mainPane.getScene().getWindow());
         alert.initModality(Modality.APPLICATION_MODAL);
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -963,7 +959,7 @@ public class StartWindowController {
             buttonBox.getChildren().addAll(okBtn, cancelBtn);
             importingScene.getChildren().add(buttonBox);
 
-            importingStage.initOwner(startWindowPane.getScene().getWindow());
+            importingStage.initOwner(mainPane.getScene().getWindow());
             importingStage.initModality(Modality.APPLICATION_MODAL);
             importingStage.setScene(new Scene(importingScene, 250, 150));
 
@@ -1005,7 +1001,7 @@ public class StartWindowController {
 
         dialog.getDialogPane().setContent(gridPane);
         dialog.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        dialog.initOwner(startWindowPane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         Optional<ButtonType> result = dialog.showAndWait();
         if(result.isPresent() && result.get() == loginButtonType) {
             clearAndDrawAgain();
@@ -1115,7 +1111,7 @@ public class StartWindowController {
 
         dialog.getDialogPane().setContent(gridPane);
         dialog.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        dialog.initOwner(startWindowPane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
 
         dialog.showAndWait();
 

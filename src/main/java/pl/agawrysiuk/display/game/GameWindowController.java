@@ -45,13 +45,15 @@ import lombok.Setter;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
+import pl.agawrysiuk.display.DisplayContext;
+import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.game.components.Ability;
 import pl.agawrysiuk.display.game.components.Token;
 import pl.agawrysiuk.display.game.components.ViewCard;
 import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.display.sideboard.Sideboard;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
-import pl.agawrysiuk.display.sideboard.Sideboard;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -61,14 +63,14 @@ import java.net.Socket;
 import java.time.LocalTime;
 import java.util.*;
 
-public class GameWindowController {
+public class GameWindowController implements DisplayWindow {
 
     @Getter
     @Setter
     private Stage primaryStage;
 
     @Getter
-    private Pane gamePane;
+    private Pane mainPane;
 
     private List<ViewCard> listCastingStack = new ArrayList<>();
 
@@ -272,9 +274,9 @@ public class GameWindowController {
     }
 
     public void initialize() {
-        gamePane = new Pane();
-        gamePane.prefWidth(1920);
-        gamePane.prefHeight(1080);
+        mainPane = new Pane();
+        mainPane.prefWidth(1920);
+        mainPane.prefHeight(1080);
         //checking mouse position
 //        gamePane.setOnMouseClicked(e -> {
 //            System.out.println(e.getSceneX());
@@ -315,7 +317,7 @@ public class GameWindowController {
                             yourTurn = true;
                             yourMove = true;
                             resolveButton.setStyle(resolveDefBtnStyle);
-                            gamePane.getChildren().add(yourTurnText);
+                            mainPane.getChildren().add(yourTurnText);
                             for (int i = 0; i < phasesTooltipYourTurn.size(); i++) {
                                 Tooltip.install(listPhases.get(i), phasesTooltipYourTurn.get(i));
                             }
@@ -323,7 +325,7 @@ public class GameWindowController {
                             chatMessages.add("RE:You go second");
                             yourTurn = false;
                             yourMove = false;
-                            gamePane.getChildren().add(opponentsTurnText);
+                            mainPane.getChildren().add(opponentsTurnText);
                             for (int i = 0; i < phasesTooltipYourTurn.size(); i++) {
                                 Tooltip.install(listPhases.get(i), phasesTooltipNotYourTurn.get(i));
                             }
@@ -366,7 +368,7 @@ public class GameWindowController {
                 alert.setTitle("Game Over");
                 alert.setHeaderText(null);
                 alert.setContentText("You won the game!");
-                alert.initOwner(gamePane.getScene().getWindow());
+                alert.initOwner(mainPane.getScene().getWindow());
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.getButtonTypes().remove(ButtonType.CANCEL);
@@ -395,14 +397,14 @@ public class GameWindowController {
                 listPhases.get(phasesIterator).setEffect(battlefieldBorder);
                 phasesIterator = 5;
                 listPhases.get(phasesIterator).setEffect(handBorder);
-                gamePane.getChildren().removeAll(attackAll, unblockAll);
+                mainPane.getChildren().removeAll(attackAll, unblockAll);
             } else if (message.contains("RESOLVE:")) {
                 ViewCard lastCardInStack = listCastingStack.get(listCastingStack.size() - 1);
                 if (lastCardInStack.getType().toLowerCase().equals("ability")) {
                     if (((Ability) lastCardInStack).getText().equals("Transform")) {
                         ((Ability) lastCardInStack).getViewCard().transform();
                     }
-                    gamePane.getChildren().remove(lastCardInStack);
+                    mainPane.getChildren().remove(lastCardInStack);
                 } else if (lastCardInStack.getType().toLowerCase().equals("sorcery") ||
                         lastCardInStack.getType().toLowerCase().equals("instant")) {
                     moveToGraveyard(lastCardInStack, !lastCardInStack.isOpponentsCard());
@@ -476,7 +478,7 @@ public class GameWindowController {
                     }
                 }
             } else if (message.contains("UNBLOCK_ALL:")) {
-                gamePane.getChildren().removeAll(attackBlockList);
+                mainPane.getChildren().removeAll(attackBlockList);
                 attackBlockList.clear();
             } else if (message.contains("BLOCK:")) {
                 message = message.replace("BLOCK:", "");
@@ -496,7 +498,7 @@ public class GameWindowController {
                         + attackCard.getTranslateY()
                         + (60 * StartWindowController.X_WINDOW));
                 attackBlockList.add(line);
-                gamePane.getChildren().add(line);
+                mainPane.getChildren().add(line);
             } else if (message.contains("CHANGE_TYPE:")) {
                 message = message.replace("CHANGE_TYPE:", "");
                 String[] messageArray = message.split(":");
@@ -714,7 +716,7 @@ public class GameWindowController {
                 viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
                 oppListBattlefield.add(viewCard);
                 viewCard.setImage(viewCard.getSmallCard());
-                gamePane.getChildren().remove(viewCard);
+                mainPane.getChildren().remove(viewCard);
 //                putOnBattlefield(viewCard, false, false);
                 reArrangeBattlefield();
                 reArrangeHand(-1, 0, false);
@@ -744,7 +746,7 @@ public class GameWindowController {
                 alert.initStyle(StageStyle.UNDECORATED);
                 ButtonType keep = new ButtonType("Keep", ButtonBar.ButtonData.OK_DONE);
                 ButtonType mullBtn = new ButtonType("Mulligan", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.initOwner(gamePane.getScene().getWindow());
+                alert.initOwner(mainPane.getScene().getWindow());
                 alert.getButtonTypes().setAll(keep, mullBtn);
                 if (mulliganCount == 0) {
                     alert.setContentText("Do you want to replace your hand with another seven cards?" +
@@ -787,7 +789,7 @@ public class GameWindowController {
                     //only here we send message that we finished mulligan and how much cards we keep
                     //receiver only wants one message about turn and one message about players' keep
                 } else {
-                    gamePane.getChildren().removeAll(heroListHand);
+                    mainPane.getChildren().removeAll(heroListHand);
                     for (ViewCard viewCard : heroListHand) {
                         viewCard.setUltimatePosition(ViewCard.PositionType.DECK);
                     }
@@ -838,7 +840,7 @@ public class GameWindowController {
         while (number > 0) {
             ViewCard viewCard = listDeck.get(0).getCard(hero, false, 250 * StartWindowController.X_WINDOW);
             viewCard.relocate((layoutX + (250 * StartWindowController.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
-            gamePane.getChildren().add(viewCard);
+            mainPane.getChildren().add(viewCard);
             listHand.add(viewCard);
             viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
             listDeck.remove(0);
@@ -862,11 +864,11 @@ public class GameWindowController {
 
         double layoutY = (hero) ? 858 * StartWindowController.X_WINDOW : -275 * StartWindowController.X_WINDOW;
 
-        gamePane.getChildren().removeAll(listHand);
+        mainPane.getChildren().removeAll(listHand);
 
         for (ViewCard viewCard : listHand) {
             viewCard.relocate((450 * StartWindowController.X_WINDOW + (250 * StartWindowController.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
-            gamePane.getChildren().add(viewCard);
+            mainPane.getChildren().add(viewCard);
             cardNumber++;
         }
     }
@@ -947,22 +949,22 @@ public class GameWindowController {
 
     private void reArrangeBattlefield() {
         if (heroListBattlefield.size() > 0) {
-            gamePane.getChildren().removeAll(heroListBattlefield);
+            mainPane.getChildren().removeAll(heroListBattlefield);
             List<ViewCard> tempList = new ArrayList<>(heroListBattlefield);
             heroListBattlefield.clear();
             for (ViewCard viewCard : tempList) {
-                gamePane.getChildren().add(viewCard);
+                mainPane.getChildren().add(viewCard);
                 heroListBattlefield.add(viewCard);
                 putOnBattlefield(viewCard, true, true);
             }
         }
 
         if (oppListBattlefield.size() > 0) {
-            gamePane.getChildren().removeAll(oppListBattlefield);
+            mainPane.getChildren().removeAll(oppListBattlefield);
             List<ViewCard> tempList = new ArrayList<>(oppListBattlefield);
             oppListBattlefield.clear();
             for (ViewCard viewCard : tempList) {
-                gamePane.getChildren().add(viewCard);
+                mainPane.getChildren().add(viewCard);
                 oppListBattlefield.add(viewCard);
                 putOnBattlefield(viewCard, true, false);
             }
@@ -1105,7 +1107,7 @@ public class GameWindowController {
         if (printNewViewStage != null && printNewViewStage.isShowing()) {
             dialog.initOwner(printNewViewStage.getScene().getWindow());
         } else {
-            dialog.initOwner(gamePane.getScene().getWindow());
+            dialog.initOwner(mainPane.getScene().getWindow());
         }
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -1167,7 +1169,7 @@ public class GameWindowController {
         changeCounters.setPadding(new Insets(25, 25, 25, 25));
 
         dialog.getDialogPane().setContent(changeCounters);
-        dialog.initOwner(gamePane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         dialog.initStyle(StageStyle.UNDECORATED);
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -1218,7 +1220,7 @@ public class GameWindowController {
         changeLife.setPadding(new Insets(25, 25, 25, 25));
 
         dialog.getDialogPane().setContent(changeLife);
-        dialog.initOwner(gamePane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         dialog.initStyle(StageStyle.UNDECORATED);
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -1295,7 +1297,7 @@ public class GameWindowController {
         addTokenPane.setPadding(new Insets(25, 25, 25, 25));
 
         dialog.getDialogPane().setContent(addTokenPane);
-        dialog.initOwner(gamePane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         dialog.initStyle(StageStyle.UNDECORATED);
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -1402,8 +1404,8 @@ public class GameWindowController {
             if (!listDeck.contains(viewCard)) {
                 listDeck.add(place, viewCard);
             }
-            if (gamePane.getChildren().contains(viewCard)) {
-                gamePane.getChildren().remove(viewCard);
+            if (mainPane.getChildren().contains(viewCard)) {
+                mainPane.getChildren().remove(viewCard);
             }
             reArrangeHand(-1, 0, hero);
             updateDeckView(hero);
@@ -1432,7 +1434,7 @@ public class GameWindowController {
             popupPane.getChildren().remove(viewCard);
         }
 
-        gamePane.getChildren().remove(viewCard);
+        mainPane.getChildren().remove(viewCard);
         RotateTransition rt = new RotateTransition(Duration.millis(15), viewCard);
         viewCard.setTranslateX(0);
         viewCard.setTranslateY(0);
@@ -1469,12 +1471,12 @@ public class GameWindowController {
             }
         }
         printNewViewStage.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        printNewViewStage.initOwner(gamePane.getScene().getWindow());
+        printNewViewStage.initOwner(mainPane.getScene().getWindow());
         printNewViewStage.show();
     }
 
     private void settingUpGameControls() {
-        gamePane.setBackground(new Background(new BackgroundImage(new Image("file:background-top.jpg"),
+        mainPane.setBackground(new Background(new BackgroundImage(new Image("file:background-top.jpg"),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 
@@ -1483,13 +1485,13 @@ public class GameWindowController {
         //adding preview
         previewIV.relocate(1565 * StartWindowController.X_WINDOW, 80 * StartWindowController.X_WINDOW);
         previewIV.setViewOrder(-4);
-        gamePane.getChildren().add(previewIV);
+        mainPane.getChildren().add(previewIV);
 
         //adding chat
         chatView.relocate(1580 * StartWindowController.X_WINDOW, 101 * StartWindowController.X_WINDOW);
         chatView.setPrefWidth(320 * StartWindowController.X_WINDOW); //previewIV is 350x495
         chatView.setPrefHeight(350 * StartWindowController.X_WINDOW); //was 453
-        gamePane.getChildren().add(chatView);
+        mainPane.getChildren().add(chatView);
         chatView.setItems(chatMessages);
         chatView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
@@ -1549,11 +1551,11 @@ public class GameWindowController {
                 chatField.setText("");
             }
         });
-        gamePane.getChildren().add(chatField);
+        mainPane.getChildren().add(chatField);
 
         sendChatBtn = new Button("Send");
         sendChatBtn.relocate(1850 * StartWindowController.X_WINDOW, 501 * StartWindowController.X_WINDOW);
-        gamePane.getChildren().add(sendChatBtn);
+        mainPane.getChildren().add(sendChatBtn);
         sendChatBtn.setOnAction(e -> {
             if (!chatField.getText().equals("")) {
                 chatMessages.add("You: " + chatField.getText());
@@ -1583,7 +1585,7 @@ public class GameWindowController {
         scryDrawSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 60, 1));
         scryDrawSpinner.setPrefWidth(60);
         scryDrawSpinner.setEditable(true);
-        gamePane.getChildren().add(scryDrawSpinner);
+        mainPane.getChildren().add(scryDrawSpinner);
         scryButton = new Button("Scry");
         scryButton.relocate(1720 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
         scryButton.setOnAction(e -> {
@@ -1598,7 +1600,7 @@ public class GameWindowController {
             chatMessages.add((scryDrawSpinner.getValue() > 1) ? ("You scried " + scryDrawSpinner.getValue() + " cards.") : "You scried one card.");
             scryDrawSpinner.getValueFactory().setValue(1);
         });
-        gamePane.getChildren().add(scryButton);
+        mainPane.getChildren().add(scryButton);
         //setting up buttons for draw card
         drawCardBtn = new Button("Draw");
         drawCardBtn.relocate(1620 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
@@ -1608,7 +1610,7 @@ public class GameWindowController {
             drawCards(scryDrawSpinner.getValue(), true);
             scryDrawSpinner.getValueFactory().setValue(1);
         });
-        gamePane.getChildren().add(drawCardBtn);
+        mainPane.getChildren().add(drawCardBtn);
 
         //setting up reveal hand
         revealBtn = new Button("Reveal");
@@ -1651,7 +1653,7 @@ public class GameWindowController {
             revealPane.setPadding(new Insets(25, 25, 25, 25));
 
             dialog.getDialogPane().setContent(revealPane);
-            dialog.initOwner(gamePane.getScene().getWindow());
+            dialog.initOwner(mainPane.getScene().getWindow());
             dialog.initStyle(StageStyle.UNDECORATED);
 
             Optional<ButtonType> result = dialog.showAndWait();
@@ -1698,7 +1700,7 @@ public class GameWindowController {
                 }
             }
         });
-        gamePane.getChildren().add(revealBtn);
+        mainPane.getChildren().add(revealBtn);
 
         //setting up untap all
         untapAll = new Button("Untap all");
@@ -1710,7 +1712,7 @@ public class GameWindowController {
             clientSender.println("UNTAPALL:" + new Random().nextInt());
             chatMessages.add("You untapped all cards.");
         });
-        gamePane.getChildren().add(untapAll);
+        mainPane.getChildren().add(untapAll);
 
         //sideboardBtn
         sideboardBtn = new Button("Sideboard");
@@ -1718,7 +1720,7 @@ public class GameWindowController {
         sideboardBtn.setOnAction(e -> {
             printNewView(heroListSideboard);
         });
-        gamePane.getChildren().add(sideboardBtn);
+        mainPane.getChildren().add(sideboardBtn);
 
         //skip turn button
         skipTurnBtn = new Button("Skip turn");
@@ -1730,7 +1732,7 @@ public class GameWindowController {
                 alert.setTitle("Warning!");
                 alert.setHeaderText(null);
                 alert.setContentText("You can't skip turn when it's not your turn.");
-                alert.initOwner(gamePane.getScene().getWindow());
+                alert.initOwner(mainPane.getScene().getWindow());
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.show();
                 return;
@@ -1741,7 +1743,7 @@ public class GameWindowController {
                 alert.setHeaderText(null);
                 alert.setContentText("You can't skip turn if you have cards in the casting stack!" +
                         "\nPlease resolve all cards and then you can skip turn.");
-                alert.initOwner(gamePane.getScene().getWindow());
+                alert.initOwner(mainPane.getScene().getWindow());
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.show();
                 return;
@@ -1751,10 +1753,10 @@ public class GameWindowController {
             listPhases.get(phasesIterator).setEffect(battlefieldBorder);
             phasesIterator = 5;
             listPhases.get(phasesIterator).setEffect(handBorder);
-            gamePane.getChildren().removeAll(attackAll, unblockAll);
+            mainPane.getChildren().removeAll(attackAll, unblockAll);
             resolve(true);
         });
-        gamePane.getChildren().add(skipTurnBtn);
+        mainPane.getChildren().add(skipTurnBtn);
 
         //setting up cointoss button
         coinTossBtn = new Button("Coin");
@@ -1764,7 +1766,7 @@ public class GameWindowController {
             clientSender.println("COINTOSS:" + coin + ":" + new Random().nextInt());
             chatMessages.add("You tossed a coin. It's " + coin + ".");
         });
-        gamePane.getChildren().add(coinTossBtn);
+        mainPane.getChildren().add(coinTossBtn);
 
         //settingup forfeit button
         forfeitBtn = new Button("Quit");
@@ -1778,7 +1780,7 @@ public class GameWindowController {
             alert.setTitle("Are you sure?");
             alert.setHeaderText(null);
             alert.setContentText("Do you really want to quit the game?");
-            alert.initOwner(gamePane.getScene().getWindow());
+            alert.initOwner(mainPane.getScene().getWindow());
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.initStyle(StageStyle.UNDECORATED);
             Optional<ButtonType> result = alert.showAndWait();
@@ -1800,7 +1802,7 @@ public class GameWindowController {
 //                System.exit(0);
             }
         });
-        gamePane.getChildren().add(forfeitBtn);
+        mainPane.getChildren().add(forfeitBtn);
 
         //setting up button for shuffling deck
         shuffleDeckBtn = new Button("Shuffle deck");
@@ -1811,7 +1813,7 @@ public class GameWindowController {
             alert.setHeaderText(null);
             alert.setContentText("You shouldn't shuffle if it wasn't triggered by a card.\nDo you really want to do it?");
             alert.initStyle(StageStyle.UNDECORATED);
-            alert.initOwner(gamePane.getScene().getWindow());
+            alert.initOwner(mainPane.getScene().getWindow());
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 clientSender.println("SHUFFLE:" + new Random().nextInt());
@@ -1823,7 +1825,7 @@ public class GameWindowController {
                 updateDeckView(true);
             }
         });
-        gamePane.getChildren().add(shuffleDeckBtn);
+        mainPane.getChildren().add(shuffleDeckBtn);
 
         //setting up token button
         addTokenBtn = new Button("Add token");
@@ -1831,7 +1833,7 @@ public class GameWindowController {
         addTokenBtn.setOnAction(e -> {
             addTokenDialog();
         });
-        gamePane.getChildren().add(addTokenBtn);
+        mainPane.getChildren().add(addTokenBtn);
 
         //setting up resolve button
         resolveButton = new Button("Resolve");
@@ -1862,7 +1864,7 @@ public class GameWindowController {
             resolve(false);
         });
         resolveButton.prefWidth(250 * StartWindowController.X_WINDOW);
-        gamePane.getChildren().add(resolveButton);
+        mainPane.getChildren().add(resolveButton);
 
         //setting up extend/contract button
         extendContractBTNS = new Button();
@@ -1871,7 +1873,7 @@ public class GameWindowController {
         extendContractBTNS.setOnMousePressed(e -> {
             moveButtons();
         });
-        gamePane.getChildren().add(extendContractBTNS);
+        mainPane.getChildren().add(extendContractBTNS);
 
         //attack/block buttons
         attackAll = new Button("Attack all");
@@ -1889,7 +1891,7 @@ public class GameWindowController {
         });
         unblockAll.setOnMousePressed(e -> {
             if (!heroListBattlefield.isEmpty()) {
-                gamePane.getChildren().removeAll(attackBlockList);
+                mainPane.getChildren().removeAll(attackBlockList);
                 attackBlockList.clear();
                 blockingCard = null;
                 attackBlock = null;
@@ -1937,7 +1939,7 @@ public class GameWindowController {
             textColumn++;
         }
         listPhases.get(0).setEffect(handBorder);
-        gamePane.getChildren().add(phasesGrid);
+        mainPane.getChildren().add(phasesGrid);
     }
 
     private void settingUpView(boolean hero) {
@@ -1961,7 +1963,7 @@ public class GameWindowController {
         deckCardsNumber.setText(Integer.toString(listDeck.size()));
         deckCardsNumber.relocate(65 * StartWindowController.X_WINDOW, textHeight);
         deckCardsNumber.setPickOnBounds(false);
-        gamePane.getChildren().add(deckCardsNumber);
+        mainPane.getChildren().add(deckCardsNumber);
 
         //setting up deck view
         updateDeckView(hero);
@@ -1977,7 +1979,7 @@ public class GameWindowController {
         deckIV.setOnMouseClicked(e -> {
             printNewView(listDeck);
         });
-        gamePane.getChildren().add(deckIV);
+        mainPane.getChildren().add(deckIV);
 
         //setting up graveyard view
         graveyardIV.relocate(175 * StartWindowController.X_WINDOW, ivHeight);
@@ -1994,7 +1996,7 @@ public class GameWindowController {
         graveyardIV.setOnMouseClicked(e -> {
             printNewView(listGraveyard);
         });
-        gamePane.getChildren().add(graveyardIV);
+        mainPane.getChildren().add(graveyardIV);
 
         Text graveyardText = new Text();
         graveyardText.setFill(Color.WHITE);
@@ -2003,7 +2005,7 @@ public class GameWindowController {
         graveyardText.setText("Graveyard");
         graveyardText.relocate(150 * StartWindowController.X_WINDOW, textHeight);
         graveyardText.setPickOnBounds(false);
-        gamePane.getChildren().add(graveyardText);
+        mainPane.getChildren().add(graveyardText);
 
         //setting up exile view
         exileIV.relocate(325 * StartWindowController.X_WINDOW, ivHeight);
@@ -2018,7 +2020,7 @@ public class GameWindowController {
         exileIV.setOnMouseClicked(e -> {
             printNewView(listExile);
         });
-        gamePane.getChildren().add(exileIV);
+        mainPane.getChildren().add(exileIV);
         Text exileText = new Text();
         exileText.setFill(Color.WHITE);
         exileText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
@@ -2026,7 +2028,7 @@ public class GameWindowController {
         exileText.setText("Exile");
         exileText.relocate(345 * StartWindowController.X_WINDOW, textHeight);
         exileText.setPickOnBounds(false);
-        gamePane.getChildren().add(exileText);
+        mainPane.getChildren().add(exileText);
 
         //setting up life
         Rectangle lifeRect = new Rectangle();
@@ -2040,7 +2042,7 @@ public class GameWindowController {
         lifeRect.setArcHeight(40 * StartWindowController.X_WINDOW);
         lifeRect.setArcWidth(40 * StartWindowController.X_WINDOW);
         lifeRect.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(((int) (Math.random() * 156)), (int) (Math.random() * 156), (int) (Math.random() * 156), 1), 10, 0.9, 0, 0));
-        gamePane.getChildren().add(lifeRect);
+        mainPane.getChildren().add(lifeRect);
         lifeTXT.setFill(Color.WHITE);
         lifeTXT.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
         lifeTXT.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
@@ -2049,7 +2051,7 @@ public class GameWindowController {
         lifeTXT.relocate(930 * StartWindowController.X_WINDOW, lifeTXTHeight);
         lifeTXT.setPickOnBounds(false);
         lifeTXT.setTextAlignment(TextAlignment.CENTER);
-        gamePane.getChildren().add(lifeTXT);
+        mainPane.getChildren().add(lifeTXT);
         if (hero) {
             lifeTXT.setOnMouseClicked(e -> {
                 lifeTXT.setText(changeLifeDialog());
@@ -2118,7 +2120,7 @@ public class GameWindowController {
                                     + viewCard.getTranslateY()
                                     + (60 * StartWindowController.X_WINDOW));
                             attackBlockList.add(attackBlock);
-                            gamePane.getChildren().add(attackBlock);
+                            mainPane.getChildren().add(attackBlock);
                             clientSender.println("BLOCK:" +
                                     heroListBattlefield.indexOf(blockingCard) + ":" +
                                     oppListBattlefield.indexOf(viewCard) + ":" +
@@ -2824,7 +2826,7 @@ public class GameWindowController {
                                 + token.getTranslateY()
                                 + (60 * StartWindowController.X_WINDOW));
                         attackBlockList.add(attackBlock);
-                        gamePane.getChildren().add(attackBlock);
+                        mainPane.getChildren().add(attackBlock);
                         clientSender.println("BLOCK:" +
                                 heroListBattlefield.indexOf(blockingCard) + ":" +
                                 oppListBattlefield.indexOf(token) + ":" +
@@ -2836,7 +2838,7 @@ public class GameWindowController {
             });
         }
         token.setViewOrder(-2);
-        gamePane.getChildren().add(token);
+        mainPane.getChildren().add(token);
         putOnBattlefield(token, false, hero);
         uglyTokenSolution.add(token);
     }
@@ -2845,7 +2847,7 @@ public class GameWindowController {
         List<ViewCard> listBattlefield = (hero) ? heroListBattlefield : oppListBattlefield;
         listBattlefield.remove(token);
         reArrangeBattlefield();
-        gamePane.getChildren().remove(token);
+        mainPane.getChildren().remove(token);
     }
 
     private void moveButtons() {
@@ -2884,7 +2886,7 @@ public class GameWindowController {
         Ability abilityVC = viewCard.createAbility(text, additionalText);
         abilityVC.relocate(viewCard.getLayoutX() + viewCard.getTranslateX() + (60 * StartWindowController.X_WINDOW),
                 viewCard.getLayoutY() + viewCard.getTranslateY() + (60 * StartWindowController.X_WINDOW));
-        gamePane.getChildren().add(abilityVC);
+        mainPane.getChildren().add(abilityVC);
         castToStack(abilityVC);
     }
 
@@ -2940,7 +2942,7 @@ public class GameWindowController {
             String endString = "";
             ViewCard lastCardInStack = listCastingStack.get(listCastingStack.size() - 1);
             if (lastCardInStack.getType().equals("Ability")) {
-                gamePane.getChildren().remove(lastCardInStack);
+                mainPane.getChildren().remove(lastCardInStack);
                 if (((Ability) lastCardInStack).getText().equals("Transform")) {
                     endString = "TRANSFORM:";
                     ((Ability) lastCardInStack).getViewCard().transform();
@@ -2972,8 +2974,8 @@ public class GameWindowController {
                 chatMessages.add("RE:It's not your turn.");
             }
             phasesIterator = 0;
-            gamePane.getChildren().remove(yourTurn ? opponentsTurnText : yourTurnText);
-            gamePane.getChildren().add(yourTurn ? yourTurnText : opponentsTurnText);
+            mainPane.getChildren().remove(yourTurn ? opponentsTurnText : yourTurnText);
+            mainPane.getChildren().add(yourTurn ? yourTurnText : opponentsTurnText);
             List<Tooltip> phasesTooltip = (yourTurn) ? phasesTooltipYourTurn : phasesTooltipNotYourTurn;
             for (int i = 0; i < phasesTooltip.size(); i++) {
                 Tooltip.install(listPhases.get(i), phasesTooltip.get(i));
@@ -2981,16 +2983,16 @@ public class GameWindowController {
         }
         chatMessages.add("You go to the next phase: " + listPhases.get(phasesIterator).getText() + ".");
         if (phasesIterator == 2) {
-            gamePane.getChildren().add(yourTurn ? attackAll : unblockAll);
+            mainPane.getChildren().add(yourTurn ? attackAll : unblockAll);
             removeBorders();
         }
         if (phasesIterator == 3) {
             attackBlock = null;
             blockingCard = null;
-            gamePane.getChildren().removeAll(attackAll, unblockAll);
+            mainPane.getChildren().removeAll(attackAll, unblockAll);
         }
         if (phasesIterator == 4) {
-            gamePane.getChildren().removeAll(attackBlockList);
+            mainPane.getChildren().removeAll(attackBlockList);
             attackBlockList.clear();
             removeBorders();
         }
@@ -3056,14 +3058,9 @@ public class GameWindowController {
     }
 
     private void goToSideboard() {
-        Sideboard sideboardController = new Sideboard(yourDeck, clientSender, clientReceiver, socket);
-        sideboardController.setPrimaryStage(this.primaryStage);
-        sideboardController.initialize();
-        this.primaryStage.setScene(new Scene(sideboardController.getSidePane(),488,720));
-        primaryStage.setMaximized(true);
-        primaryStage.setFullScreenExitHint("");//no hint on the screen
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
+        DisplayContext context = new DisplayContext();
+        context.setNewWindow(new Sideboard(yourDeck, clientSender, clientReceiver, socket));
+        context.showNewWindow(this);
     }
 
     private String changeType(ViewCard viewCard) {
@@ -3088,7 +3085,7 @@ public class GameWindowController {
         changeType.setPadding(new Insets(25, 25, 25, 25));
 
         dialog.getDialogPane().setContent(changeType);
-        dialog.initOwner(gamePane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         dialog.initStyle(StageStyle.UNDECORATED);
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -3153,7 +3150,7 @@ public class GameWindowController {
         abilityPane.setPadding(new Insets(25, 25, 25, 25));
 
         dialog.getDialogPane().setContent(abilityPane);
-        dialog.initOwner(gamePane.getScene().getWindow());
+        dialog.initOwner(mainPane.getScene().getWindow());
         dialog.initStyle(StageStyle.UNDECORATED);
 
         Optional<ButtonType> result = dialog.showAndWait();

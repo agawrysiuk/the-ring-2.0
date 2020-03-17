@@ -2,29 +2,29 @@ package pl.agawrysiuk.display.init;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.db.Database;
+import pl.agawrysiuk.display.DisplayContext;
+import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.util.Optional;
 
-public class InitWindow {
+public class InitWindow implements DisplayWindow {
 
     private String playersName;
     private String host;
 
     @Getter
-    private Pane initPane = new Pane();;
+    private Pane mainPane = new Pane();;
 
     @Getter
     @Setter
@@ -73,14 +73,8 @@ public class InitWindow {
         Database.getInstance().setSettings(0, playersName);
         Database.getInstance().setSettings(1, host);
 
-        StartWindowController startWindowController = new StartWindowController();
-        startWindowController.initialize();
-        startWindowController.setPrimaryStage(this.primaryStage);
-        this.primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(), 488, 720));
-        this.primaryStage.setMaximized(true);
-        this.primaryStage.setFullScreenExitHint("");//no hint on the screen
-        this.primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        this.primaryStage.setFullScreen(true); //full screen without borders
-        this.primaryStage.show();
+        DisplayContext context = new DisplayContext();
+        context.setNewWindow(new StartWindowController());
+        context.showNewWindow(this);
     }
 }

@@ -2,12 +2,10 @@ package pl.agawrysiuk.display.sideboard;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -16,11 +14,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.model.Deck;
+import pl.agawrysiuk.display.DisplayContext;
+import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.game.GameWindowController;
 import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.model.Card;
+import pl.agawrysiuk.model.Deck;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,14 +30,14 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sideboard {
+public class Sideboard implements DisplayWindow {
 
     @Getter
     @Setter
     private Stage primaryStage;
 
     @Getter
-    private Pane sidePane;
+    private Pane mainPane;
     private Socket socket;
     private PrintWriter clientSender;
     private BufferedReader clientReceiver;
@@ -78,13 +78,13 @@ public class Sideboard {
     }
 
     public void initialize() {
-        sidePane = new Pane();
-        sidePane.prefWidth(1920);
-        sidePane.prefHeight(1080);
+        mainPane = new Pane();
+        mainPane.prefWidth(1920);
+        mainPane.prefHeight(1080);
 
-        textMain.relocate(25* StartWindowController.X_WINDOW, 5* StartWindowController.X_WINDOW);
-        textSide.relocate(1325* StartWindowController.X_WINDOW, 5* StartWindowController.X_WINDOW);
-        quitBtn.relocate(1550* StartWindowController.X_WINDOW, 980* StartWindowController.X_WINDOW);
+        textMain.relocate(25 * StartWindowController.X_WINDOW, 5 * StartWindowController.X_WINDOW);
+        textSide.relocate(1325 * StartWindowController.X_WINDOW, 5 * StartWindowController.X_WINDOW);
+        quitBtn.relocate(1550 * StartWindowController.X_WINDOW, 980 * StartWindowController.X_WINDOW);
         quitBtn.setScaleX(2);
         quitBtn.setScaleY(2);
         quitBtn.setOnAction(actionEvent -> {
@@ -93,7 +93,7 @@ public class Sideboard {
             alert.setTitle("You have quit");
             alert.setHeaderText(null);
             alert.setContentText("You have quit the game. You will return to the main window.");
-            alert.initOwner(sidePane.getScene().getWindow());
+            alert.initOwner(mainPane.getScene().getWindow());
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             quitTheGame();
@@ -107,7 +107,7 @@ public class Sideboard {
 //            this.youReady = true;
 //            if (this.oppReady) playAgainBtn.setDisable(false);
 //        });
-        playAgainBtn.relocate(1750* StartWindowController.X_WINDOW, 980* StartWindowController.X_WINDOW);
+        playAgainBtn.relocate(1750 * StartWindowController.X_WINDOW, 980 * StartWindowController.X_WINDOW);
         playAgainBtn.setScaleX(2);
         playAgainBtn.setScaleY(2);
         playAgainBtn.setOnAction(actionEvent -> {
@@ -117,7 +117,7 @@ public class Sideboard {
             if (this.oppReady) startTheGameAgain();
         });
 //        playAgainBtn.setDisable(true);
-        sidePane.getChildren().addAll(quitBtn, playAgainBtn);
+        mainPane.getChildren().addAll(quitBtn, playAgainBtn);
         printView();
         Task playTask = new Task() {
             @Override
@@ -157,7 +157,7 @@ public class Sideboard {
                 alert.setTitle("Opponent has quit");
                 alert.setHeaderText(null);
                 alert.setContentText("Opponent has quit the game. You will return to the main window.");
-                alert.initOwner(sidePane.getScene().getWindow());
+                alert.initOwner(mainPane.getScene().getWindow());
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.showAndWait();
                 quitTheGame();
@@ -197,77 +197,67 @@ public class Sideboard {
     }
 
     public void printView() {
-        sidePane.getChildren().removeAll(mainList);
-        sidePane.getChildren().removeAll(sideList);
-        sidePane.getChildren().removeAll(textMain, textSide);
-        int width = (int) (25* StartWindowController.X_WINDOW);
-        int height = (int) (25* StartWindowController.X_WINDOW);
+        mainPane.getChildren().removeAll(mainList);
+        mainPane.getChildren().removeAll(sideList);
+        mainPane.getChildren().removeAll(textMain, textSide);
+        int width = (int) (25 * StartWindowController.X_WINDOW);
+        int height = (int) (25 * StartWindowController.X_WINDOW);
         int number = 0;
         for (ImageView iv : mainList) {
-            iv.setFitWidth(250* StartWindowController.X_WINDOW);
+            iv.setFitWidth(250 * StartWindowController.X_WINDOW);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
-            sidePane.getChildren().add(iv);
-            height += 40* StartWindowController.X_WINDOW;
+            mainPane.getChildren().add(iv);
+            height += 40 * StartWindowController.X_WINDOW;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25* StartWindowController.X_WINDOW);
+                height = (int) (25 * StartWindowController.X_WINDOW);
                 width += 260;
             }
         }
 
-        width = (int) (1325* StartWindowController.X_WINDOW);
-        height = (int) (25* StartWindowController.X_WINDOW);
+        width = (int) (1325 * StartWindowController.X_WINDOW);
+        height = (int) (25 * StartWindowController.X_WINDOW);
         number = 0;
 
         for (ImageView iv : sideList) {
-            iv.setFitWidth(250* StartWindowController.X_WINDOW);
+            iv.setFitWidth(250 * StartWindowController.X_WINDOW);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
-            sidePane.getChildren().add(iv);
-            height += 40* StartWindowController.X_WINDOW;
+            mainPane.getChildren().add(iv);
+            height += 40 * StartWindowController.X_WINDOW;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25* StartWindowController.X_WINDOW);
+                height = (int) (25 * StartWindowController.X_WINDOW);
                 width += 260;
             }
         }
         textMain.setText("Main deck: " + mainList.size() + " cards");
         textSide.setText("Sideboard: " + sideList.size() + " cards");
-        sidePane.getChildren().addAll(textMain, textSide);
+        mainPane.getChildren().addAll(textMain, textSide);
     }
 
     private void quitTheGame() {
         try {
             socket.close();
-            StartWindowController startWindowController = new StartWindowController();
-            startWindowController.initialize();
-            startWindowController.setPrimaryStage(this.primaryStage);
-            this.primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(),488,720));
-            primaryStage.setMaximized(true);
-            primaryStage.setFullScreenExitHint("");//no hint on the screen
-            primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-            primaryStage.setFullScreen(true); //full screen without borders
-            } catch (IOException ioe) {
+            DisplayContext context = new DisplayContext();
+            context.setNewWindow(new StartWindowController());
+            context.showNewWindow(this);
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
     }
 
     private void startTheGameAgain() {
-        GameWindowController controller = new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket);
-        controller.setPrimaryStage(this.primaryStage);
-        controller.initialize();
-        this.primaryStage.setScene(new Scene(controller.getGamePane(),488,720));
-        primaryStage.setMaximized(true);
-        primaryStage.setFullScreenExitHint("");//no hint on the screen
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
+        DisplayContext context = new DisplayContext();
+        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket));
+        context.showNewWindow(this);
     }
 }
