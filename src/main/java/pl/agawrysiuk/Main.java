@@ -3,7 +3,7 @@ package pl.agawrysiuk;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.init.InitWindow;
+import pl.agawrysiuk.display.init.InitWindow;
 
 /** THE GAME:
  * - "Play" button returns a copy of the deck, not it's immediate instance

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.sideboard;
+package pl.agawrysiuk.display.sideboard;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -19,8 +19,8 @@ import lombok.Setter;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.model.Deck;
-import pl.agawrysiuk.game.GameWindowController;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.display.game.GameWindowController;
+import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.io.BufferedReader;
 import java.io.IOException;

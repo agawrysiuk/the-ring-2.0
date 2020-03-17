@@ -1,4 +1,4 @@
-package pl.agawrysiuk.game.components;
+package pl.agawrysiuk.display.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -15,7 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.StartWindowController;
 
 public class Ability extends ViewCard {
     private ViewCard viewCard;

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.game.components;
+package pl.agawrysiuk.display.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -13,7 +13,7 @@ import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

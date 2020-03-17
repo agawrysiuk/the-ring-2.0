@@ -1,4 +1,4 @@
-package pl.agawrysiuk.init;
+package pl.agawrysiuk.display.init;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.util.Optional;
 
@@ -77,10 +77,10 @@ public class InitWindow {
         startWindowController.initialize();
         startWindowController.setPrimaryStage(this.primaryStage);
         this.primaryStage.setScene(new Scene(startWindowController.getStartWindowPane(), 488, 720));
-        primaryStage.setMaximized(true);
-        primaryStage.setFullScreenExitHint("");//no hint on the screen
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
-        primaryStage.show();
+        this.primaryStage.setMaximized(true);
+        this.primaryStage.setFullScreenExitHint("");//no hint on the screen
+        this.primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
+        this.primaryStage.setFullScreen(true); //full screen without borders
+        this.primaryStage.show();
     }
 }

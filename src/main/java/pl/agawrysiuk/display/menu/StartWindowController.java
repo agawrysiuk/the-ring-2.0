@@ -1,4 +1,4 @@
-package pl.agawrysiuk.menu;
+package pl.agawrysiuk.display.menu;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -36,7 +36,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.game.GameWindowController;
+import pl.agawrysiuk.display.game.GameWindowController;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.game;
+package pl.agawrysiuk.display.game;
 
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -45,13 +45,13 @@ import lombok.Setter;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.game.components.Ability;
-import pl.agawrysiuk.game.components.Token;
-import pl.agawrysiuk.game.components.ViewCard;
-import pl.agawrysiuk.menu.StartWindowController;
+import pl.agawrysiuk.display.game.components.Ability;
+import pl.agawrysiuk.display.game.components.Token;
+import pl.agawrysiuk.display.game.components.ViewCard;
+import pl.agawrysiuk.display.menu.StartWindowController;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
-import pl.agawrysiuk.sideboard.Sideboard;
+import pl.agawrysiuk.display.sideboard.Sideboard;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
