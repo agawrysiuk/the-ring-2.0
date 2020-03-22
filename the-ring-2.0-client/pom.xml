@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.agawrysiuk</groupId>
-    <artifactId>the-ring-2.0</artifactId>
+    <artifactId>the-ring-2.0-client</artifactId>
     <version>2.0-SNAPSHOT</version>
 
     <dependencies>
