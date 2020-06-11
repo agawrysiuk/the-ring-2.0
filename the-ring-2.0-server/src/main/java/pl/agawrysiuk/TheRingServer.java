@@ -1,5 +1,9 @@
 package pl.agawrysiuk;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,18 +18,24 @@ import java.util.Random;
 
 // FIXME: 2019-08-12 do it as a fxml with visible connected players
 
-public class TheRingServer {
+@SpringBootApplication
+public class TheRingServer implements CommandLineRunner {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TheRingServer.class, args);
+    }
 
     public static List<Player> playersList;
 
-    public static void main(String[] args) {
+    @Override
+    public void run(String... args) {
         playersList = new ArrayList<>();
 
         Thread checkingState = new Thread(() -> {
             while (true) { //checking if socket is closed
-                Iterator playersIterator = playersList.iterator();
+                Iterator<Player> playersIterator = playersList.iterator();
                 while (playersIterator.hasNext()) {
-                    Player checkedPlayer = (Player) playersIterator.next();
+                    Player checkedPlayer = playersIterator.next();
                     if (checkedPlayer.getSocket().isClosed()) {
                         playersIterator.remove();
                         break;
