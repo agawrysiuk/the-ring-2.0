@@ -3,6 +3,6 @@ package pl.agawrysiuk;
 public class App {
 
     public static void main(String[] args) {
-        Main.main(args);
+        TheRingClient.main(args);
     }
 }

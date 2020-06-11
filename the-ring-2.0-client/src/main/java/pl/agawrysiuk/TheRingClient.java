@@ -51,7 +51,7 @@ import pl.agawrysiuk.display.init.InitWindow;
 // TODO: 2019-08-09 add emblems?
 
 
-public class Main extends Application {
+public class TheRingClient extends Application {
 
 
     @Override

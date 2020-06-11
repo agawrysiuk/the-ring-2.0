@@ -32,9 +32,9 @@ public class Player extends Thread {
             Thread sendingPlayersListThread = new Thread(() -> {
                 while (!isReady && !inGame) {
                     try {
-                        if (!Main.playersList.isEmpty()) {
+                        if (!TheRingServer.playersList.isEmpty()) {
                             StringBuilder list = new StringBuilder();
-                            Main.playersList.forEach(player -> {
+                            TheRingServer.playersList.forEach(player -> {
                                 list.append(player.getPlayerName());
                                 list.append(",");
                             });

@@ -14,7 +14,7 @@ import java.util.Random;
 
 // FIXME: 2019-08-12 do it as a fxml with visible connected players
 
-public class Main {
+public class TheRingServer {
 
     public static List<Player> playersList;
 
