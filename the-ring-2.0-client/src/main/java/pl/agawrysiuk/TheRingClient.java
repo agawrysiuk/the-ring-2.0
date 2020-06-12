@@ -3,7 +3,7 @@ package pl.agawrysiuk;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.init.InitWindow;
+import pl.agawrysiuk.display.init.WindowInitializer;
 
 /** THE GAME:
  * - "Play" button returns a copy of the deck, not it's immediate instance
@@ -57,9 +57,9 @@ public class TheRingClient extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("The Ring");
-        InitWindow initWindow = new InitWindow();
-        initWindow.setPrimaryStage(primaryStage);
-        initWindow.initialize();
+        WindowInitializer windowInitializer = new WindowInitializer();
+        windowInitializer.setPrimaryStage(primaryStage);
+        windowInitializer.initialize();
     }
 
     @Override

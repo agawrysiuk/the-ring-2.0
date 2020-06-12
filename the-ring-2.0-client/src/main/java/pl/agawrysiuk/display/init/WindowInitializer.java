@@ -18,7 +18,7 @@ import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.util.Optional;
 
-public class InitWindow implements DisplayWindow {
+public class WindowInitializer implements DisplayWindow {
 
     private String playersName;
     private String host;

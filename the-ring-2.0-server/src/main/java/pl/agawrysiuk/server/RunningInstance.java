@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.agawrysiuk.helpers.MatchMaker;
-import pl.agawrysiuk.helpers.PlayerConnector;
+import pl.agawrysiuk.helpers.ConnectionListener;
 import pl.agawrysiuk.player.Player;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class RunningInstance implements CommandLineRunner {
 
     private static List<Player> players = new ArrayList<>();
     private MatchMaker checkingState;
-    private PlayerConnector acceptingPlayers;
+    private ConnectionListener acceptingPlayers;
 
     @Override
     public void run(String... args) {
@@ -27,7 +27,7 @@ public class RunningInstance implements CommandLineRunner {
     }
 
     private void configureAcceptingPlayers() {
-        acceptingPlayers = new PlayerConnector(players);
+        acceptingPlayers = new ConnectionListener(players);
     }
 
     private void configureCheckingState() {

@@ -12,11 +12,11 @@ import java.net.Socket;
 import java.util.List;
 
 @Slf4j
-public class PlayerConnector extends Thread {
+public class ConnectionListener extends Thread {
 
     private List<Player> players;
 
-    public PlayerConnector(List<Player> players) {
+    public ConnectionListener(List<Player> players) {
         this.players = players;
     }
 
