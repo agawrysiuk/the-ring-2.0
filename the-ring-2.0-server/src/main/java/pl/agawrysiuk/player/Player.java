@@ -1,5 +1,6 @@
 package pl.agawrysiuk.player;
 
+import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.server.RunningInstance;
@@ -9,9 +10,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 
 @Slf4j
-@ToString
+@Getter
+@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
 public class Player extends Thread {
     private Socket socket;
     @ToString.Include
@@ -24,13 +27,15 @@ public class Player extends Thread {
     private PrintWriter output;
     private boolean isStartingFirst;
     private Thread sendingPlayersList;
+    private List<Player> players;
 
-    public Player(Socket socket, BufferedReader input, PrintWriter output) {
+    public Player(Socket socket, BufferedReader input, PrintWriter output, List<Player> players) {
         this.socket = socket;
         this.isReady = false;
         this.inGame = false;
         this.input = input;
         this.output = output;
+        this.players = players;
         log.info("Client connected");
     }
 
@@ -38,6 +43,7 @@ public class Player extends Thread {
     public void run() {
         try {
             playerName = input.readLine();
+            //todo send data to the client
 
             configureSendingPlayersList();
             sendingPlayersList.start();
@@ -62,9 +68,9 @@ public class Player extends Thread {
         sendingPlayersList = new Thread(() -> {
             while (!isReady && !inGame) {
                 try {
-                    if (!RunningInstance.playersList.isEmpty()) {
+                    if (!players.isEmpty()) {
                         StringBuilder list = new StringBuilder();
-                        RunningInstance.playersList.forEach(player -> {
+                        players.forEach(player -> {
                             list.append(player.getPlayerName());
                             list.append(",");
                         });
@@ -147,30 +153,6 @@ public class Player extends Thread {
             }
             //here, you just move forward the messages
         }
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public String getOpponent() {
-        return opponentName;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public BufferedReader getInput() {
-        return input;
-    }
-
-    public PrintWriter getOutput() {
-        return output;
     }
 
     public Player setReady(boolean ready) {
