@@ -26,7 +26,6 @@ public class DownloaderApplication extends Application implements CommandLineRun
     public void start(Stage stage) throws Exception {
         Controller controller = new Controller();
         View view = new View(controller);
-        controller.setView(view.getMainView());
 
         Scene scene = new Scene(view.asParent(), 400, 400);
         stage.setTitle("Magic Card Downloader");
