@@ -24,6 +24,6 @@ public class DisplayContext {
         primaryStage.setMaximized(true);
         primaryStage.setFullScreenExitHint(""); //no hint on the screen
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); //no escape button
-        primaryStage.setFullScreen(true); //full screen without borders
+        primaryStage.setFullScreen(false); //full screen without borders
     }
 }
