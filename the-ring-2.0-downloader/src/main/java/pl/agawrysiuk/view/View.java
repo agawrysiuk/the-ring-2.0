@@ -1,16 +1,18 @@
-package pl.agawrysiuk.downloader.view;
+package pl.agawrysiuk.view;
 
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pl.agawrysiuk.downloader.controller.Controller;
+import pl.agawrysiuk.controller.Controller;
 
-@Data
+@Getter
+@Setter
 @Slf4j
 public class View {
-    private BorderPane mainView;
 
+    private BorderPane mainView;
     private Controller controller;
 
     public View(Controller controller) {
