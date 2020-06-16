@@ -2,9 +2,9 @@ package pl.agawrysiuk.scryfall;
 
 import lombok.experimental.UtilityClass;
 import pl.agawrysiuk.dto.CardDto;
-import pl.agawrysiuk.scryfall.utils.CardDownloadException;
-import pl.agawrysiuk.scryfall.utils.FieldInvestigator;
 import pl.agawrysiuk.scryfall.utils.ResponseMapper;
+import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
+import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,8 +21,8 @@ public class CardRequest {
             .version(HttpClient.Version.HTTP_2)
             .build();
 
-    private static final String SCRYFALL_URL_PREFIX = "https://api.scryfall.com/cards/search?q=";
-    private static final String SCRYFALL_URL_SUFFIX = "&unique=prints";
+    private final String SCRYFALL_URL_PREFIX = "https://api.scryfall.com/cards/search?q=";
+    private final String SCRYFALL_URL_SUFFIX = "&unique=prints";
 
     public List<CardDto> sendRequest(String cardname) throws IOException, InterruptedException, CardDownloadException {
         boolean hasMore = true;
@@ -31,12 +31,12 @@ public class CardRequest {
         while (hasMore) {
             String response = getResponse(uri);
             pages.add(response);
-            hasMore = FieldInvestigator.hasMore(response);
+            hasMore = ScryfallUtils.hasMore(response);
             if(hasMore) {
-                uri = URI.create(FieldInvestigator.getNextPage(response));
+                uri = URI.create(ScryfallUtils.getNextPage(response));
             }
         }
-        return ResponseMapper.map(pages);
+        return new ResponseMapper().map(pages);
     }
 
     private String build(String cardName) {

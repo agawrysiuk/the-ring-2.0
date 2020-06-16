@@ -1,35 +1,27 @@
 package pl.agawrysiuk.scryfall.utils;
 
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pl.agawrysiuk.dto.CardDto;
+import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static pl.agawrysiuk.scryfall.utils.enums.Field.*;
+
 @Slf4j
-@UtilityClass
 public class ResponseMapper {
 
     private List<CardDto> cardList;
 
-    private final String OBJECT = "object";
-    private final String CARD_OBJECT = "card";
-
-    private final String DATA = "data";
-    private final String DETAILS = "details";
-
-    private final String CARD_NAME = "name";
-    private final String SET_NAME = "set_name";
-    private final String IMAGE_LIST = "image_uris";
-    private final String IMAGE_NORMAL = "normal";
-
+    public ResponseMapper() {
+        this.cardList = new ArrayList<>();
+    }
 
     public List<CardDto> map(List<String> jsonList) throws CardDownloadException {
-        cardList = new ArrayList<>();
         for(int i = 0; i < jsonList.size(); i ++) {
             addToCardList(jsonList.get(i));
         }
@@ -38,7 +30,7 @@ public class ResponseMapper {
 
     private void addToCardList(String json) throws CardDownloadException {
         JSONObject downloaded = new JSONObject(json);
-        if (FieldInvestigator.checkError(downloaded)) {
+        if (ScryfallUtils.checkError(downloaded)) {
             throw new CardDownloadException(downloaded.getString(DETAILS));
         }
         createCardList(downloaded);

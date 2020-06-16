@@ -1,8 +1,8 @@
-package pl.agawrysiuk.scryfall.utils;
+package pl.agawrysiuk.scryfall.utils.exception;
 
 public class CardDownloadException extends Exception {
 
     public CardDownloadException(String message) {
-        super("Something went wrong while downloading a card.");
+        super(message);
     }
 }

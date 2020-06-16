@@ -3,14 +3,10 @@ package pl.agawrysiuk.scryfall.utils;
 import lombok.experimental.UtilityClass;
 import org.json.JSONObject;
 
+import static pl.agawrysiuk.scryfall.utils.enums.Field.*;
+
 @UtilityClass
-public class FieldInvestigator {
-
-
-    private final String OBJECT = "object";
-    private final String ERROR = "error";
-    private final String HAS_MORE = "has_more";
-    private final String NEXT_PAGE = "next_page";
+public class ScryfallUtils {
 
     public boolean hasMore(String json) {
         JSONObject jsonObject = new JSONObject(json);
