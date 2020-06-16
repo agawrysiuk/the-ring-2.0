@@ -8,17 +8,19 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.controller.Controller;
 import pl.agawrysiuk.dto.CardDto;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 @Getter
-@Setter
 @Slf4j
 public class View {
 
@@ -29,6 +31,9 @@ public class View {
     private TextField searchField;
     private Button searchButton;
     private ImageView image;
+
+    private final ResourceBundle textResource = ResourceBundle
+            .getBundle("bundles.LangBundle", new Locale("en", "EN"));
 
     public View(Controller controller) {
         this.controller = controller;
@@ -60,8 +65,8 @@ public class View {
     private TableView createCardsTable() {
         cardsTable = new TableView<>();
 
-        cardsTable.getColumns().add(createColumn("Card Title", "title", 250));
-        cardsTable.getColumns().add(createColumn("Set", "setTitle", 100));
+        cardsTable.getColumns().add(createColumn(textResource.getString("column.title.card"), "title", 250));
+        cardsTable.getColumns().add(createColumn(textResource.getString("column.title.set"), "setTitle", 100));
 
         cardsTable.prefWidth(350);
         cardsTable.maxWidth(350);
@@ -84,7 +89,7 @@ public class View {
         hBox.getChildren().add(searchField);
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
-        searchButton = new Button("Search");
+        searchButton = new Button(textResource.getString("button.search"));
         hBox.getChildren().add(searchButton);
         searchButton.setOnMouseClicked(value -> {
             controller.searchForCard();
@@ -93,13 +98,12 @@ public class View {
     }
 
     private ImageView createPreview() {
-        image = new ImageView();
-        image.prefWidth(488);
+        image = new ImageView(new WritableImage(488,680));
         return image;
     }
 
     private HBox createAddButton() {
-        Button add = new Button("Add");
+        Button add = new Button(textResource.getString("button.add"));
         HBox hBox = new HBox();
         hBox.setMinWidth(mainView.getWidth());
         hBox.setAlignment(Pos.CENTER);
