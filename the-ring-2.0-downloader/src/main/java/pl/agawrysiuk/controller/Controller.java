@@ -40,7 +40,7 @@ public class Controller {
     }
 
     public void searchForCard() {
-        List<CardDto> searchedCards = cardDownloader.downloadCards();
+        List<CardDto> searchedCards = cardDownloader.downloadCard(view.getSearchField().getText());
         view.getCardsTable().setItems(FXCollections.observableArrayList(searchedCards));
     }
 }
