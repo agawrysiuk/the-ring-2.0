@@ -35,13 +35,21 @@ public class Controller {
                 view.getImage().setImage(new Image(((CardDto)newSelection).getImage()));
             }
         });
-
         view.getCardsTable().setItems(cards);
 
     }
 
     public void searchForCard() {
-        List<CardDto> searchedCards = cardDownloader.downloadCard(view.getSearchField().getText());
+        String cardName = view.getSearchField().getText();
+        log.info("Searching for card name {}", cardName);
+        List<CardDto> searchedCards = cardDownloader.downloadCard(cardName);
         view.getCardsTable().setItems(FXCollections.observableArrayList(searchedCards));
+        log.info("Search for card name {} ended", cardName);
+    }
+
+    public void addCardToSqlFile() {
+        CardDto selected = (CardDto) view.getCardsTable().getSelectionModel().getSelectedItem();
+        log.info("Saving {} to sql file", selected.getTitle());
+        cardSaver.saveCardToSql(selected);
     }
 }

@@ -30,6 +30,7 @@ public class View {
     private TableView cardsTable;
     private TextField searchField;
     private Button searchButton;
+    private Button addButton;
     private ImageView image;
 
     private final ResourceBundle textResource = ResourceBundle
@@ -103,11 +104,14 @@ public class View {
     }
 
     private HBox createAddButton() {
-        Button add = new Button(textResource.getString("button.add"));
+        addButton = new Button(textResource.getString("button.add"));
         HBox hBox = new HBox();
         hBox.setMinWidth(mainView.getWidth());
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().add(add);
+        hBox.getChildren().add(addButton);
+        addButton.setOnMouseClicked(value -> {
+            controller.addCardToSqlFile();
+        });
         return hBox;
     }
 }

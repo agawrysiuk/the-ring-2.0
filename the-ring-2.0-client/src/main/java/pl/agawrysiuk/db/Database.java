@@ -31,7 +31,8 @@ public final class Database  {
         return instance;
     }
 
-    public boolean loadDatabase() { // dont move to static box! if it fails to load, controller will shut down the game or do something else
+    public boolean loadDatabase() {
+        // dont move to static box! if it fails to load, controller will shut down the game or do something else
         //loading cards
         try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database"+ File.separator +"cards.dat")))) {
             boolean eof = false;
