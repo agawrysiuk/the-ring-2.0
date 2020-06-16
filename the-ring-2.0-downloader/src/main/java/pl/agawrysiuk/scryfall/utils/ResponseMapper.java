@@ -10,7 +10,7 @@ import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.agawrysiuk.scryfall.utils.enums.Field.*;
+import static pl.agawrysiuk.scryfall.utils.Field.*;
 
 @Slf4j
 public class ResponseMapper {

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.scryfall.utils.enums;
+package pl.agawrysiuk.scryfall.utils;
 
 import lombok.experimental.UtilityClass;
 
@@ -17,4 +17,6 @@ public class Field {
     public final String SET_NAME = "set_name";
     public final String IMAGE_LIST = "image_uris";
     public final String IMAGE_NORMAL = "normal";
+
+    public static final String ID = "id";
 }

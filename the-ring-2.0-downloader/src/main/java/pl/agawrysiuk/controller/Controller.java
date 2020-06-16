@@ -49,7 +49,6 @@ public class Controller {
 
     public void addCardToSqlFile() {
         CardDto selected = (CardDto) view.getCardsTable().getSelectionModel().getSelectedItem();
-        log.info("Saving {} to sql file", selected.getTitle());
-        cardSaver.saveCardToSql(selected);
+        cardSaver.saveToSql(selected);
     }
 }
