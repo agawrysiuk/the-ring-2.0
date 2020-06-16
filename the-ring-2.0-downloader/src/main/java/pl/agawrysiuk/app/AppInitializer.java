@@ -22,7 +22,7 @@ public class AppInitializer extends Application implements CommandLineRunner {
         Controller controller = new Controller(new CardDownloader(), new CardSaver());
         View view = new View(controller);
 
-        Scene scene = new Scene(view.asParent(), 400, 400);
+        Scene scene = new Scene(view.asParent(), 1000, 1000);
         stage.setTitle("Magic Card Downloader");
         stage.setScene(scene);
         stage.show();

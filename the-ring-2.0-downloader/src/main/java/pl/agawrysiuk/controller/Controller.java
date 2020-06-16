@@ -2,6 +2,7 @@ package pl.agawrysiuk.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class Controller {
     public void setViewBehaviour() {
         view.getCardsTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                view.getImage().setImage(((CardDto)newSelection).getImage());
+                view.getImage().setImage(new Image(((CardDto)newSelection).getImage()));
             }
         });
 

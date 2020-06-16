@@ -13,7 +13,7 @@ public class CardDownloader {
     public List<CardDto> downloadCard(String cardName) {
         List<CardDto> list;
         try {
-            list = CardRequest.send(cardName);
+            list = CardRequest.sendRequest(cardName);
         } catch (IOException | InterruptedException | CardDownloadException e) {
             e.printStackTrace();
             return Collections.emptyList();

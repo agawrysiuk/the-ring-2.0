@@ -60,19 +60,19 @@ public class View {
     private TableView createCardsTable() {
         cardsTable = new TableView<>();
 
-        cardsTable.getColumns().add(createColumn("Card Title", "title"));
-        cardsTable.getColumns().add(createColumn("Set", "setTitle"));
+        cardsTable.getColumns().add(createColumn("Card Title", "title", 250));
+        cardsTable.getColumns().add(createColumn("Set", "setTitle", 100));
 
-        cardsTable.prefWidth(300);
-        cardsTable.minHeight(200);
+        cardsTable.prefWidth(350);
+        cardsTable.maxWidth(350);
 
         return cardsTable;
     }
 
-    private TableColumn<String, CardDto> createColumn(String columnTitle, String fieldName) {
+    private TableColumn<String, CardDto> createColumn(String columnTitle, String fieldName, double prefWidth) {
         TableColumn<String, CardDto> column = new TableColumn<>(columnTitle);
         column.setCellValueFactory(new PropertyValueFactory<>(fieldName));
-        column.setPrefWidth(100);
+        column.setPrefWidth(prefWidth);
         return column;
     }
 
@@ -94,6 +94,7 @@ public class View {
 
     private ImageView createPreview() {
         image = new ImageView();
+        image.prefWidth(488);
         return image;
     }
 

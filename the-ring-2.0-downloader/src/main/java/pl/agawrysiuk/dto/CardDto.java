@@ -1,18 +1,17 @@
 package pl.agawrysiuk.dto;
 
-import javafx.scene.image.Image;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class CardDto {
+    @ToString.Include
     private String title;
+    @ToString.Include
     private String setTitle;
-    private Image image;
+    private String image;
     private String json;
 }
