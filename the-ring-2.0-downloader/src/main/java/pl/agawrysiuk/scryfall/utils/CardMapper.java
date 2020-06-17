@@ -13,22 +13,22 @@ import java.util.List;
 import static pl.agawrysiuk.scryfall.utils.Field.*;
 
 @Slf4j
-public class ResponseMapper {
+public class CardMapper {
 
     private List<CardDto> cardList;
 
-    public ResponseMapper() {
+    public CardMapper() {
         this.cardList = new ArrayList<>();
     }
 
     public List<CardDto> map(List<String> jsonList) throws CardDownloadException {
         for(int i = 0; i < jsonList.size(); i ++) {
-            addToCardList(jsonList.get(i));
+            mapJsonPageToCardList(jsonList.get(i));
         }
         return cardList;
     }
 
-    private void addToCardList(String json) throws CardDownloadException {
+    private void mapJsonPageToCardList(String json) throws CardDownloadException {
         JSONObject downloaded = new JSONObject(json);
         if (ScryfallUtils.checkError(downloaded)) {
             throw new CardDownloadException(downloaded.getString(DETAILS));
@@ -41,8 +41,8 @@ public class ResponseMapper {
         for (int i = 0; i < array.length(); i++) {
             if(array.getJSONObject(i).get(OBJECT).equals(CARD_OBJECT)) {
                 try {
-                    cardList.add(createCard(array.getJSONObject(i)));
-                    log.info("Download card {}", downloaded.getString(CARD_NAME));
+                    cardList.add(buildCard(array.getJSONObject(i)));
+                    log.info("Downloaded card {}", downloaded.getString(NAME));
                 } catch (JSONException e) {
                     log.info("Card image not found for {}", array.getJSONObject(i).toString());
                 }
@@ -50,9 +50,9 @@ public class ResponseMapper {
         }
     }
 
-    private CardDto createCard(JSONObject jsonObject) throws JSONException {
+    private CardDto buildCard(JSONObject jsonObject) throws JSONException {
         return CardDto.builder()
-                .title(jsonObject.getString(CARD_NAME))
+                .title(jsonObject.getString(NAME))
                 .setTitle(jsonObject.getString(SET_NAME))
                 .image(jsonObject.getJSONObject(IMAGE_LIST).getString(IMAGE_NORMAL))
                 .json(jsonObject.toString())

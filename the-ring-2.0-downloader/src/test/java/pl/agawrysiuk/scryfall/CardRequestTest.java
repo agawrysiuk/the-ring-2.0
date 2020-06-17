@@ -13,13 +13,13 @@ class CardRequestTest {
 
     @Test
     void send() throws Exception {
-        List<CardDto> list = CardRequest.sendRequest("temple malady");
+        List<CardDto> list = CardRequest.getCards("temple malady");
         log.info("Downloaded cards: {}", list.toString());
         Assertions.assertNotNull(list);
     }
 
     @Test
     void sendNotFound() throws Exception {
-        Assertions.assertThrows(CardDownloadException.class, () -> CardRequest.sendRequest("temple melody"));
+        Assertions.assertThrows(CardDownloadException.class, () -> CardRequest.getCards("temple melody"));
     }
 }

@@ -13,7 +13,8 @@ public class Field {
     public final String DATA = "data";
     public final String DETAILS = "details";
 
-    public final String CARD_NAME = "name";
+    public final String NAME = "name";
+    public final String CODE = "code";
     public final String SET_NAME = "set_name";
 
     public final String IMAGE_LIST = "image_uris";

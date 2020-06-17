@@ -8,10 +8,9 @@ import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 
 @Slf4j
-public class CardSaver {
+public class CardSaver extends Saver {
 
     private final String ID_PLACEHOLDER = "%ID%";
     private final String SCRYFALL_ID_PLACEHOLDER = "%SCRYFALL_ID%";
@@ -26,22 +25,18 @@ public class CardSaver {
             + SET_PLACEHOLDER + ","
             + JSON_PLACEHOLDER + ");";
 
-    private String addLeadingZerosIfNeeded(String string) {
-        return string.length() == 1 ? "0".concat(string) : string;
-    }
-
-    public void saveToSql(CardDto selected) {
+    public void saveToSql(CardDto toSave) {
         try {
-            saveCard(selected);
-            log.info("Saved {} to sql file", selected.getTitle());
+            saveCard(toSave);
+            log.info("Saved {} to sql file", toSave.getTitle());
         } catch (IOException e) {
-            log.info("Couldn't write {}, to file", selected.getTitle());
+            log.info("Couldn't write {}, to file", toSave.getTitle());
             e.printStackTrace();
         }
     }
 
     private void saveCard(CardDto selected) throws IOException {
-        String fileName = createCardFileName(selected.getTitle());
+        String fileName = createFileName(selected.getTitle());
         FileUtils.writeStringToFile(
                 new File(fileName),
                 createCardSql(selected),
@@ -49,7 +44,7 @@ public class CardSaver {
                 true);
     }
 
-    private String createCardFileName(String cardName) {
+    private String createFileName(String cardName) {
         return createSqlFilePrefix()
                 + "__insert_"
                 + cardName
@@ -57,17 +52,6 @@ public class CardSaver {
                     .replaceAll("[^a-z]", "_")
                     .replaceAll("[_]{2,}", "_")
                 + "_into_cards.sql";
-    }
-
-    private String createSqlFilePrefix() {
-        LocalDateTime now = LocalDateTime.now();
-        return "V1_"
-                + now.getYear()
-                + addLeadingZerosIfNeeded(String.valueOf(now.getMonthValue()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getDayOfMonth()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getHour()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getMinute()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getSecond()));
     }
 
     private String createCardSql(CardDto selected) throws IOException {

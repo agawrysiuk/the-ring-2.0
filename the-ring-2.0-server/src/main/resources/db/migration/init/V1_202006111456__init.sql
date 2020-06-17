@@ -9,8 +9,10 @@ CREATE SEQUENCE SEQ_CARD START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE set (
     id int PRIMARY KEY,
+    scryfall_id varchar(250) NOT NULL,
     code varchar(250) NOT NULL,
-    title varchar(250) NOT NULL
+    title varchar(250) NOT NULL,
+    json clob NOT NULL
 );
 CREATE SEQUENCE SEQ_SET START WITH 1 INCREMENT BY 1;
 

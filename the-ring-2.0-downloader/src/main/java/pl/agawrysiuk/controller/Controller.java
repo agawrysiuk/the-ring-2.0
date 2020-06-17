@@ -7,8 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.dto.CardDto;
+import pl.agawrysiuk.dto.SetDto;
 import pl.agawrysiuk.service.CardDownloader;
 import pl.agawrysiuk.service.CardSaver;
+import pl.agawrysiuk.service.SetDownloader;
+import pl.agawrysiuk.service.SetSaver;
 import pl.agawrysiuk.view.View;
 
 import java.util.List;
@@ -42,13 +45,22 @@ public class Controller {
     public void searchForCard() {
         String cardName = view.getSearchField().getText();
         log.info("Searching for card name {}", cardName);
-        List<CardDto> searchedCards = cardDownloader.downloadCard(cardName);
-        view.getCardsTable().setItems(FXCollections.observableArrayList(searchedCards));
+        List<CardDto> downloadedCards = cardDownloader.downloadCard(cardName);
+        view.getCardsTable().setItems(FXCollections.observableArrayList(downloadedCards));
         log.info("Search for card name {} ended", cardName);
     }
 
     public void addCardToSqlFile() {
         CardDto selected = (CardDto) view.getCardsTable().getSelectionModel().getSelectedItem();
         cardSaver.saveToSql(selected);
+    }
+
+    public void searchAndSaveToSqlAllSets() {
+        log.info("Downloading all sets.");
+        SetDownloader downloader = new SetDownloader();
+        List<SetDto> downloadedSets = downloader.downloadSets();
+        SetSaver saver = new SetSaver();
+        saver.saveToSql(downloadedSets);
+        log.info("Downloading sets done.");
     }
 }

@@ -1,20 +1,20 @@
 package pl.agawrysiuk.service;
 
-import pl.agawrysiuk.dto.CardDto;
-import pl.agawrysiuk.scryfall.CardRequest;
-import pl.agawrysiuk.scryfall.utils.CardMapper;
+import pl.agawrysiuk.dto.SetDto;
+import pl.agawrysiuk.scryfall.SetRequest;
+import pl.agawrysiuk.scryfall.utils.SetMapper;
 import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class CardDownloader {
+public class SetDownloader {
 
-    public List<CardDto> downloadCard(String cardName) {
+    public List<SetDto> downloadSets() {
         try {
-            List<String> response = CardRequest.getCards(cardName);
-            return new CardMapper().map(response);
+            List<String> response = SetRequest.getSets();
+            return new SetMapper().map(response);
         } catch (IOException | InterruptedException | CardDownloadException e) {
             e.printStackTrace();
             return Collections.emptyList();
