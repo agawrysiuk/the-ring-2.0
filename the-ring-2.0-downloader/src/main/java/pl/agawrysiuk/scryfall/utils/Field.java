@@ -15,8 +15,14 @@ public class Field {
 
     public final String CARD_NAME = "name";
     public final String SET_NAME = "set_name";
+
     public final String IMAGE_LIST = "image_uris";
+    public final String IMAGE_SMALL = "small";
     public final String IMAGE_NORMAL = "normal";
+    public final String IMAGE_LARGE = "large";
+    public final String IMAGE_PNG = "png";
+    public final String IMAGE_ART_CROP = "art_crop";
+    public final String IMAGE_BORDER_CROP = "border_crop";
 
     public static final String ID = "id";
 }

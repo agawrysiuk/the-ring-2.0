@@ -1,6 +1,6 @@
 CREATE TABLE card (
     id int PRIMARY KEY,
-    scryfall_id int NOT NULL,
+    scryfall_id varchar(250) NOT NULL,
     title varchar(250) NOT NULL,
     set varchar(250) NOT NULL,
     json clob NOT NULL

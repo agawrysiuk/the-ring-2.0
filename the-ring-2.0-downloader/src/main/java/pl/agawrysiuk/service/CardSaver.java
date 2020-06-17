@@ -26,20 +26,6 @@ public class CardSaver {
             + SET_PLACEHOLDER + ","
             + JSON_PLACEHOLDER + ");";
 
-    private final String fileName = createFileName();
-
-    private String createFileName() {
-        LocalDateTime now = LocalDateTime.now();
-        return "V1_"
-                + now.getYear()
-                + addLeadingZerosIfNeeded(String.valueOf(now.getMonthValue()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getDayOfMonth()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getHour()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getMinute()))
-                + addLeadingZerosIfNeeded(String.valueOf(now.getSecond()))
-                + "__insert_into_cards.sql";
-    }
-
     private String addLeadingZerosIfNeeded(String string) {
         return string.length() == 1 ? "0".concat(string) : string;
     }
@@ -55,6 +41,7 @@ public class CardSaver {
     }
 
     private void saveCard(CardDto selected) throws IOException {
+        String fileName = createCardFileName(selected.getTitle());
         FileUtils.writeStringToFile(
                 new File(fileName),
                 createCardSql(selected),
@@ -62,18 +49,39 @@ public class CardSaver {
                 true);
     }
 
-    private String createCardSql(CardDto selected) {
+    private String createCardFileName(String cardName) {
+        return createSqlFilePrefix()
+                + "__insert_"
+                + cardName
+                    .toLowerCase()
+                    .replaceAll("[^a-z]", "_")
+                    .replaceAll("[_]{2,}", "_")
+                + "_into_cards.sql";
+    }
+
+    private String createSqlFilePrefix() {
+        LocalDateTime now = LocalDateTime.now();
+        return "V1_"
+                + now.getYear()
+                + addLeadingZerosIfNeeded(String.valueOf(now.getMonthValue()))
+                + addLeadingZerosIfNeeded(String.valueOf(now.getDayOfMonth()))
+                + addLeadingZerosIfNeeded(String.valueOf(now.getHour()))
+                + addLeadingZerosIfNeeded(String.valueOf(now.getMinute()))
+                + addLeadingZerosIfNeeded(String.valueOf(now.getSecond()));
+    }
+
+    private String createCardSql(CardDto selected) throws IOException {
         String sql = INSERT_INTO_CARD;
         sql = sql.replace(ID_PLACEHOLDER, "SEQ_CARD.NEXTVAL");
         sql = sql.replace(SCRYFALL_ID_PLACEHOLDER, wrap(ScryfallUtils.getId(selected.getJson())));
         sql = sql.replace(TITLE_PLACEHOLDER, wrap(selected.getTitle()));
-        sql = sql.replace(SET_PLACEHOLDER, wrap(ScryfallUtils.getId(selected.getJson())));
-        sql = sql.replace(JSON_PLACEHOLDER, wrap(selected.getJson())); // todo add image serialize
+        sql = sql.replace(SET_PLACEHOLDER, wrap(ScryfallUtils.getSetName(selected.getJson())));
+        sql = sql.replace(JSON_PLACEHOLDER, wrap(ScryfallUtils.encodeImagesInJson(selected.getJson())));
         sql = sql.concat(System.lineSeparator());
         return sql;
     }
 
     private String wrap(String string) {
-        return "'" + string.replace("'","''") + "'";
+        return "'" + string.replace("'", "''") + "'";
     }
 }
