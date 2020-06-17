@@ -39,7 +39,7 @@ public class SetMapper {
     private void createSetList(JSONObject downloaded) {
         JSONArray array = downloaded.getJSONArray(DATA);
         for (int i = 0; i < array.length(); i++) {
-            if(array.getJSONObject(i).get(OBJECT).equals(CARD_OBJECT)) {
+            if(array.getJSONObject(i).get(OBJECT).equals(SET_OBJECT)) {
                 try {
                     setList.add(buildSet(array.getJSONObject(i)));
                     log.info("Downloaded set {}", downloaded.getString(NAME));

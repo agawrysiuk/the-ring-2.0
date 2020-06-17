@@ -19,6 +19,8 @@ public class SetSaver extends Saver {
     private final String TITLE_PLACEHOLDER = "%TITLE%";
     private final String JSON_PLACEHOLDER = "%JSON%";
 
+    private final String DELETE_FROM_SET = "DELETE FROM SET;";
+
     private final String INSERT_INTO_SET = "INSERT INTO SET VALUES("
             + ID_PLACEHOLDER + ","
             + SCRYFALL_ID_PLACEHOLDER + ","
@@ -49,7 +51,7 @@ public class SetSaver extends Saver {
     }
 
     private String createSetsSql(List<SetDto> selected) {
-        String fullSql = "";
+        String fullSql = DELETE_FROM_SET.concat(System.lineSeparator()).concat(System.lineSeparator());
         for (SetDto set : selected) {
             String sql = INSERT_INTO_SET;
             sql = sql.replace(ID_PLACEHOLDER, "SEQ_SET.NEXTVAL");

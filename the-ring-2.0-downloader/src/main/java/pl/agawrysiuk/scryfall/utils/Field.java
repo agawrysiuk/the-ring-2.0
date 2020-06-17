@@ -9,6 +9,7 @@ public class Field {
     public final String HAS_MORE = "has_more";
     public final String NEXT_PAGE = "next_page";
     public final String CARD_OBJECT = "card";
+    public final String SET_OBJECT = "set";
 
     public final String DATA = "data";
     public final String DETAILS = "details";

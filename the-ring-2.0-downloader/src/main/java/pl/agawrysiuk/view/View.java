@@ -112,6 +112,11 @@ public class View {
         addButton.setOnMouseClicked(value -> {
             controller.addCardToSqlFile();
         });
+
+
+        Button setsButton = new Button(textResource.getString("button.set"));
+        setsButton.setOnMouseClicked(value -> controller.searchAndSaveToSqlAllSets());
+        hBox.getChildren().add(setsButton);
         return hBox;
     }
 }
