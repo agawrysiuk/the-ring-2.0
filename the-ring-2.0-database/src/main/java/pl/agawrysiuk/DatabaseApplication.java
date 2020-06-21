@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
 @SpringBootApplication
-public class DownloaderApplication {
+public class DatabaseApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DownloaderApplication.class, args);
+        SpringApplication.run(DatabaseApplication.class, args);
     }
 }

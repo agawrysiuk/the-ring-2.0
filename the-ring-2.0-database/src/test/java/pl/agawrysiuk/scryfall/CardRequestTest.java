@@ -16,9 +16,4 @@ class CardRequestTest {
         log.info("Downloaded cards: {}", list.toString());
         Assertions.assertNotNull(list);
     }
-
-    @Test
-    void sendNotFound() throws Exception {
-        Assertions.assertThrows(CardDownloadException.class, () -> CardRequest.getCards("temple melody"));
-    }
 }
