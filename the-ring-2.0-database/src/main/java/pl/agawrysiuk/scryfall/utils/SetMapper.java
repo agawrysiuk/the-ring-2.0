@@ -42,7 +42,7 @@ public class SetMapper {
             if(array.getJSONObject(i).get(OBJECT).equals(SET_OBJECT)) {
                 try {
                     setList.add(buildSet(array.getJSONObject(i)));
-                    log.info("Downloaded set {}", downloaded.getString(NAME));
+                    log.info("Downloaded set {}", array.getJSONObject(i).getString(NAME));
                 } catch (JSONException e) {
                     log.info("Something went wrong while parsing set {}", array.getJSONObject(i).toString());
                 }

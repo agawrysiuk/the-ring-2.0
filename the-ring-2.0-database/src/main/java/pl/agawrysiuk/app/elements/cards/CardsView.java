@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.view;
+package pl.agawrysiuk.app.elements.cards;
 
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import pl.agawrysiuk.app.controller.Controller;
 import pl.agawrysiuk.dto.CardDto;
 
 import java.util.Locale;
@@ -22,10 +21,10 @@ import java.util.ResourceBundle;
 
 @Getter
 @Slf4j
-public class View {
+public class CardsView {
 
-    private BorderPane mainView;
-    private Controller controller;
+    private BorderPane pane;
+    private CardsController cardsController;
 
     private TableView cardsTable;
     private TextField searchField;
@@ -36,14 +35,10 @@ public class View {
     private final ResourceBundle textResource = ResourceBundle
             .getBundle("bundles.LangBundle", new Locale("en", "EN"));
 
-    public View(Controller controller) {
-        this.controller = controller;
-        controller.setView(this);
+    public CardsView(CardsController cardsController) {
+        this.cardsController = cardsController;
+        cardsController.setCardsView(this);
         createAndConfigurePane();
-    }
-
-    public Parent asParent() {
-        return mainView;
     }
 
     private void createAndConfigurePane() {
@@ -52,15 +47,15 @@ public class View {
     }
 
     private void createView() {
-        mainView = new BorderPane();
-        mainView.setCenter(createCardsTable());
-        mainView.setTop(createSearchBar());
-        mainView.setRight(createPreview());
-        mainView.setBottom(createAddButton());
+        pane = new BorderPane();
+        pane.setCenter(createCardsTable());
+        pane.setTop(createSearchBar());
+        pane.setRight(createPreview());
+        pane.setBottom(createAddButton());
     }
 
     private void configureViewBehaviour() {
-        controller.setViewBehaviour();
+        cardsController.setViewBehaviour();
     }
 
     private TableView createCardsTable() {
@@ -93,7 +88,7 @@ public class View {
         searchButton = new Button(textResource.getString("button.search"));
         hBox.getChildren().add(searchButton);
         searchButton.setOnMouseClicked(value -> {
-            controller.searchForCard();
+            cardsController.searchForCard();
         });
         return hBox;
     }
@@ -106,17 +101,12 @@ public class View {
     private HBox createAddButton() {
         addButton = new Button(textResource.getString("button.add"));
         HBox hBox = new HBox();
-        hBox.setMinWidth(mainView.getWidth());
+        hBox.setMinWidth(pane.getWidth());
         hBox.setAlignment(Pos.CENTER);
         hBox.getChildren().add(addButton);
         addButton.setOnMouseClicked(value -> {
-            controller.addCardToSqlFile();
+            cardsController.addCardToSqlFile();
         });
-
-
-        Button setsButton = new Button(textResource.getString("button.set"));
-        setsButton.setOnMouseClicked(value -> controller.searchAndSaveToSqlAllSets());
-        hBox.getChildren().add(setsButton);
         return hBox;
     }
 }
