@@ -1,7 +1,6 @@
 package pl.agawrysiuk.app.elements.cards;
 
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;

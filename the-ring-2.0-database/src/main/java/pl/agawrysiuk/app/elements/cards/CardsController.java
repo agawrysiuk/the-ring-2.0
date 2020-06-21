@@ -7,11 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.dto.CardDto;
-import pl.agawrysiuk.dto.SetDto;
 import pl.agawrysiuk.service.downloader.CardDownloader;
 import pl.agawrysiuk.service.saver.CardSaver;
-import pl.agawrysiuk.service.downloader.SetDownloader;
-import pl.agawrysiuk.service.saver.SetSaver;
 
 import java.util.List;
 

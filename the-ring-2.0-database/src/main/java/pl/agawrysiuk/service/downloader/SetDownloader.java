@@ -2,7 +2,7 @@ package pl.agawrysiuk.service.downloader;
 
 import pl.agawrysiuk.dto.SetDto;
 import pl.agawrysiuk.scryfall.SetRequest;
-import pl.agawrysiuk.scryfall.utils.SetMapper;
+import pl.agawrysiuk.scryfall.utils.mapper.SetMapper;
 import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.io.IOException;

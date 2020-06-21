@@ -1,10 +1,11 @@
-package pl.agawrysiuk.scryfall.utils;
+package pl.agawrysiuk.scryfall.utils.mapper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pl.agawrysiuk.dto.SetDto;
+import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
 import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.util.ArrayList;
