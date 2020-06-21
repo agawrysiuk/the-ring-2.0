@@ -1,4 +1,4 @@
-package pl.agawrysiuk.view;
+package pl.agawrysiuk.app.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import pl.agawrysiuk.controller.Controller;
+import pl.agawrysiuk.app.controller.Controller;
 import pl.agawrysiuk.dto.CardDto;
 
 import java.util.Locale;

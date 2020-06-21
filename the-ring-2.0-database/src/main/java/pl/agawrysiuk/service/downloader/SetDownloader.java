@@ -1,4 +1,4 @@
-package pl.agawrysiuk.service;
+package pl.agawrysiuk.service.downloader;
 
 import pl.agawrysiuk.dto.SetDto;
 import pl.agawrysiuk.scryfall.SetRequest;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SetDownloader {
 
-    public List<SetDto> downloadSets() {
+    public List<SetDto> download() {
         try {
             List<String> response = SetRequest.getSets();
             return new SetMapper().map(response);

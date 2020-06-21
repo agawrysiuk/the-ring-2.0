@@ -5,10 +5,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import pl.agawrysiuk.controller.Controller;
-import pl.agawrysiuk.service.CardDownloader;
-import pl.agawrysiuk.service.CardSaver;
-import pl.agawrysiuk.view.View;
+import pl.agawrysiuk.app.controller.Controller;
+import pl.agawrysiuk.service.downloader.CardDownloader;
+import pl.agawrysiuk.service.saver.CardSaver;
+import pl.agawrysiuk.app.view.View;
 
 @Component
 public class AppInitializer extends Application implements CommandLineRunner {

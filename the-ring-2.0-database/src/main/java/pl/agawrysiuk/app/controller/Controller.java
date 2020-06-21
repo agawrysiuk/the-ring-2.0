@@ -1,4 +1,4 @@
-package pl.agawrysiuk.controller;
+package pl.agawrysiuk.app.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,11 +8,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.SetDto;
-import pl.agawrysiuk.service.CardDownloader;
-import pl.agawrysiuk.service.CardSaver;
-import pl.agawrysiuk.service.SetDownloader;
-import pl.agawrysiuk.service.SetSaver;
-import pl.agawrysiuk.view.View;
+import pl.agawrysiuk.service.downloader.CardDownloader;
+import pl.agawrysiuk.service.saver.CardSaver;
+import pl.agawrysiuk.service.downloader.SetDownloader;
+import pl.agawrysiuk.service.saver.SetSaver;
+import pl.agawrysiuk.app.view.View;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class Controller {
     public void searchForCard() {
         String cardName = view.getSearchField().getText();
         log.info("Searching for card name {}", cardName);
-        List<CardDto> downloadedCards = cardDownloader.downloadCard(cardName);
+        List<CardDto> downloadedCards = cardDownloader.download(cardName);
         view.getCardsTable().setItems(FXCollections.observableArrayList(downloadedCards));
         log.info("Search for card name {} ended", cardName);
     }
@@ -58,7 +58,7 @@ public class Controller {
     public void searchAndSaveToSqlAllSets() {
         log.info("Downloading all sets.");
         SetDownloader downloader = new SetDownloader();
-        List<SetDto> downloadedSets = downloader.downloadSets();
+        List<SetDto> downloadedSets = downloader.download();
         SetSaver saver = new SetSaver();
         saver.saveToSql(downloadedSets);
         log.info("Downloading sets done.");
