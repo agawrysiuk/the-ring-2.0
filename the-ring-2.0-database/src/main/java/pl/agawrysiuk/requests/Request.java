@@ -30,6 +30,10 @@ public abstract class Request {
         return pages;
     }
 
+    public static String downloadInternal(URI uri) throws IOException, InterruptedException {
+        return getResponse(uri);
+    }
+
     public static String getResponse(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()

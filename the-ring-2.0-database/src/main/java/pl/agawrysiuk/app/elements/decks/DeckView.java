@@ -6,11 +6,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import lombok.Getter;
-import pl.agawrysiuk.app.elements.sets.SetController;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -27,6 +25,7 @@ public class DeckView {
 
     public DeckView(DeckController deckController) {
         this.deckController = deckController;
+        this.deckController.setDeckView(this);
         createAndConfigurePane();
     }
 
@@ -36,37 +35,35 @@ public class DeckView {
 
     private void createView() {
         pane = new BorderPane();
-        pane.setCenter(createCenter());
-        pane.getCenter().prefWidth(500);
-        pane.getCenter().prefHeight(1000);
-        pane.setBottom(createBottom());
-        pane.setRight(createRight());
+        pane.setLeft(createTextAreaForPaste());
+        pane.getLeft().prefWidth(500);
+        pane.getLeft().prefHeight(1000);
+        pane.setCenter(createButtonAndTextInfo());
     }
 
-    private Node createCenter() {
+    private Node createTextAreaForPaste() {
         textArea = new TextArea();
         textArea.prefWidth(pane.getWidth() / 2);
         textArea.prefHeight(pane.getHeight());
         return textArea;
     }
 
-    private Node createBottom() {
+    private Node createButtonAndTextInfo() {
+        VBox vBox = new VBox(20);
+        infoText = new Text(textResource.getString("text.info.paste-deck"));
+        Button saveDeck = createSaveDeckButton();
+        vBox.getChildren().addAll(saveDeck, infoText);
+        VBox.setMargin(saveDeck, new Insets(20,20,0,20));
+        vBox.setAlignment(Pos.TOP_CENTER);
+        VBox.setMargin(infoText, new Insets(0,20,20,20));
+        return vBox;
+    }
+
+    private Button createSaveDeckButton() {
         Button deckButton = new Button(textResource.getString("button.deck"));
-        HBox hBox = new HBox();
-        hBox.setMinWidth(pane.getWidth());
-        hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().add(deckButton);
         deckButton.setOnMouseClicked(value -> {
             deckController.searchAndSaveDeck(textArea.getText());
         });
-        return hBox;
-    }
-
-    private Node createRight() {
-        VBox vBox = new VBox();
-        infoText = new Text(textResource.getString("text.info.paste-deck"));
-        vBox.getChildren().add(infoText);
-        VBox.setMargin(infoText, new Insets(20,20,20,20));
-        return vBox;
+        return deckButton;
     }
 }
