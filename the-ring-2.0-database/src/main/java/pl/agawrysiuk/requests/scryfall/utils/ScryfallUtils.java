@@ -1,4 +1,4 @@
-package pl.agawrysiuk.scryfall.utils;
+package pl.agawrysiuk.requests.scryfall.utils;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
 
-import static pl.agawrysiuk.scryfall.utils.Field.*;
+import static pl.agawrysiuk.requests.scryfall.utils.Field.*;
 
 @UtilityClass
 public class ScryfallUtils {

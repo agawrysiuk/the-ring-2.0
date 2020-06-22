@@ -1,6 +1,7 @@
-package pl.agawrysiuk.scryfall;
+package pl.agawrysiuk.requests.scryfall;
 
 import lombok.experimental.UtilityClass;
+import pl.agawrysiuk.requests.Request;
 
 import java.io.IOException;
 import java.net.URI;

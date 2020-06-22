@@ -1,4 +1,4 @@
-package pl.agawrysiuk.scryfall.utils;
+package pl.agawrysiuk.requests.scryfall.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;

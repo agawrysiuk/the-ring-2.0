@@ -1,6 +1,6 @@
-package pl.agawrysiuk.scryfall;
+package pl.agawrysiuk.requests;
 
-import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
+import pl.agawrysiuk.requests.scryfall.utils.ScryfallUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,7 +16,7 @@ public abstract class Request {
             .version(HttpClient.Version.HTTP_2)
             .build();
 
-    static List<String> download(URI uri) throws IOException, InterruptedException {
+    public static List<String> download(URI uri) throws IOException, InterruptedException {
         boolean hasMore = true;
         List<String> pages = new ArrayList<>();
         while (hasMore) {
@@ -30,7 +30,7 @@ public abstract class Request {
         return pages;
     }
 
-    static String getResponse(URI uri) throws IOException, InterruptedException {
+    public static String getResponse(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
                 .uri(uri)

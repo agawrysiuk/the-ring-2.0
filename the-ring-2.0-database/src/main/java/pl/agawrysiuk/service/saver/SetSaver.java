@@ -3,7 +3,7 @@ package pl.agawrysiuk.service.saver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import pl.agawrysiuk.dto.SetDto;
-import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
+import pl.agawrysiuk.requests.scryfall.utils.ScryfallUtils;
 
 import java.io.File;
 import java.io.IOException;

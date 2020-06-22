@@ -1,17 +1,17 @@
-package pl.agawrysiuk.scryfall.utils.mapper;
+package pl.agawrysiuk.requests.scryfall.utils.mapper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pl.agawrysiuk.dto.CardDto;
-import pl.agawrysiuk.scryfall.utils.ScryfallUtils;
-import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
+import pl.agawrysiuk.requests.scryfall.utils.ScryfallUtils;
+import pl.agawrysiuk.requests.scryfall.utils.exception.CardDownloadException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.agawrysiuk.scryfall.utils.Field.*;
+import static pl.agawrysiuk.requests.scryfall.utils.Field.*;
 
 @Slf4j
 public class CardMapper {

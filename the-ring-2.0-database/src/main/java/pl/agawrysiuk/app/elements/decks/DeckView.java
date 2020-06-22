@@ -57,7 +57,7 @@ public class DeckView {
         hBox.setAlignment(Pos.CENTER);
         hBox.getChildren().add(deckButton);
         deckButton.setOnMouseClicked(value -> {
-            deckController.searchAndSaveDeck();
+            deckController.searchAndSaveDeck(textArea.getText());
         });
         return hBox;
     }

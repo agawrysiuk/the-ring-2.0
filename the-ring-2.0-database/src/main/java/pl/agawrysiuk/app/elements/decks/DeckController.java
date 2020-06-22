@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class DeckController {
 
-    public void searchAndSaveDeck() {
+    public void searchAndSaveDeck(String deckInfo) {
         log.info("Checking for cards.");
 //        SetDownloader downloader = new SetDownloader();
 //        List<SetDto> downloadedSets = downloader.download();

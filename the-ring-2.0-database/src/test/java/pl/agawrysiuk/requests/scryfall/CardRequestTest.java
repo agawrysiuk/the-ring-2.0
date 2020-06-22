@@ -1,9 +1,8 @@
-package pl.agawrysiuk.scryfall;
+package pl.agawrysiuk.requests.scryfall;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pl.agawrysiuk.scryfall.utils.exception.CardDownloadException;
 
 import java.util.List;
 

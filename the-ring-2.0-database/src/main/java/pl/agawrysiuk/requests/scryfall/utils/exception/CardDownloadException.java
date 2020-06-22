@@ -1,4 +1,4 @@
-package pl.agawrysiuk.scryfall.utils.exception;
+package pl.agawrysiuk.requests.scryfall.utils.exception;
 
 public class CardDownloadException extends Exception {
 

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.scryfall.utils;
+package pl.agawrysiuk.requests.scryfall.utils;
 
 import lombok.experimental.UtilityClass;
 
