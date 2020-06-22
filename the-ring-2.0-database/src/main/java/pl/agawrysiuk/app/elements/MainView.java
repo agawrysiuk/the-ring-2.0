@@ -6,6 +6,8 @@ import javafx.scene.control.TabPane;
 import lombok.Getter;
 import pl.agawrysiuk.app.elements.cards.CardsController;
 import pl.agawrysiuk.app.elements.cards.CardsView;
+import pl.agawrysiuk.app.elements.decks.DeckController;
+import pl.agawrysiuk.app.elements.decks.DeckView;
 import pl.agawrysiuk.app.elements.sets.SetController;
 import pl.agawrysiuk.app.elements.sets.SetView;
 import pl.agawrysiuk.service.downloader.CardDownloader;
@@ -25,10 +27,12 @@ public class MainView {
 
         Tab tab1 = new Tab("Cards", createCardsView());
         tab1.setClosable(false);
-        Tab tab2 = new Tab("Sets"  , createSetsView());
+        Tab tab2 = new Tab("Sets", createSetsView());
+        tab2.setClosable(false);
+        Tab tab3 = new Tab("Decks", createDecksView());
         tab2.setClosable(false);
 
-        pane.getTabs().addAll(tab1, tab2);
+        pane.getTabs().addAll(tab1, tab2, tab3);
     }
 
     private Parent createCardsView() {
@@ -41,6 +45,12 @@ public class MainView {
         SetController setController = new SetController();
         SetView setView = new SetView(setController);
         return setView.getPane();
+    }
+
+    private Parent createDecksView() {
+        DeckController deckController = new DeckController();
+        DeckView deckView = new DeckView(deckController);
+        return deckView.getPane();
     }
 
 }
