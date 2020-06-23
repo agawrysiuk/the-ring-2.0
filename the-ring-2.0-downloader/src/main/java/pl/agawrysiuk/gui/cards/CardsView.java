@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.elements.cards;
+package pl.agawrysiuk.gui.cards;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

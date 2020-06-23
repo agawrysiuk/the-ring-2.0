@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.elements.decks;
+package pl.agawrysiuk.gui.decks;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

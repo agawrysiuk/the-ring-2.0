@@ -24,5 +24,6 @@ It's an ongoing work and will be finished when this line gets removed :)
 - Add the database
 - Change UI
 
-
-
+## Notes
+- App.java files in both Client and Downloader are required to start JavaFX from IntelliJ/Maven packs
+(a workaround for a known bug)

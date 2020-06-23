@@ -5,7 +5,6 @@ import pl.agawrysiuk.requests.Request;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 @UtilityClass
 public class InternalRequest extends Request {

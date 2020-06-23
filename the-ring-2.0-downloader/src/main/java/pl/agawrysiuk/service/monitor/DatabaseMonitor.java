@@ -1,6 +1,5 @@
 package pl.agawrysiuk.service.monitor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class DatabaseMonitor {
     private List<Card> map(String toMap) {
         try {
             return objectMapper.readValue(toMap, new TypeReference<List<Card>>(){});
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             log.info("A problem occurred while parsing {} to Card.class", toMap);
             throw new RuntimeException(e);
         }

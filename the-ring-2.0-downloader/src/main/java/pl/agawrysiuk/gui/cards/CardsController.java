@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.elements.cards;
+package pl.agawrysiuk.gui.cards;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

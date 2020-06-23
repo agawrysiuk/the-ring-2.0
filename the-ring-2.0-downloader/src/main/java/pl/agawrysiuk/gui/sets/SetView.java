@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.elements.sets;
+package pl.agawrysiuk.gui.sets;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;

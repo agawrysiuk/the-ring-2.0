@@ -1,15 +1,15 @@
-package pl.agawrysiuk.app.elements;
+package pl.agawrysiuk.gui;
 
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import lombok.Getter;
-import pl.agawrysiuk.app.elements.cards.CardsController;
-import pl.agawrysiuk.app.elements.cards.CardsView;
-import pl.agawrysiuk.app.elements.decks.DeckController;
-import pl.agawrysiuk.app.elements.decks.DeckView;
-import pl.agawrysiuk.app.elements.sets.SetController;
-import pl.agawrysiuk.app.elements.sets.SetView;
+import pl.agawrysiuk.gui.cards.CardsController;
+import pl.agawrysiuk.gui.cards.CardsView;
+import pl.agawrysiuk.gui.decks.DeckController;
+import pl.agawrysiuk.gui.decks.DeckView;
+import pl.agawrysiuk.gui.sets.SetController;
+import pl.agawrysiuk.gui.sets.SetView;
 import pl.agawrysiuk.service.downloader.CardDownloader;
 import pl.agawrysiuk.service.saver.CardSaver;
 

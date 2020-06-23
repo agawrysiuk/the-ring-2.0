@@ -1,4 +1,4 @@
-package pl.agawrysiuk.app.elements.sets;
+package pl.agawrysiuk.gui.sets;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
