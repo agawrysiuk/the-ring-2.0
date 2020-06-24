@@ -33,6 +33,10 @@ public class ScryfallUtils {
         return new JSONObject(json).getString(ID);
     }
 
+    public String getName(String json) {
+        return new JSONObject(json).getString(NAME);
+    }
+
     public String getSetName(String json) {
         return new JSONObject(json).getString(SET_NAME);
     }

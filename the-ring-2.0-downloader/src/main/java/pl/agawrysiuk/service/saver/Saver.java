@@ -18,4 +18,8 @@ public abstract class Saver {
     private String addLeadingZerosIfNeeded(String string) {
         return string.length() == 1 ? "0".concat(string) : string;
     }
+
+    String wrap(String string) {
+        return "'" + string.replace("'", "''") + "'";
+    }
 }

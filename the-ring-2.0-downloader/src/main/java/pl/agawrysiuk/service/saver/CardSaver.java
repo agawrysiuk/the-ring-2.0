@@ -64,8 +64,4 @@ public class CardSaver extends Saver {
         sql = sql.concat(System.lineSeparator());
         return sql;
     }
-
-    private String wrap(String string) {
-        return "'" + string.replace("'", "''") + "'";
-    }
 }

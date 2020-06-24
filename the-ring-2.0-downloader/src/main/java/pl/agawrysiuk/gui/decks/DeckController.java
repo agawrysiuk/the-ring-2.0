@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.service.monitor.CardNotFoundException;
 import pl.agawrysiuk.service.monitor.DatabaseMonitor;
+import pl.agawrysiuk.service.saver.DeckSaver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +42,19 @@ public class DeckController {
             }
         }
         if (missing.isEmpty()) {
+            log.info("All cards exist. Saving deck to sql.");
+            saveDeck(deckList);
+
+            deckView.getInfoText().setText("Saving deck done.");
             log.info("Saving deck done.");
         } else {
             handleCardNotFound(missing);
         }
+    }
+
+    private void saveDeck(List<String> deckList) {
+        DeckSaver deckSaver = new DeckSaver();
+        deckSaver.saveDeck(deckList);
     }
 
     private List<String> getDeckList(String deckInfo) {

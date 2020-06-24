@@ -64,8 +64,4 @@ public class SetSaver extends Saver {
         }
         return fullSql;
     }
-
-    private String wrap(String string) {
-        return "'" + string.replace("'", "''") + "'";
-    }
 }
