@@ -2,6 +2,7 @@ package pl.agawrysiuk.requests.scryfall.utils;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -47,16 +48,36 @@ public class ScryfallUtils {
 
     public String encodeImagesInJson(String json) throws IOException {
         JSONObject full = new JSONObject(json);
-        JSONObject imageList = full.getJSONObject(IMAGE_LIST);
-        imageList
-                .put(IMAGE_SMALL, encodeImage(imageList.getString(IMAGE_SMALL)))
-                .put(IMAGE_NORMAL, encodeImage(imageList.getString(IMAGE_NORMAL)))
-                .put(IMAGE_LARGE, encodeImage(imageList.getString(IMAGE_LARGE)))
-                .put(IMAGE_PNG, encodeImage(imageList.getString(IMAGE_PNG)))
-                .put(IMAGE_ART_CROP, encodeImage(imageList.getString(IMAGE_ART_CROP)))
-                .put(IMAGE_BORDER_CROP, encodeImage(imageList.getString(IMAGE_BORDER_CROP)));
-        full.put(IMAGE_LIST, imageList);
-        return full.toString();
+        if(hasFaces(full)) {
+            return encodeWithFaces(full);
+        } else {
+            return encodeRegular(full);
+        }
+    }
+
+    private static String encodeWithFaces(JSONObject jsonObject) throws IOException {
+        JSONArray cardArray = jsonObject.getJSONArray(CARD_FACES);
+        for (int i = 0; i < cardArray.length(); i++) {
+            JSONObject imageList = cardArray.getJSONObject(i).getJSONObject(IMAGE_LIST);
+            jsonObject.getJSONArray(CARD_FACES).getJSONObject(i).put(IMAGE_LIST, encodeImageList(imageList));
+        }
+        return jsonObject.toString();
+    }
+
+    private static String encodeRegular(JSONObject jsonObject) throws IOException {
+        JSONObject imageList = jsonObject.getJSONObject(IMAGE_LIST);
+        jsonObject.put(IMAGE_LIST, encodeImageList(imageList));
+        return jsonObject.toString();
+    }
+
+    private JSONObject encodeImageList(JSONObject imageList) throws IOException {
+        return imageList
+                        .put(IMAGE_SMALL, encodeImage(imageList.getString(IMAGE_SMALL)))
+                        .put(IMAGE_NORMAL, encodeImage(imageList.getString(IMAGE_NORMAL)))
+                        .put(IMAGE_LARGE, encodeImage(imageList.getString(IMAGE_LARGE)))
+                        .put(IMAGE_PNG, encodeImage(imageList.getString(IMAGE_PNG)))
+                        .put(IMAGE_ART_CROP, encodeImage(imageList.getString(IMAGE_ART_CROP)))
+                        .put(IMAGE_BORDER_CROP, encodeImage(imageList.getString(IMAGE_BORDER_CROP)));
     }
 
     private String encodeImage(String urlPath) throws IOException {
