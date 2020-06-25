@@ -23,6 +23,7 @@ public class DeckController {
     public void searchAndSaveDeck(String deckInfo) {
         log.info("Checking for cards.");
         DatabaseMonitor monitor = new DatabaseMonitor();
+        //todo change it to check on the backend
         List<Card> cards = monitor.getExistingCards();
         checkCards(deckInfo, cards);
     }

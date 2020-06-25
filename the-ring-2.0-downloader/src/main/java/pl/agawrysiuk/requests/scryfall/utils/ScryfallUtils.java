@@ -21,6 +21,10 @@ public class ScryfallUtils {
                 : jsonObject.getBoolean(HAS_MORE);
     }
 
+    public boolean hasFaces(JSONObject jsonObject) {
+        return jsonObject.getString(LAYOUT).equals(TRANSFORM);
+    }
+
     public String getNextPage(String json) {
         return new JSONObject(json).getString(NEXT_PAGE);
     }

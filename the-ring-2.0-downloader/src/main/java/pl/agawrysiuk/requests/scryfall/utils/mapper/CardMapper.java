@@ -55,8 +55,22 @@ public class CardMapper {
         return CardDto.builder()
                 .title(jsonObject.getString(NAME))
                 .setTitle(jsonObject.getString(SET_NAME))
-                .image(jsonObject.getJSONObject(IMAGE_LIST).getString(IMAGE_NORMAL))
+                .image(getImage(jsonObject))
                 .json(jsonObject.toString())
                 .build();
+    }
+
+    private String getImage(JSONObject jsonObject) {
+        if (ScryfallUtils.hasFaces(jsonObject)) {
+            return jsonObject
+                    .getJSONArray(CARD_FACES)
+                    .getJSONObject(0)
+                    .getJSONObject(IMAGE_LIST)
+                    .getString(IMAGE_NORMAL);
+        } else {
+            return jsonObject
+                    .getJSONObject(IMAGE_LIST)
+                    .getString(IMAGE_NORMAL);
+        }
     }
 }

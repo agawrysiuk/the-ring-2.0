@@ -18,6 +18,11 @@ public class Field {
     public final String CODE = "code";
     public final String SET_NAME = "set_name";
 
+    public final String LAYOUT = "layout";
+    public final String TRANSFORM = "transform";
+
+    public final String CARD_FACES = "card_faces";
+
     public final String IMAGE_LIST = "image_uris";
     public final String IMAGE_SMALL = "small";
     public final String IMAGE_NORMAL = "normal";
