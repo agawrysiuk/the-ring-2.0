@@ -3,12 +3,9 @@ package pl.agawrysiuk.gui.decks;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import pl.agawrysiuk.model.Card;
-import pl.agawrysiuk.service.monitor.CardNotFoundException;
 import pl.agawrysiuk.service.monitor.DatabaseMonitor;
 import pl.agawrysiuk.service.saver.DeckSaver;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,27 +21,14 @@ public class DeckController {
         log.info("Checking for cards.");
         DatabaseMonitor monitor = new DatabaseMonitor();
         //todo change it to check on the backend
-        List<Card> cards = monitor.getExistingCards();
-        checkCards(deckInfo, cards);
-    }
-
-    private void checkCards(String deckInfo, List<Card> cards) {
-        List<String> deckList = getDeckList(deckInfo);
-        List<String> missing = new ArrayList<>();
-        for (String cardInfo : deckList) {
-            try {
-                String cardName = getCardName(cardInfo);
-                cards.stream()
-                        .filter(card -> card.getTitle().equals(cardName))
-                        .findFirst()
-                        .orElseThrow(() -> new CardNotFoundException(cardName));
-            } catch (CardNotFoundException e) {
-                missing.add(e.getMessage());
-            }
-        }
+        List<String> missing = monitor.checkExistingCardsMatch(
+                getDeckList(deckInfo)
+                        .stream()
+                        .map(this::getCardName)
+                        .collect(Collectors.toList()));
         if (missing.isEmpty()) {
             log.info("All cards exist. Saving deck to sql.");
-            saveDeck(deckList);
+            saveDeck(getDeckList(deckInfo));
 
             deckView.getInfoText().setText("Saving deck done.");
             log.info("Saving deck done.");

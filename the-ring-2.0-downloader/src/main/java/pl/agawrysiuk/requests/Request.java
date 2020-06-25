@@ -30,13 +30,23 @@ public abstract class Request {
         return pages;
     }
 
-    public static String downloadInternal(URI uri) throws IOException, InterruptedException {
-        return getResponse(uri);
+    public static String checkCardDatabase(URI uri, String body) throws IOException, InterruptedException {
+        return postResponse(uri,body);
     }
 
     public static String getResponse(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
+                .uri(uri)
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body();
+    }
+
+    public static String postResponse(URI uri, String body) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .header("Content-Type","application/json")
                 .uri(uri)
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
