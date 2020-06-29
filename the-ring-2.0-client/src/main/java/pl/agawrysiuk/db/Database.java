@@ -48,6 +48,8 @@ public final class Database  {
         } catch (FileNotFoundException e) {
             System.out.println("Cards file not found");
             e.printStackTrace();
+            System.out.println("Creating new file cards.dat");
+            new File("database" + File.separator + "cards.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
@@ -100,6 +102,8 @@ public final class Database  {
         } catch (FileNotFoundException e) {
             System.out.println("Decks file not found");
             e.printStackTrace();
+            System.out.println("Creating new file decks.dat");
+            new File("database" + File.separator + "decks.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
@@ -125,8 +129,10 @@ public final class Database  {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Decks file not found");
+            System.out.println("Settings file not found");
             e.printStackTrace();
+            System.out.println("Creating new file settings.dat");
+            new File("database" + File.separator + "settings.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
