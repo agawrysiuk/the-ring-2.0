@@ -1,7 +1,6 @@
 package pl.agawrysiuk.display.init;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -14,65 +13,62 @@ import lombok.Setter;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
+import pl.agawrysiuk.display.creators.DialogCreator;
+import pl.agawrysiuk.display.creators.GridPaneCreator;
+import pl.agawrysiuk.display.creators.TextFieldCreator;
 import pl.agawrysiuk.display.menu.StartWindowController;
 
 import java.util.Optional;
 
-public class WindowInitializer implements DisplayWindow {
+public class GameInitializer implements DisplayWindow {
 
     private String playersName;
     private String host;
 
     @Getter
-    private Pane mainPane = new Pane();;
+    private Pane mainPane = new Pane();
+    ;
 
     @Getter
     @Setter
     private Stage primaryStage;
 
     public void initialize() {
+        loadSettings();
+        showConnectionDialogAndWaitForInput();
+        saveSettings();
+        moveToMainWindow();
+    }
+
+    private void loadSettings() {
         playersName = Database.getInstance().getSettings().get(0);
         host = Database.getInstance().getSettings().get(1);
+    }
 
+    private void showConnectionDialogAndWaitForInput() {
         do {
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setTitle("Choose your name and connect to server");
-            dialog.setHeaderText(null);
-
-            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-
-            GridPane grid = new GridPane();
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(20, 150, 10, 10));
-
-            TextField name = new TextField();
-            name.setText(playersName);
-            name.setPromptText("Your nickname");
-            TextField serverIP = new TextField();
-            serverIP.setText(host);
-            serverIP.setPromptText("IP of the server");
-
-            grid.add(new Label("Username:"), 0, 0);
-            grid.add(name, 1, 0);
-            grid.add(new Label("Server IP:"), 0, 1);
-            grid.add(serverIP, 1, 1);
-
-            dialog.getDialogPane().setContent(grid);
+            TextField name = TextFieldCreator.TextField(playersName, "Your nickname");
+            TextField serverIp = TextFieldCreator.TextField(host, "IP of the server");
+            GridPane grid = GridPaneCreator.GridPane(2, 2,
+                    new Label("Username:"), name, new Label("Server IP:"), serverIp);
+            Dialog<ButtonType> dialog = DialogCreator.dialogOkButton("Choose your name and connect to server", grid);
 
             Platform.runLater(name::requestFocus);
 
             Optional<ButtonType> result = dialog.showAndWait();
             result.ifPresent(nameIP -> {
                 playersName = name.getText();
-                host = serverIP.getText();
+                host = serverIp.getText();
             });
         } while (playersName == null || playersName.equals(""));
+    }
 
-        //saving name and host for the future
+    private void saveSettings() {
         Database.getInstance().setSettings(0, playersName);
         Database.getInstance().setSettings(1, host);
+    }
 
+    private void moveToMainWindow() {
         DisplayContext context = new DisplayContext();
         context.setNewWindow(new StartWindowController());
         context.showNewWindow(this);
