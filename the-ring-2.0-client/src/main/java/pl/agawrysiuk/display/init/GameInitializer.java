@@ -16,7 +16,7 @@ import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.creators.DialogCreator;
 import pl.agawrysiuk.display.creators.GridPaneCreator;
 import pl.agawrysiuk.display.creators.TextFieldCreator;
-import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.MenuWindow;
 
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class GameInitializer implements DisplayWindow {
             TextField serverIp = TextFieldCreator.TextField(host, "IP of the server");
             GridPane grid = GridPaneCreator.GridPane(2, 2,
                     new Label("Username:"), name, new Label("Server IP:"), serverIp);
-            Dialog<ButtonType> dialog = DialogCreator.dialogOkButton("Choose your name and connect to server", grid);
+            Dialog<ButtonType> dialog = DialogCreator.DialogOkButton("Choose your name and connect to server", grid);
 
             Platform.runLater(name::requestFocus);
 
@@ -70,7 +70,7 @@ public class GameInitializer implements DisplayWindow {
 
     private void moveToMainWindow() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new StartWindowController());
+        context.setNewWindow(new MenuWindow());
         context.showNewWindow(this);
     }
 }

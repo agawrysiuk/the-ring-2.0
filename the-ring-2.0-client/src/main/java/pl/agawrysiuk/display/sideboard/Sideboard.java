@@ -18,7 +18,7 @@ import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.game.GameWindowController;
-import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.MenuWindow;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 
@@ -63,10 +63,10 @@ public class Sideboard implements DisplayWindow {
         this.clientReceiver = clientReceiver;
         handBorder.setOffsetY(0);
         handBorder.setOffsetX(0);
-        handBorder.setRadius(200 * StartWindowController.X_WINDOW);
+        handBorder.setRadius(200 * MenuWindow.X_WINDOW);
         handBorder.setColor(Color.AQUA);
-        handBorder.setWidth(25 * StartWindowController.X_WINDOW);
-        handBorder.setHeight(25 * StartWindowController.X_WINDOW);
+        handBorder.setWidth(25 * MenuWindow.X_WINDOW);
+        handBorder.setHeight(25 * MenuWindow.X_WINDOW);
         handBorder.setSpread(0.80);
         deck.sortCards();
         for (Card card : deck.getCardsInDeck()) {
@@ -82,9 +82,9 @@ public class Sideboard implements DisplayWindow {
         mainPane.prefWidth(1920);
         mainPane.prefHeight(1080);
 
-        textMain.relocate(25 * StartWindowController.X_WINDOW, 5 * StartWindowController.X_WINDOW);
-        textSide.relocate(1325 * StartWindowController.X_WINDOW, 5 * StartWindowController.X_WINDOW);
-        quitBtn.relocate(1550 * StartWindowController.X_WINDOW, 980 * StartWindowController.X_WINDOW);
+        textMain.relocate(25 * MenuWindow.X_WINDOW, 5 * MenuWindow.X_WINDOW);
+        textSide.relocate(1325 * MenuWindow.X_WINDOW, 5 * MenuWindow.X_WINDOW);
+        quitBtn.relocate(1550 * MenuWindow.X_WINDOW, 980 * MenuWindow.X_WINDOW);
         quitBtn.setScaleX(2);
         quitBtn.setScaleY(2);
         quitBtn.setOnAction(actionEvent -> {
@@ -107,7 +107,7 @@ public class Sideboard implements DisplayWindow {
 //            this.youReady = true;
 //            if (this.oppReady) playAgainBtn.setDisable(false);
 //        });
-        playAgainBtn.relocate(1750 * StartWindowController.X_WINDOW, 980 * StartWindowController.X_WINDOW);
+        playAgainBtn.relocate(1750 * MenuWindow.X_WINDOW, 980 * MenuWindow.X_WINDOW);
         playAgainBtn.setScaleX(2);
         playAgainBtn.setScaleY(2);
         playAgainBtn.setOnAction(actionEvent -> {
@@ -200,41 +200,41 @@ public class Sideboard implements DisplayWindow {
         mainPane.getChildren().removeAll(mainList);
         mainPane.getChildren().removeAll(sideList);
         mainPane.getChildren().removeAll(textMain, textSide);
-        int width = (int) (25 * StartWindowController.X_WINDOW);
-        int height = (int) (25 * StartWindowController.X_WINDOW);
+        int width = (int) (25 * MenuWindow.X_WINDOW);
+        int height = (int) (25 * MenuWindow.X_WINDOW);
         int number = 0;
         for (ImageView iv : mainList) {
-            iv.setFitWidth(250 * StartWindowController.X_WINDOW);
+            iv.setFitWidth(250 * MenuWindow.X_WINDOW);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
             mainPane.getChildren().add(iv);
-            height += 40 * StartWindowController.X_WINDOW;
+            height += 40 * MenuWindow.X_WINDOW;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25 * StartWindowController.X_WINDOW);
+                height = (int) (25 * MenuWindow.X_WINDOW);
                 width += 260;
             }
         }
 
-        width = (int) (1325 * StartWindowController.X_WINDOW);
-        height = (int) (25 * StartWindowController.X_WINDOW);
+        width = (int) (1325 * MenuWindow.X_WINDOW);
+        height = (int) (25 * MenuWindow.X_WINDOW);
         number = 0;
 
         for (ImageView iv : sideList) {
-            iv.setFitWidth(250 * StartWindowController.X_WINDOW);
+            iv.setFitWidth(250 * MenuWindow.X_WINDOW);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
             mainPane.getChildren().add(iv);
-            height += 40 * StartWindowController.X_WINDOW;
+            height += 40 * MenuWindow.X_WINDOW;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25 * StartWindowController.X_WINDOW);
+                height = (int) (25 * MenuWindow.X_WINDOW);
                 width += 260;
             }
         }
@@ -247,7 +247,7 @@ public class Sideboard implements DisplayWindow {
         try {
             socket.close();
             DisplayContext context = new DisplayContext();
-            context.setNewWindow(new StartWindowController());
+            context.setNewWindow(new MenuWindow());
             context.showNewWindow(this);
         } catch (IOException ioe) {
             ioe.printStackTrace();

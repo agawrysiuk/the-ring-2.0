@@ -51,7 +51,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class StartWindowController implements DisplayWindow {
+public class MenuWindow implements DisplayWindow {
 
     public static final double X_WINDOW = Screen.getPrimary().getVisualBounds().getWidth() / 1920;
 

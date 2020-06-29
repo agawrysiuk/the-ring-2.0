@@ -11,9 +11,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
-import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.MenuWindow;
+import pl.agawrysiuk.model.Card;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -81,7 +81,7 @@ public class ViewCard extends ImageView {
         this.opponentsCard = false;
 
         BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImg, null)).getSubimage(25, 25, 430, 357); //15,15,450,370
-        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
         this.smallCard = SwingFXUtils.toFXImage(artImg, null);
 
         JSONObject thisCard = new JSONObject(this.json);
@@ -111,11 +111,11 @@ public class ViewCard extends ImageView {
         this.activeImage = this.cardImg;
 
         BufferedImage temp = SwingFXUtils.fromFXImage(activeImage, null);
-        temp = Scalr.resize(temp, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (250*StartWindowController.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
+        temp = Scalr.resize(temp, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (250* MenuWindow.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
         this.setImage(SwingFXUtils.toFXImage(temp, null));
 
         BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImg, null)).getSubimage(25, 25, 430, 357); //15,15,450,370
-        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120*StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
         this.smallCard = SwingFXUtils.toFXImage(artImg, null);
 
         JSONObject thisCard = new JSONObject(this.json);
@@ -187,21 +187,21 @@ public class ViewCard extends ImageView {
 
         if(this.activeImage.equals(this.cardImgTransform)) {
             BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImgTransform, null)).getSubimage(25, 25, 430, 357); //15,15,450,370
-            artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120*StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+            artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
             image = SwingFXUtils.toFXImage(artImg, null);
         } else {
             image = this.smallCard; //changed from smallcard??
         }
 
         //drawing counters on the screen
-        Canvas canvas = new Canvas((int) image.getWidth() + 10*StartWindowController.X_WINDOW, (int) image.getHeight() + 10*StartWindowController.X_WINDOW);
+        Canvas canvas = new Canvas((int) image.getWidth() + 10* MenuWindow.X_WINDOW, (int) image.getHeight() + 10* MenuWindow.X_WINDOW);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
-        gc.fillOval((int) image.getWidth() - 10*StartWindowController.X_WINDOW, (int) image.getHeight() - 10*StartWindowController.X_WINDOW, 20*StartWindowController.X_WINDOW, 20*StartWindowController.X_WINDOW);
+        gc.fillOval((int) image.getWidth() - 10* MenuWindow.X_WINDOW, (int) image.getHeight() - 10* MenuWindow.X_WINDOW, 20* MenuWindow.X_WINDOW, 20* MenuWindow.X_WINDOW);
         gc.setFill(Color.WHITE);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(Integer.toString(this.counters), (int) image.getWidth(), (int) image.getHeight() + 5*StartWindowController.X_WINDOW);
-        WritableImage countersImage = new WritableImage((int) (image.getWidth() + 10*StartWindowController.X_WINDOW), (int) (image.getHeight() + 10*StartWindowController.X_WINDOW));
+        gc.fillText(Integer.toString(this.counters), (int) image.getWidth(), (int) image.getHeight() + 5* MenuWindow.X_WINDOW);
+        WritableImage countersImage = new WritableImage((int) (image.getWidth() + 10* MenuWindow.X_WINDOW), (int) (image.getHeight() + 10* MenuWindow.X_WINDOW));
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
         Image snapshot = canvas.snapshot(parameters, countersImage);
@@ -209,7 +209,7 @@ public class ViewCard extends ImageView {
         //combining bf image with counters
         BufferedImage activeBI = SwingFXUtils.fromFXImage(image, null);
         BufferedImage countersBI = SwingFXUtils.fromFXImage(snapshot, null);
-        BufferedImage combined = new BufferedImage((int) (image.getWidth() + 10*StartWindowController.X_WINDOW), (int) (image.getHeight() + 10*StartWindowController.X_WINDOW), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combined = new BufferedImage((int) (image.getWidth() + 10* MenuWindow.X_WINDOW), (int) (image.getHeight() + 10* MenuWindow.X_WINDOW), BufferedImage.TYPE_INT_ARGB);
         Graphics g = combined.getGraphics();
         g.drawImage(activeBI, 0, 0, null);
         g.drawImage(countersBI, 0, 0, null);
@@ -220,7 +220,7 @@ public class ViewCard extends ImageView {
     public void transform() {
 //        if(isVisibleToYou && this.position.equals(PositionType.BATTLEFIELD)) {
         BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImgTransform, null)).getSubimage(25, 25, 430, 357); //15,15,450,370
-        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120*StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
         this.setImage(SwingFXUtils.toFXImage(artImg, null));
         this.activeImage = this.cardImgTransform;
 //        }

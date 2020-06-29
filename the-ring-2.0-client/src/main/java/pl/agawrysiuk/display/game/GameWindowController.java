@@ -21,7 +21,6 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -50,7 +49,7 @@ import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.game.components.Ability;
 import pl.agawrysiuk.display.game.components.Token;
 import pl.agawrysiuk.display.game.components.ViewCard;
-import pl.agawrysiuk.display.menu.StartWindowController;
+import pl.agawrysiuk.display.menu.MenuWindow;
 import pl.agawrysiuk.display.sideboard.Sideboard;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
@@ -196,34 +195,34 @@ public class GameWindowController implements DisplayWindow {
 
         handBorder.setOffsetY(0);
         handBorder.setOffsetX(0);
-        handBorder.setRadius(200 * StartWindowController.X_WINDOW);
+        handBorder.setRadius(200 * MenuWindow.X_WINDOW);
         handBorder.setColor(Color.AQUA);
-        handBorder.setWidth(25 * StartWindowController.X_WINDOW);
-        handBorder.setHeight(25 * StartWindowController.X_WINDOW);
+        handBorder.setWidth(25 * MenuWindow.X_WINDOW);
+        handBorder.setHeight(25 * MenuWindow.X_WINDOW);
         handBorder.setSpread(0.80);
 
         handClickBorder.setOffsetY(0);
         handClickBorder.setOffsetX(0);
-        handClickBorder.setRadius(200 * StartWindowController.X_WINDOW);
+        handClickBorder.setRadius(200 * MenuWindow.X_WINDOW);
         handClickBorder.setColor(Color.ORANGE);
-        handClickBorder.setWidth(25 * StartWindowController.X_WINDOW);
-        handClickBorder.setHeight(25 * StartWindowController.X_WINDOW);
+        handClickBorder.setWidth(25 * MenuWindow.X_WINDOW);
+        handClickBorder.setHeight(25 * MenuWindow.X_WINDOW);
         handClickBorder.setSpread(0.80);
 
         battlefieldBorder.setOffsetY(0);
         battlefieldBorder.setOffsetX(0);
-        battlefieldBorder.setRadius(400 * StartWindowController.X_WINDOW); //100
+        battlefieldBorder.setRadius(400 * MenuWindow.X_WINDOW); //100
         battlefieldBorder.setColor(Color.BLACK);
-        battlefieldBorder.setWidth(10 * StartWindowController.X_WINDOW); //10
-        battlefieldBorder.setHeight(10 * StartWindowController.X_WINDOW); //10
+        battlefieldBorder.setWidth(10 * MenuWindow.X_WINDOW); //10
+        battlefieldBorder.setHeight(10 * MenuWindow.X_WINDOW); //10
         battlefieldBorder.setSpread(1); //0.9
 
         highlightBorder.setOffsetY(0);
         highlightBorder.setOffsetX(0);
-        highlightBorder.setRadius(400 * StartWindowController.X_WINDOW); //100
+        highlightBorder.setRadius(400 * MenuWindow.X_WINDOW); //100
         highlightBorder.setColor(Color.RED);
-        highlightBorder.setWidth(15 * StartWindowController.X_WINDOW); //10
-        highlightBorder.setHeight(15 * StartWindowController.X_WINDOW); //10
+        highlightBorder.setWidth(15 * MenuWindow.X_WINDOW); //10
+        highlightBorder.setHeight(15 * MenuWindow.X_WINDOW); //10
         highlightBorder.setSpread(1); //0.9
     }
 
@@ -252,7 +251,7 @@ public class GameWindowController implements DisplayWindow {
             heroListSideboard.add(viewCard);
             viewCard.setUltimatePosition(ViewCard.PositionType.SIDEBOARD);
             bringCardToGame(viewCard, true);
-            viewCard.getCard(true, false, 250 * StartWindowController.X_WINDOW);
+            viewCard.getCard(true, false, 250 * MenuWindow.X_WINDOW);
 
         }
 
@@ -487,16 +486,16 @@ public class GameWindowController implements DisplayWindow {
                 Line line = createLine();
                 line.setStartX(blockCard.getLayoutX()
                         + blockCard.getTranslateX()
-                        + (60 * StartWindowController.X_WINDOW));
+                        + (60 * MenuWindow.X_WINDOW));
                 line.setStartY(blockCard.getLayoutY()
                         + blockCard.getTranslateY()
-                        + (60 * StartWindowController.X_WINDOW));
+                        + (60 * MenuWindow.X_WINDOW));
                 line.setEndX(attackCard.getLayoutX()
                         + attackCard.getTranslateX()
-                        + (60 * StartWindowController.X_WINDOW));
+                        + (60 * MenuWindow.X_WINDOW));
                 line.setEndY(attackCard.getLayoutY()
                         + attackCard.getTranslateY()
-                        + (60 * StartWindowController.X_WINDOW));
+                        + (60 * MenuWindow.X_WINDOW));
                 attackBlockList.add(line);
                 mainPane.getChildren().add(line);
             } else if (message.contains("CHANGE_TYPE:")) {
@@ -814,22 +813,22 @@ public class GameWindowController implements DisplayWindow {
         if (hero) {
             listDeck = heroListDeck;
             listHand = heroListHand;
-            layoutY = 858 * StartWindowController.X_WINDOW;
+            layoutY = 858 * MenuWindow.X_WINDOW;
         } else {
             listDeck = oppListDeck;
             listHand = oppListHand;
-            layoutY = -275 * StartWindowController.X_WINDOW;
+            layoutY = -275 * MenuWindow.X_WINDOW;
         }
         if (listDeck.size() - number < 0) {
             System.out.println("You can't draw any more cards");
             return;
         }
         double insetRight = 0;
-        double layoutX = 450 * StartWindowController.X_WINDOW;
+        double layoutX = 450 * MenuWindow.X_WINDOW;
         int cardNumber = 0;
 
         if (250 * (number + listHand.size()) > 1200) {
-            insetRight = (((250 * (number + listHand.size())) - 1200) / (number + listHand.size())) * StartWindowController.X_WINDOW;
+            insetRight = (((250 * (number + listHand.size())) - 1200) / (number + listHand.size())) * MenuWindow.X_WINDOW;
         }
         if (!listHand.isEmpty()) {
             reArrangeHand(insetRight, cardNumber, hero);
@@ -838,8 +837,8 @@ public class GameWindowController implements DisplayWindow {
 
         //adding new cards
         while (number > 0) {
-            ViewCard viewCard = listDeck.get(0).getCard(hero, false, 250 * StartWindowController.X_WINDOW);
-            viewCard.relocate((layoutX + (250 * StartWindowController.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
+            ViewCard viewCard = listDeck.get(0).getCard(hero, false, 250 * MenuWindow.X_WINDOW);
+            viewCard.relocate((layoutX + (250 * MenuWindow.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
             mainPane.getChildren().add(viewCard);
             listHand.add(viewCard);
             viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
@@ -858,16 +857,16 @@ public class GameWindowController implements DisplayWindow {
         if (insetRight == -1) {
             insetRight = 0;
             if (250 * (listHand.size()) > 1200) {
-                insetRight = (((250 * (listHand.size())) - 1200) / (listHand.size())) * StartWindowController.X_WINDOW;
+                insetRight = (((250 * (listHand.size())) - 1200) / (listHand.size())) * MenuWindow.X_WINDOW;
             }
         }
 
-        double layoutY = (hero) ? 858 * StartWindowController.X_WINDOW : -275 * StartWindowController.X_WINDOW;
+        double layoutY = (hero) ? 858 * MenuWindow.X_WINDOW : -275 * MenuWindow.X_WINDOW;
 
         mainPane.getChildren().removeAll(listHand);
 
         for (ViewCard viewCard : listHand) {
-            viewCard.relocate((450 * StartWindowController.X_WINDOW + (250 * StartWindowController.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
+            viewCard.relocate((450 * MenuWindow.X_WINDOW + (250 * MenuWindow.X_WINDOW * cardNumber) - (insetRight * cardNumber)), layoutY);
             mainPane.getChildren().add(viewCard);
             cardNumber++;
         }
@@ -889,29 +888,29 @@ public class GameWindowController implements DisplayWindow {
         int cardTypeCount = 0;
         switch (viewCard.getType().toLowerCase()) {
             case "creature":
-                slotPositionX = 950 * StartWindowController.X_WINDOW;
-                slotPositionY = (hero) ? 500 * StartWindowController.X_WINDOW : 250 * StartWindowController.X_WINDOW;
+                slotPositionX = 950 * MenuWindow.X_WINDOW;
+                slotPositionY = (hero) ? 500 * MenuWindow.X_WINDOW : 250 * MenuWindow.X_WINDOW;
                 newRow = 9;
-                nextLine = 50 * StartWindowController.X_WINDOW;
+                nextLine = 50 * MenuWindow.X_WINDOW;
                 break;
             case "land":
-                slotPositionX = 400 * StartWindowController.X_WINDOW;
-                slotPositionY = (hero) ? 720 * StartWindowController.X_WINDOW : 95 * StartWindowController.X_WINDOW;
+                slotPositionX = 400 * MenuWindow.X_WINDOW;
+                slotPositionY = (hero) ? 720 * MenuWindow.X_WINDOW : 95 * MenuWindow.X_WINDOW;
                 newRow = 7;
-                nextLine = 20 * StartWindowController.X_WINDOW;
+                nextLine = 20 * MenuWindow.X_WINDOW;
                 break;
             case "artifact":
             case "enchantment":
-                slotPositionX = 1250 * StartWindowController.X_WINDOW;
-                slotPositionY = (hero) ? 720 * StartWindowController.X_WINDOW : 95 * StartWindowController.X_WINDOW;
+                slotPositionX = 1250 * MenuWindow.X_WINDOW;
+                slotPositionY = (hero) ? 720 * MenuWindow.X_WINDOW : 95 * MenuWindow.X_WINDOW;
                 newRow = 5;
-                nextLine = 20 * StartWindowController.X_WINDOW;
+                nextLine = 20 * MenuWindow.X_WINDOW;
                 break;
             case "planeswalker":
-                slotPositionX = 150 * StartWindowController.X_WINDOW;
-                slotPositionY = (hero) ? 500 * StartWindowController.X_WINDOW : 250 * StartWindowController.X_WINDOW;
+                slotPositionX = 150 * MenuWindow.X_WINDOW;
+                slotPositionY = (hero) ? 500 * MenuWindow.X_WINDOW : 250 * MenuWindow.X_WINDOW;
                 newRow = 3;
-                nextLine = 100 * StartWindowController.X_WINDOW;
+                nextLine = 100 * MenuWindow.X_WINDOW;
                 break;
         }
 
@@ -939,7 +938,7 @@ public class GameWindowController implements DisplayWindow {
         TranslateTransition tt = new TranslateTransition(Duration.millis(150), viewCard);
         tt.setFromX(viewCard.getTranslateX());
         tt.setFromY(viewCard.getTranslateY());
-        tt.setToX((slotPositionX + (Math.pow(-1, slotCard) * 130 * ((slotCard) / 2) * StartWindowController.X_WINDOW) - viewCard.getLayoutX()));
+        tt.setToX((slotPositionX + (Math.pow(-1, slotCard) * 130 * ((slotCard) / 2) * MenuWindow.X_WINDOW) - viewCard.getLayoutX()));
         tt.setToY(slotPositionY - viewCard.getLayoutY());
         tt.play();
         viewCard.setCacheHint(CacheHint.QUALITY);
@@ -978,8 +977,8 @@ public class GameWindowController implements DisplayWindow {
         tt.setFromX(viewCard.getTranslateX());
         tt.setFromY(viewCard.getTranslateY());
         viewCard.setEffect(null);
-        tt.setToX(100 * StartWindowController.X_WINDOW - ((listCastingStack.size() % 2) * (75 * StartWindowController.X_WINDOW)) - viewCard.getLayoutX());
-        tt.setToY(50 * StartWindowController.X_WINDOW + ((listCastingStack.size() - 1) * (50 * StartWindowController.X_WINDOW)) - viewCard.getLayoutY());
+        tt.setToX(100 * MenuWindow.X_WINDOW - ((listCastingStack.size() % 2) * (75 * MenuWindow.X_WINDOW)) - viewCard.getLayoutX());
+        tt.setToY(50 * MenuWindow.X_WINDOW + ((listCastingStack.size() - 1) * (50 * MenuWindow.X_WINDOW)) - viewCard.getLayoutY());
         tt.play();
         reArrangeHand(-1, 0, !viewCard.isOpponentsCard());
         viewCard.setViewOrder((-listCastingStack.size()) - 4);
@@ -997,7 +996,7 @@ public class GameWindowController implements DisplayWindow {
 //        tt.setToX(0);
 //        tt.setToY(0);
 //        tt.play();
-        viewCard.getCard(hero, false, 250 * StartWindowController.X_WINDOW);
+        viewCard.getCard(hero, false, 250 * MenuWindow.X_WINDOW);
         reArrangeHand(-1, 0, hero);
         viewCard.setTranslateX(0);
         viewCard.setTranslateY(0);
@@ -1016,7 +1015,7 @@ public class GameWindowController implements DisplayWindow {
 //        tt.setToX(0);
 //        tt.setToY(0);
 //        tt.play();
-        viewCard.getCard(true, false, 250 * StartWindowController.X_WINDOW);
+        viewCard.getCard(true, false, 250 * MenuWindow.X_WINDOW);
 //        reArrangeHand(-1, 0,true);
     }
 
@@ -1033,7 +1032,7 @@ public class GameWindowController implements DisplayWindow {
 //        tt.setToX(0);
 //        tt.setToY(0);
 //        tt.play();
-        viewCard.getCard(true, false, 250 * StartWindowController.X_WINDOW);
+        viewCard.getCard(true, false, 250 * MenuWindow.X_WINDOW);
 //        reArrangeHand(-1, 0,true);
     }
 
@@ -1047,7 +1046,7 @@ public class GameWindowController implements DisplayWindow {
         }
         deckCardsNumber.setText(Integer.toString(listDeck.size()));
         BufferedImage backBuffered = SwingFXUtils.fromFXImage(listDeck.get(0).getActiveImage(), null);
-        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * StartWindowController.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
+        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * MenuWindow.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
         deckIV.setImage(SwingFXUtils.toFXImage(backBuffered, null));
     }
 
@@ -1059,7 +1058,7 @@ public class GameWindowController implements DisplayWindow {
             return;
         }
         BufferedImage backBuffered = SwingFXUtils.fromFXImage(listGraveyard.get(listGraveyard.size() - 1).getCardImg(), null);
-        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * StartWindowController.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
+        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * MenuWindow.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
         graveyardIV.setImage(SwingFXUtils.toFXImage(backBuffered, null));
     }
 
@@ -1071,7 +1070,7 @@ public class GameWindowController implements DisplayWindow {
             return;
         }
         BufferedImage backBuffered = SwingFXUtils.fromFXImage(listExile.get(listExile.size() - 1).getActiveImage(), null);
-        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * StartWindowController.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
+        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * MenuWindow.X_WINDOW), 100, Scalr.OP_ANTIALIAS);
         exileIV.setImage(SwingFXUtils.toFXImage(backBuffered, null));
     }
 
@@ -1458,11 +1457,11 @@ public class GameWindowController implements DisplayWindow {
 
         printNewViewStage = new Stage();
         printNewViewStage.setTitle("Cards in the deck");
-        printNewViewStage.setScene(new Scene(popupPane, 1085 * StartWindowController.X_WINDOW, 900 * StartWindowController.X_WINDOW));
+        printNewViewStage.setScene(new Scene(popupPane, 1085 * MenuWindow.X_WINDOW, 900 * MenuWindow.X_WINDOW));
 
         for (ViewCard viewCard : list) { //printing deck
-            viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * StartWindowController.X_WINDOW);
-            StackPane.setMargin(viewCard, new Insets(marginStackPane * StartWindowController.X_WINDOW, 0, 0, rowCards)); //sets the place where the card image will be printed
+            viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * MenuWindow.X_WINDOW);
+            StackPane.setMargin(viewCard, new Insets(marginStackPane * MenuWindow.X_WINDOW, 0, 0, rowCards)); //sets the place where the card image will be printed
             popupPane.getChildren().add(viewCard);
             marginStackPane += 35; //changing horizontal space
             if (marginStackPane % 550 == 0) { //checking if we are at the bottom
@@ -1483,14 +1482,14 @@ public class GameWindowController implements DisplayWindow {
 //        gamePane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
         //adding preview
-        previewIV.relocate(1565 * StartWindowController.X_WINDOW, 80 * StartWindowController.X_WINDOW);
+        previewIV.relocate(1565 * MenuWindow.X_WINDOW, 80 * MenuWindow.X_WINDOW);
         previewIV.setViewOrder(-4);
         mainPane.getChildren().add(previewIV);
 
         //adding chat
-        chatView.relocate(1580 * StartWindowController.X_WINDOW, 101 * StartWindowController.X_WINDOW);
-        chatView.setPrefWidth(320 * StartWindowController.X_WINDOW); //previewIV is 350x495
-        chatView.setPrefHeight(350 * StartWindowController.X_WINDOW); //was 453
+        chatView.relocate(1580 * MenuWindow.X_WINDOW, 101 * MenuWindow.X_WINDOW);
+        chatView.setPrefWidth(320 * MenuWindow.X_WINDOW); //previewIV is 350x495
+        chatView.setPrefHeight(350 * MenuWindow.X_WINDOW); //was 453
         mainPane.getChildren().add(chatView);
         chatView.setItems(chatMessages);
         chatView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
@@ -1507,9 +1506,9 @@ public class GameWindowController implements DisplayWindow {
                             setGraphic(null);
                             setText(null);
                         } else {
-                            setMinWidth(stringListView.getWidth() - 15 * StartWindowController.X_WINDOW);
-                            setMaxWidth(stringListView.getWidth() - 15 * StartWindowController.X_WINDOW);
-                            setPrefWidth(stringListView.getWidth() - 15 * StartWindowController.X_WINDOW);
+                            setMinWidth(stringListView.getWidth() - 15 * MenuWindow.X_WINDOW);
+                            setMaxWidth(stringListView.getWidth() - 15 * MenuWindow.X_WINDOW);
+                            setPrefWidth(stringListView.getWidth() - 15 * MenuWindow.X_WINDOW);
                             setWrapText(true);
                             if (getItem().contains("You: ") || getItem().contains("Opponent: ")) {
                                 setStyle("-fx-font-weight: 900");
@@ -1541,8 +1540,8 @@ public class GameWindowController implements DisplayWindow {
 
         //adding chat send message
         chatField = new TextField();
-        chatField.setPrefWidth(250 * StartWindowController.X_WINDOW);
-        chatField.relocate(1580 * StartWindowController.X_WINDOW, 501 * StartWindowController.X_WINDOW);
+        chatField.setPrefWidth(250 * MenuWindow.X_WINDOW);
+        chatField.relocate(1580 * MenuWindow.X_WINDOW, 501 * MenuWindow.X_WINDOW);
         chatField.setOpacity(0.4);
         chatField.setOnAction(e -> {
             if (!chatField.getText().equals("")) {
@@ -1554,7 +1553,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(chatField);
 
         sendChatBtn = new Button("Send");
-        sendChatBtn.relocate(1850 * StartWindowController.X_WINDOW, 501 * StartWindowController.X_WINDOW);
+        sendChatBtn.relocate(1850 * MenuWindow.X_WINDOW, 501 * MenuWindow.X_WINDOW);
         mainPane.getChildren().add(sendChatBtn);
         sendChatBtn.setOnAction(e -> {
             if (!chatField.getText().equals("")) {
@@ -1568,26 +1567,26 @@ public class GameWindowController implements DisplayWindow {
         Text turnText = yourTurnText;
         int textRelocate = 1720;
         for (int i = 0; i < 2; i++) {
-            turnText.prefWidth(150 * StartWindowController.X_WINDOW);
+            turnText.prefWidth(150 * MenuWindow.X_WINDOW);
             turnText.setTextAlignment(TextAlignment.CENTER);
             turnText.setViewOrder(-2);
-            turnText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * StartWindowController.X_WINDOW));
+            turnText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * MenuWindow.X_WINDOW));
             turnText.setFill(Color.DARKRED);
             turnText.setEffect(battlefieldBorder);
-            turnText.relocate(textRelocate * StartWindowController.X_WINDOW, 600 * StartWindowController.X_WINDOW);
+            turnText.relocate(textRelocate * MenuWindow.X_WINDOW, 600 * MenuWindow.X_WINDOW);
             turnText = opponentsTurnText;
             textRelocate = 1670;
         }
 
         //setting up buttons for scry
         scryDrawSpinner = new Spinner<>();
-        scryDrawSpinner.relocate(1820 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
+        scryDrawSpinner.relocate(1820 * MenuWindow.X_WINDOW, 650 * MenuWindow.X_WINDOW);
         scryDrawSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 60, 1));
         scryDrawSpinner.setPrefWidth(60);
         scryDrawSpinner.setEditable(true);
         mainPane.getChildren().add(scryDrawSpinner);
         scryButton = new Button("Scry");
-        scryButton.relocate(1720 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
+        scryButton.relocate(1720 * MenuWindow.X_WINDOW, 650 * MenuWindow.X_WINDOW);
         scryButton.setOnAction(e -> {
             if (heroListDeck.size() == 0) {
                 return;
@@ -1603,7 +1602,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(scryButton);
         //setting up buttons for draw card
         drawCardBtn = new Button("Draw");
-        drawCardBtn.relocate(1620 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
+        drawCardBtn.relocate(1620 * MenuWindow.X_WINDOW, 650 * MenuWindow.X_WINDOW);
         drawCardBtn.setOnAction(e -> {
             clientSender.println("DRAW:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
             chatMessages.add((scryDrawSpinner.getValue() > 1) ? ("You draw " + scryDrawSpinner.getValue() + " cards.") : "You draw a card.");
@@ -1614,7 +1613,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up reveal hand
         revealBtn = new Button("Reveal");
-        revealBtn.relocate(1950 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW);
+        revealBtn.relocate(1950 * MenuWindow.X_WINDOW, 650 * MenuWindow.X_WINDOW);
         revealBtn.setOnAction(e -> {
             Dialog<ButtonType> dialog = new Dialog<>();
 
@@ -1704,7 +1703,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up untap all
         untapAll = new Button("Untap all");
-        untapAll.relocate(1640 * StartWindowController.X_WINDOW, 725 * StartWindowController.X_WINDOW); //2075,650
+        untapAll.relocate(1640 * MenuWindow.X_WINDOW, 725 * MenuWindow.X_WINDOW); //2075,650
         untapAll.setOnAction(e -> {
             for (ViewCard viewCard : heroListBattlefield) {
                 untapCard(viewCard, true, true);
@@ -1716,7 +1715,7 @@ public class GameWindowController implements DisplayWindow {
 
         //sideboardBtn
         sideboardBtn = new Button("Sideboard");
-        sideboardBtn.relocate(1955 * StartWindowController.X_WINDOW, 725 * StartWindowController.X_WINDOW);
+        sideboardBtn.relocate(1955 * MenuWindow.X_WINDOW, 725 * MenuWindow.X_WINDOW);
         sideboardBtn.setOnAction(e -> {
             printNewView(heroListSideboard);
         });
@@ -1724,7 +1723,7 @@ public class GameWindowController implements DisplayWindow {
 
         //skip turn button
         skipTurnBtn = new Button("Skip turn");
-        skipTurnBtn.relocate(1800 * StartWindowController.X_WINDOW, 725 * StartWindowController.X_WINDOW);
+        skipTurnBtn.relocate(1800 * MenuWindow.X_WINDOW, 725 * MenuWindow.X_WINDOW);
 
         skipTurnBtn.setOnAction(e -> {
             if (!yourTurn) {
@@ -1760,7 +1759,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up cointoss button
         coinTossBtn = new Button("Coin");
-        coinTossBtn.relocate(2110 * StartWindowController.X_WINDOW, 800 * StartWindowController.X_WINDOW);
+        coinTossBtn.relocate(2110 * MenuWindow.X_WINDOW, 800 * MenuWindow.X_WINDOW);
         coinTossBtn.setOnAction(e -> {
             String coin = (new Random().nextBoolean()) ? "HEADS" : "TAILS";
             clientSender.println("COINTOSS:" + coin + ":" + new Random().nextInt());
@@ -1770,7 +1769,7 @@ public class GameWindowController implements DisplayWindow {
 
         //settingup forfeit button
         forfeitBtn = new Button("Quit");
-        forfeitBtn.relocate(2110 * StartWindowController.X_WINDOW, 725 * StartWindowController.X_WINDOW);
+        forfeitBtn.relocate(2110 * MenuWindow.X_WINDOW, 725 * MenuWindow.X_WINDOW);
         forfeitBtn.setStyle("-fx-background-color: linear-gradient(#636363, #4a4a4a);" +
                 "-fx-background-radius: 5;" +
                 "-fx-background-insets: 0;" +
@@ -1806,7 +1805,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up button for shuffling deck
         shuffleDeckBtn = new Button("Shuffle deck");
-        shuffleDeckBtn.relocate(2075 * StartWindowController.X_WINDOW, 650 * StartWindowController.X_WINDOW); //1620,725
+        shuffleDeckBtn.relocate(2075 * MenuWindow.X_WINDOW, 650 * MenuWindow.X_WINDOW); //1620,725
         shuffleDeckBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle(null);
@@ -1829,7 +1828,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up token button
         addTokenBtn = new Button("Add token");
-        addTokenBtn.relocate(1965 * StartWindowController.X_WINDOW, 800 * StartWindowController.X_WINDOW);
+        addTokenBtn.relocate(1965 * MenuWindow.X_WINDOW, 800 * MenuWindow.X_WINDOW);
         addTokenBtn.setOnAction(e -> {
             addTokenDialog();
         });
@@ -1837,7 +1836,7 @@ public class GameWindowController implements DisplayWindow {
 
         //setting up resolve button
         resolveButton = new Button("Resolve");
-        resolveButton.relocate(1630 * StartWindowController.X_WINDOW, 800 * StartWindowController.X_WINDOW);
+        resolveButton.relocate(1630 * MenuWindow.X_WINDOW, 800 * MenuWindow.X_WINDOW);
         resolveButton.setPrefWidth(85);
         resolveButton.setOnMouseEntered(e -> {
             if (yourMove) {
@@ -1863,13 +1862,13 @@ public class GameWindowController implements DisplayWindow {
         resolveButton.setOnAction(e -> {
             resolve(false);
         });
-        resolveButton.prefWidth(250 * StartWindowController.X_WINDOW);
+        resolveButton.prefWidth(250 * MenuWindow.X_WINDOW);
         mainPane.getChildren().add(resolveButton);
 
         //setting up extend/contract button
         extendContractBTNS = new Button();
         extendContractBTNS.setText("<");
-        extendContractBTNS.relocate(1890 * StartWindowController.X_WINDOW, 850 * StartWindowController.X_WINDOW);
+        extendContractBTNS.relocate(1890 * MenuWindow.X_WINDOW, 850 * MenuWindow.X_WINDOW);
         extendContractBTNS.setOnMousePressed(e -> {
             moveButtons();
         });
@@ -1903,15 +1902,15 @@ public class GameWindowController implements DisplayWindow {
                 clientSender.println("UNBLOCK_ALL:" + new Random().nextInt());
             }
         });
-        attackAll.relocate(1800 * StartWindowController.X_WINDOW, 800 * StartWindowController.X_WINDOW);
-        unblockAll.relocate(1800 * StartWindowController.X_WINDOW, 800 * StartWindowController.X_WINDOW);
+        attackAll.relocate(1800 * MenuWindow.X_WINDOW, 800 * MenuWindow.X_WINDOW);
+        unblockAll.relocate(1800 * MenuWindow.X_WINDOW, 800 * MenuWindow.X_WINDOW);
 
         //fixing size all buttons
         Collections.addAll(buttonsList, coinTossBtn, skipTurnBtn, unblockAll, attackAll, forfeitBtn, untapAll, sideboardBtn, scryDrawSpinner, drawCardBtn, scryButton, shuffleDeckBtn, resolveButton, addTokenBtn, revealBtn);
         buttonsList.forEach(node -> {
             node.setViewOrder(-2);
-            node.setScaleX(2 * StartWindowController.X_WINDOW);
-            node.setScaleY(2 * StartWindowController.X_WINDOW);
+            node.setScaleX(2 * MenuWindow.X_WINDOW);
+            node.setScaleY(2 * MenuWindow.X_WINDOW);
         });
         sendChatBtn.setViewOrder(-2);
         sendChatBtn.setScaleX(1);
@@ -1920,19 +1919,19 @@ public class GameWindowController implements DisplayWindow {
 
         //adding phases in the middle
         GridPane phasesGrid = new GridPane();
-        phasesGrid.prefWidth(1920 * StartWindowController.X_WINDOW);
-        phasesGrid.relocate(0 * StartWindowController.X_WINDOW, 455 * StartWindowController.X_WINDOW);
+        phasesGrid.prefWidth(1920 * MenuWindow.X_WINDOW);
+        phasesGrid.relocate(0 * MenuWindow.X_WINDOW, 455 * MenuWindow.X_WINDOW);
         phasesGrid.setViewOrder(1);
         ColumnConstraints column = new ColumnConstraints();
-        column.setPrefWidth((double) 1920 * StartWindowController.X_WINDOW / 6);
+        column.setPrefWidth((double) 1920 * MenuWindow.X_WINDOW / 6);
         column.setHalignment(HPos.CENTER);
         int textColumn = 0;
         for (Text text : listPhases) {
-            text.prefWidth((double) 1920 * StartWindowController.X_WINDOW / listPhases.size());
+            text.prefWidth((double) 1920 * MenuWindow.X_WINDOW / listPhases.size());
             text.setTextAlignment(TextAlignment.CENTER);
             text.setViewOrder(1);
             phasesGrid.getColumnConstraints().add(column);
-            text.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * StartWindowController.X_WINDOW));
+            text.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * MenuWindow.X_WINDOW));
             text.setFill(Color.WHITE);
             text.setEffect(battlefieldBorder);
             phasesGrid.add(text, textColumn, 0);
@@ -1947,29 +1946,29 @@ public class GameWindowController implements DisplayWindow {
         ImageView graveyardIV = (hero) ? heroGraveyardIV : oppGraveyardIV;
         ImageView exileIV = (hero) ? heroExileIV : oppExileIV;
         Text deckCardsNumber = (hero) ? heroDeckCardsNumber : oppDeckCardsNumber;
-        double ivHeight = (hero) ? 870 * StartWindowController.X_WINDOW : -120 * StartWindowController.X_WINDOW;
-        double textHeight = (hero) ? 1032 * StartWindowController.X_WINDOW : 48 * StartWindowController.X_WINDOW;
+        double ivHeight = (hero) ? 870 * MenuWindow.X_WINDOW : -120 * MenuWindow.X_WINDOW;
+        double textHeight = (hero) ? 1032 * MenuWindow.X_WINDOW : 48 * MenuWindow.X_WINDOW;
         List<ViewCard> listDeck = (hero) ? heroListDeck : oppListDeck;
         List<ViewCard> listGraveyard = (hero) ? heroListGraveyard : oppListGraveyard;
         List<ViewCard> listExile = (hero) ? heroListExile : oppListExile;
         Text lifeTXT = (hero) ? yourLifeTXT : opponentsLifeTXT;
-        double lifeTXTHeight = (hero) ? 795 * StartWindowController.X_WINDOW : 95 * StartWindowController.X_WINDOW;
-        double lifeRectHeight = (hero) ? 800 * StartWindowController.X_WINDOW : 100 * StartWindowController.X_WINDOW;
+        double lifeTXTHeight = (hero) ? 795 * MenuWindow.X_WINDOW : 95 * MenuWindow.X_WINDOW;
+        double lifeRectHeight = (hero) ? 800 * MenuWindow.X_WINDOW : 100 * MenuWindow.X_WINDOW;
 
         //adding text under the deck view
         deckCardsNumber.setFill(Color.WHITE);
-        deckCardsNumber.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
+        deckCardsNumber.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * MenuWindow.X_WINDOW));
         deckCardsNumber.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 5, 0.8, 0, 0));
         deckCardsNumber.setText(Integer.toString(listDeck.size()));
-        deckCardsNumber.relocate(65 * StartWindowController.X_WINDOW, textHeight);
+        deckCardsNumber.relocate(65 * MenuWindow.X_WINDOW, textHeight);
         deckCardsNumber.setPickOnBounds(false);
         mainPane.getChildren().add(deckCardsNumber);
 
         //setting up deck view
         updateDeckView(hero);
-        deckIV.relocate(25 * StartWindowController.X_WINDOW, ivHeight);
+        deckIV.relocate(25 * MenuWindow.X_WINDOW, ivHeight);
         deckIV.setOnMouseEntered(e -> {
-            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listDeck.get(0).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
+            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listDeck.get(0).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
             deckIV.setEffect(handBorder);
         });
         deckIV.setOnMouseExited(e -> {
@@ -1982,10 +1981,10 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(deckIV);
 
         //setting up graveyard view
-        graveyardIV.relocate(175 * StartWindowController.X_WINDOW, ivHeight);
+        graveyardIV.relocate(175 * MenuWindow.X_WINDOW, ivHeight);
         graveyardIV.setOnMouseEntered(e -> {
             if (listGraveyard.size() != 0) {
-                previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listGraveyard.get(listGraveyard.size() - 1).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
+                previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listGraveyard.get(listGraveyard.size() - 1).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
             }
             graveyardIV.setEffect(handBorder);
         });
@@ -2000,17 +1999,17 @@ public class GameWindowController implements DisplayWindow {
 
         Text graveyardText = new Text();
         graveyardText.setFill(Color.WHITE);
-        graveyardText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
+        graveyardText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * MenuWindow.X_WINDOW));
         graveyardText.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 5, 0.8, 0, 0));
         graveyardText.setText("Graveyard");
-        graveyardText.relocate(150 * StartWindowController.X_WINDOW, textHeight);
+        graveyardText.relocate(150 * MenuWindow.X_WINDOW, textHeight);
         graveyardText.setPickOnBounds(false);
         mainPane.getChildren().add(graveyardText);
 
         //setting up exile view
-        exileIV.relocate(325 * StartWindowController.X_WINDOW, ivHeight);
+        exileIV.relocate(325 * MenuWindow.X_WINDOW, ivHeight);
         exileIV.setOnMouseEntered(e -> {
-            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listExile.get(listExile.size() - 1).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
+            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listExile.get(listExile.size() - 1).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
             exileIV.setEffect(handBorder);
         });
         exileIV.setOnMouseExited(e -> {
@@ -2023,32 +2022,32 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(exileIV);
         Text exileText = new Text();
         exileText.setFill(Color.WHITE);
-        exileText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
+        exileText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * MenuWindow.X_WINDOW));
         exileText.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 5, 0.8, 0, 0));
         exileText.setText("Exile");
-        exileText.relocate(345 * StartWindowController.X_WINDOW, textHeight);
+        exileText.relocate(345 * MenuWindow.X_WINDOW, textHeight);
         exileText.setPickOnBounds(false);
         mainPane.getChildren().add(exileText);
 
         //setting up life
         Rectangle lifeRect = new Rectangle();
-        lifeRect.setX(920 * StartWindowController.X_WINDOW);
+        lifeRect.setX(920 * MenuWindow.X_WINDOW);
         lifeRect.setY(lifeRectHeight);
-        lifeRect.setWidth(60 * StartWindowController.X_WINDOW);
-        lifeRect.setHeight(40 * StartWindowController.X_WINDOW);
+        lifeRect.setWidth(60 * MenuWindow.X_WINDOW);
+        lifeRect.setHeight(40 * MenuWindow.X_WINDOW);
         Stop[] stops = new Stop[]{new Stop(0, Color.GRAY), new Stop(1, Color.DARKGRAY)};
         LinearGradient lg1 = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, stops);
         lifeRect.setFill(lg1);
-        lifeRect.setArcHeight(40 * StartWindowController.X_WINDOW);
-        lifeRect.setArcWidth(40 * StartWindowController.X_WINDOW);
+        lifeRect.setArcHeight(40 * MenuWindow.X_WINDOW);
+        lifeRect.setArcWidth(40 * MenuWindow.X_WINDOW);
         lifeRect.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(((int) (Math.random() * 156)), (int) (Math.random() * 156), (int) (Math.random() * 156), 1), 10, 0.9, 0, 0));
         mainPane.getChildren().add(lifeRect);
         lifeTXT.setFill(Color.WHITE);
-        lifeTXT.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * StartWindowController.X_WINDOW));
+        lifeTXT.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 35 * MenuWindow.X_WINDOW));
         lifeTXT.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
-        lifeTXT.prefWidth(100 * StartWindowController.X_WINDOW);
-        lifeTXT.prefHeight(40 * StartWindowController.X_WINDOW);
-        lifeTXT.relocate(930 * StartWindowController.X_WINDOW, lifeTXTHeight);
+        lifeTXT.prefWidth(100 * MenuWindow.X_WINDOW);
+        lifeTXT.prefHeight(40 * MenuWindow.X_WINDOW);
+        lifeTXT.relocate(930 * MenuWindow.X_WINDOW, lifeTXTHeight);
         lifeTXT.setPickOnBounds(false);
         lifeTXT.setTextAlignment(TextAlignment.CENTER);
         mainPane.getChildren().add(lifeTXT);
@@ -2072,7 +2071,7 @@ public class GameWindowController implements DisplayWindow {
                 if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
                     viewCard.setViewOrder(-3);
                 }
-                previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
+                previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
 //                if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
 //                    viewCard.setEffect(handBorder);
 //                }
@@ -2115,10 +2114,10 @@ public class GameWindowController implements DisplayWindow {
                         if (attackBlock != null) {
                             attackBlock.setEndX(viewCard.getLayoutX()
                                     + viewCard.getTranslateX()
-                                    + (60 * StartWindowController.X_WINDOW));
+                                    + (60 * MenuWindow.X_WINDOW));
                             attackBlock.setEndY(viewCard.getLayoutY()
                                     + viewCard.getTranslateY()
-                                    + (60 * StartWindowController.X_WINDOW));
+                                    + (60 * MenuWindow.X_WINDOW));
                             attackBlockList.add(attackBlock);
                             mainPane.getChildren().add(attackBlock);
                             clientSender.println("BLOCK:" +
@@ -2177,11 +2176,11 @@ public class GameWindowController implements DisplayWindow {
             if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
                 viewCard.setViewOrder(-3);
             }
-            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
+            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null));
             if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
                 if (yourMove) viewCard.setEffect(handBorder);
                 if (!viewCard.isDragging()) {
-                    viewCard.setTranslateY(-135 * StartWindowController.X_WINDOW);
+                    viewCard.setTranslateY(-135 * MenuWindow.X_WINDOW);
 //                        scaleTrans.stop();
 //                        scaleTrans.setRate(2.5);
 //                        scaleTrans.play();
@@ -2338,10 +2337,10 @@ public class GameWindowController implements DisplayWindow {
                         if (!viewCard.getEffect().equals(handBorder)) {
                             double dragDeltaX = viewCard.getLayoutX()
                                     + viewCard.getTranslateX()
-                                    + (60 * StartWindowController.X_WINDOW);
+                                    + (60 * MenuWindow.X_WINDOW);
                             double dragDeltaY = viewCard.getLayoutY()
                                     + viewCard.getTranslateY()
-                                    + (60 * StartWindowController.X_WINDOW);
+                                    + (60 * MenuWindow.X_WINDOW);
                             Line line = createLine();
                             line.setStartX(dragDeltaX);
                             line.setStartY(dragDeltaY);
@@ -2566,7 +2565,7 @@ public class GameWindowController implements DisplayWindow {
                             clientSender.println("LOOK_UP:" + heroListExile.indexOf(viewCard) + ":" + new Random().nextInt());
                             chatMessages.add("You turned over " + viewCard.getTitle() + " in your graveyard.");
                             updateExileView(true);
-                            viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * StartWindowController.X_WINDOW);
+                            viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * MenuWindow.X_WINDOW);
                         });
                         rightClickMenu.getItems().setAll(reveal, moveDeck, moveHand, moveBattlefield, moveGraveyard,exileShow);
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
@@ -2616,7 +2615,7 @@ public class GameWindowController implements DisplayWindow {
             }
             if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
                 viewCard.setEffect(handBorder);
-                if (e.getSceneY() - viewCard.getPositionY() < -300 * StartWindowController.X_WINDOW) {
+                if (e.getSceneY() - viewCard.getPositionY() < -300 * MenuWindow.X_WINDOW) {
                     viewCard.setEffect(handClickBorder);
                 } else {
                     viewCard.setEffect(handBorder);
@@ -2633,7 +2632,7 @@ public class GameWindowController implements DisplayWindow {
             }
             if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
                 viewCard.setEffect(null);
-                if (e.getSceneY() - viewCard.getPositionY() < -300 * StartWindowController.X_WINDOW) {
+                if (e.getSceneY() - viewCard.getPositionY() < -300 * MenuWindow.X_WINDOW) {
 //                        scaleTrans.stop();
 //                        scaleTrans.setDuration(Duration.millis(1));
 //                        scaleTrans.setRate(-5);
@@ -2704,7 +2703,7 @@ public class GameWindowController implements DisplayWindow {
 
         }
         Token token = new Token(attack, defense, color, type, additionalText);
-        token.setOnMouseEntered(e -> previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(token.getCardImg(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * StartWindowController.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null)));
+        token.setOnMouseEntered(e -> previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(token.getCardImg(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS), null)));
         token.setOnMouseExited(e -> previewIV.setImage(null));
         token.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
         token.setEffect(battlefieldBorder);
@@ -2775,10 +2774,10 @@ public class GameWindowController implements DisplayWindow {
                         if (!token.getEffect().equals(handBorder)) {
                             double dragDeltaX = token.getLayoutX()
                                     + token.getTranslateX()
-                                    + (60 * StartWindowController.X_WINDOW);
+                                    + (60 * MenuWindow.X_WINDOW);
                             double dragDeltaY = token.getLayoutY()
                                     + token.getTranslateY()
-                                    + (60 * StartWindowController.X_WINDOW);
+                                    + (60 * MenuWindow.X_WINDOW);
                             Line line = createLine();
                             line.setStartX(dragDeltaX);
                             line.setStartY(dragDeltaY);
@@ -2815,16 +2814,16 @@ public class GameWindowController implements DisplayWindow {
                     if (attackBlock != null) {
                         System.out.println(token.getLayoutX()
                                 + token.getTranslateX()
-                                + (60 * StartWindowController.X_WINDOW));
+                                + (60 * MenuWindow.X_WINDOW));
                         System.out.println(token.getLayoutY()
                                 + token.getTranslateY()
-                                + (60 * StartWindowController.X_WINDOW));
+                                + (60 * MenuWindow.X_WINDOW));
                         attackBlock.setEndX(token.getLayoutX()
                                 + token.getTranslateX()
-                                + (60 * StartWindowController.X_WINDOW));
+                                + (60 * MenuWindow.X_WINDOW));
                         attackBlock.setEndY(token.getLayoutY()
                                 + token.getTranslateY()
-                                + (60 * StartWindowController.X_WINDOW));
+                                + (60 * MenuWindow.X_WINDOW));
                         attackBlockList.add(attackBlock);
                         mainPane.getChildren().add(attackBlock);
                         clientSender.println("BLOCK:" +
@@ -2852,7 +2851,7 @@ public class GameWindowController implements DisplayWindow {
 
     private void moveButtons() {
         extendContractBTNS.setDisable(true);
-        double translation = (buttonsRelocated) ? -270 * StartWindowController.X_WINDOW : 270 * StartWindowController.X_WINDOW;
+        double translation = (buttonsRelocated) ? -270 * MenuWindow.X_WINDOW : 270 * MenuWindow.X_WINDOW;
         ParallelTransition pt = new ParallelTransition(); //all transitions at the same time
 
         for (Node node : buttonsList) {
@@ -2884,8 +2883,8 @@ public class GameWindowController implements DisplayWindow {
 
     private void castAbTr(ViewCard viewCard, String text, String additionalText) {
         Ability abilityVC = viewCard.createAbility(text, additionalText);
-        abilityVC.relocate(viewCard.getLayoutX() + viewCard.getTranslateX() + (60 * StartWindowController.X_WINDOW),
-                viewCard.getLayoutY() + viewCard.getTranslateY() + (60 * StartWindowController.X_WINDOW));
+        abilityVC.relocate(viewCard.getLayoutX() + viewCard.getTranslateX() + (60 * MenuWindow.X_WINDOW),
+                viewCard.getLayoutY() + viewCard.getTranslateY() + (60 * MenuWindow.X_WINDOW));
         mainPane.getChildren().add(abilityVC);
         castToStack(abilityVC);
     }
