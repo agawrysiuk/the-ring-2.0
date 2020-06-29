@@ -5,7 +5,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,7 +15,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -176,14 +174,11 @@ public class MenuWindow implements DisplayWindow {
         mainPane.setCenter(scrollPane);
 
         //making scrollbar scroll faster
-        deckView.setOnScroll(new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(ScrollEvent event) {
-                double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
-                double width = scrollPane.getContent().getBoundsInLocal().getWidth();
-                double vvalue = scrollPane.getVvalue();
-                scrollPane.setVvalue(vvalue + -deltaY / width); // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
-            }
+        deckView.setOnScroll(event -> {
+            double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
+            double width = scrollPane.getContent().getBoundsInLocal().getWidth();
+            double vvalue = scrollPane.getVvalue();
+            scrollPane.setVvalue(vvalue + -deltaY / width); // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
         });
     }
     public void placeDeckOnScreen(Deck item) {

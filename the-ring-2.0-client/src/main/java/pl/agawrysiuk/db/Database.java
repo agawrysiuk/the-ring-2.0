@@ -1,27 +1,25 @@
 package pl.agawrysiuk.db;
 
 import javafx.scene.image.Image;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import lombok.Getter;
+import lombok.Setter;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Getter
 public final class Database  {
     private static final Database instance = new Database();
     private static final List<Card> databaseCards = new ArrayList<>();
     private static final Map<String, Deck> databaseDecks = new TreeMap<>();
     private static final Image backImage = new Image("file:database"+ File.separator +"cards"+ File.separator +"cardback.jpg");
+    @Setter
     private static final List<String> settings = new ArrayList<>();
 
     private Database() {
@@ -196,18 +194,6 @@ public final class Database  {
         }
     }
 
-    public void setSettings (int number,String value) {
-        settings.set(number,value);
-    }
-
-    public List<String> getSettings() {
-        return settings;
-    }
-
-    public Map<String, Deck> getDecks() {
-        return databaseDecks;
-    }
-
     public boolean loadDeckFromTXT(Deck deck, boolean forPlaying) {
         //import options
         boolean sideboard = false;
@@ -253,140 +239,6 @@ public final class Database  {
         return true;
     }
 
-    public void importDeckFromScryfall(String deckInfo) {
-        try {
-            String[] lines = deckInfo.split(System.lineSeparator());
-            for(String line : lines) {
-                if(line.equals("")) { //checking sideboard line
-                    continue;
-                }
-                String[] checkedCardName = line.split(" ", 2);
-                if(getCard(checkedCardName[1]) == null) {
-                    importCardFromScryfall(checkedCardName[1]);
-                } else {
-                    System.out.println(checkedCardName[1] + " already exists in the database.");
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found.");
-            e.printStackTrace();
-            return;
-        } catch (IOException io) {
-            System.out.println("Issue while loading a deck.");
-            io.printStackTrace();
-            return;
-        }
-
-        System.out.println("Deck loaded from scryfall.");
-    }
-
-    public void importCardFromScryfall(String cardTitle) throws IOException { //nowy kod
-        //ignoreContentType brute forced to true so it doesn't show "unhandled content type" error
-        cardTitle = cardTitle.toLowerCase();
-        cardTitle = cardTitle.replace(" ","+");
-        Document scryfallDocument;
-        try {
-            scryfallDocument = Jsoup.connect("https://api.scryfall.com/cards/named?fuzzy="+cardTitle).ignoreContentType(true).get();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
-        String json = scryfallDocument.body().text();
-        JSONObject downloadedCard = new JSONObject(json);
-
-        if(downloadedCard.getString("object").equals("error")) { //if somehow the above try/catch doesnt work
-            System.out.println("Wrong card name.");
-            return;
-        }
-
-        String cardName = downloadedCard.getString("name");
-        if(downloadedCard.getString("layout").equals("transform") ||
-                downloadedCard.getString("layout").equals("adventure")) {
-            int index = cardName.indexOf(" //");
-            cardName = cardName.substring(0,index);
-        }
-        if(downloadedCard.getString("layout").equals("split")) {
-            cardName = cardName.replace(" // ","/");
-        }
-
-        for(Card searchedCard: databaseCards ) { //checking if card exists
-            if(searchedCard.getTitle().equals(cardName)) {
-                System.out.println("Card" + cardName + " already exists");
-                return;
-            }
-        }
-
-        downloadCardImage(downloadedCard);
-
-//        String cardPathNormal;
-//        String cardPathNormalTransform = "";
-//        String fileName;
-//
-//        if(downloadedCard.getString("layout").equals("transform")) { //checking if the card is a transform card
-//            /*  getJSONArray("card_faces") downloading arraylist containing two objects, each has "image_uris"
-//                getJSONObject(0) chooses object, 0 is front card, 1 is back card for mtg
-//                getJSONObject("image_uris") chooses object of "image_uris"
-//                getString("border_crop") gets the url of card image */
-//            cardPathNormal = downloadedCard.getJSONArray("card_faces").getJSONObject(0).getJSONObject("image_uris").getString("border_crop");
-//            cardPathNormalTransform = downloadedCard.getJSONArray("card_faces").getJSONObject(1).getJSONObject("image_uris").getString("border_crop");
-//        } else {
-//            cardPathNormal = downloadedCard.getJSONObject("image_uris").getString("border_crop");
-//        }
-//
-//        //saving images to disc
-//        BufferedImage image = ImageIO.read(new URL(cardPathNormal));
-//        fileName = downloadedCard.getString("scryfall_uri"); //getting url name from scryfall
-//        fileName = fileName.replace("?utm_source=api",""); //deleting the final part about source
-//        String[] toSave = fileName.split("/"); //splitting
-//        fileName = toSave[toSave.length-1];
-//        ImageIO.write(image,"jpg",new File("database"+File.separator +"cards"+File.separator +fileName+".jpg"));
-//
-//        String fileNameTransform = "";
-//        if(!cardPathNormalTransform.equals("")) { //saving back of the card
-//            image = ImageIO.read(new URL(cardPathNormalTransform));
-//            fileNameTransform = fileName+"-transform";
-//            ImageIO.write(image,"jpg",new File("database"+File.separator +"cards"+File.separator +fileNameTransform+".jpg"));
-//        }
-
-        //Creating Card object
-        Card theCard = new Card(cardName,json);
-        databaseCards.add(theCard);
-    }
-
-    public void downloadCardImage(JSONObject downloadedCard) throws IOException {
-        String cardPathNormal;
-        String cardPathNormalTransform = "";
-        String fileName;
-
-        if(downloadedCard.getString("layout").equals("transform")) { //checking if the card is a transform card
-            /*  getJSONArray("card_faces") downloading arraylist containing two objects, each has "image_uris"
-                getJSONObject(0) chooses object, 0 is front card, 1 is back card for mtg
-                getJSONObject("image_uris") chooses object of "image_uris"
-                getString("border_crop") gets the url of card image */
-            cardPathNormal = downloadedCard.getJSONArray("card_faces").getJSONObject(0).getJSONObject("image_uris").getString("border_crop");
-            cardPathNormalTransform = downloadedCard.getJSONArray("card_faces").getJSONObject(1).getJSONObject("image_uris").getString("border_crop");
-        } else {
-            cardPathNormal = downloadedCard.getJSONObject("image_uris").getString("border_crop");
-        }
-
-        //saving images to disc
-        BufferedImage image = ImageIO.read(new URL(cardPathNormal));
-        fileName = downloadedCard.getString("scryfall_uri"); //getting url name from scryfall
-        fileName = fileName.replace("?utm_source=api",""); //deleting the final part about source
-        String[] toSave = fileName.split("/"); //splitting
-        fileName = toSave[toSave.length-1];
-        ImageIO.write(image,"jpg",new File("database"+File.separator +"cards"+File.separator +fileName+".jpg"));
-
-        String fileNameTransform = "";
-        if(!cardPathNormalTransform.equals("")) { //saving back of the card
-            image = ImageIO.read(new URL(cardPathNormalTransform));
-            fileNameTransform = fileName+"-transform";
-            ImageIO.write(image,"jpg",new File("database"+File.separator +"cards"+File.separator +fileNameTransform+".jpg"));
-        }
-    }
-
-
     public Card getCard(String cardTitle) { //geting a reference to the card in databaseCards
         for(Card currentCard : databaseCards) {
             if(currentCard.getTitle().equals(cardTitle)) {
@@ -410,18 +262,4 @@ public final class Database  {
         }
         return null;
     }
-
-    public Image getBackImage() {
-        return backImage;
-    }
-
-    public List<Card> getDatabaseCards() {
-        return databaseCards;
-    }
-
-    //    public void printDatabase() {
-//        for (Card card : databaseCards) {
-//            System.out.println(card.toString());
-//        }
-//    }
 }
