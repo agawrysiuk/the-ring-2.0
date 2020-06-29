@@ -73,9 +73,7 @@ public class MenuWindow implements DisplayWindow {
     private BorderPane mainPane;
     private Button removeDeckButton;
     private Button changeTitleButton;
-    private ComboBox<String> chooseOppBox;
     private ComboBox<Integer> comboBoxRows;
-    private ObservableList<String> chooseOppList;
     private int columnDrawIndex = 0;
     private int rowDrawIndex = 0;
     private int marginStackPane = 25;
@@ -203,16 +201,6 @@ public class MenuWindow implements DisplayWindow {
         rightBox.getChildren().add(highlightedCards);
         VBox.setMargin(highlightedCards, new Insets(0, 30, 0, 0));
 
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER);
-        Text opponentText = new Text("Choose opponent: ");
-        HBox.setMargin(opponentText, new Insets(0,0,5,0));
-        hBox.getChildren().add(opponentText);
-        chooseOppBox = new ComboBox<>();
-        chooseOppBox.prefWidth(100);
-        hBox.getChildren().add(chooseOppBox);
-        rightBox.getChildren().add(hBox);
-
         playButton = new Button("PLAY");
         playButton.prefWidth(125);
         playButton.prefHeight(50);
@@ -263,58 +251,12 @@ public class MenuWindow implements DisplayWindow {
             placeDeckOnScreen(deck);
         }
 
-        //setting up names
-//        while(playersName==null || playersName.equals("")) {
-//            TextInputDialog setName = new TextInputDialog();
-//            setName.setTitle("Choose your name");
-//            setName.setContentText(null);
-//            setName.setHeaderText(null);
-//
-//            Optional<String> result = setName.showAndWait();
-//            result.ifPresent(name -> playersName=name);
-//        }
-
         //setting up connection
         connectToServer();
-
-        //setting up opponents list
-        chooseOppList = FXCollections.observableArrayList();
         isReady = false;
-        chooseOppBox.setItems(chooseOppList);
-        checkingListTask = new Task<>() {
-            @Override
-            protected ObservableList<String> call() throws Exception {
-                while (!isReady) {
-                    try {
-                        String messageReceived = clientReceiver.readLine();
-                        if (messageReceived.equals("OPPREADY")) {
-                            return null;
-                        }
-                        if (!messageReceived.equals("")) {
-                            String[] list = messageReceived.split(",");
-
-                            Platform.runLater(() -> {
-                                chooseOppList.setAll(list);
-                                updateValue(chooseOppList);
-                            });
-                        }
-                        Thread.sleep(10000);
-//                    } catch (InterruptedException e) {
-                        //catch?l
-                    } catch (IOException e) {
-                        //catch? i know it needs to be changed
-                    }
-                }
-                return null;
-            }
-        };
-        checkingListThread = new Thread(checkingListTask);
-        checkingListThread.start();
-        chooseOppBox.itemsProperty().bind(checkingListTask.valueProperty());
 
         //setting up visibility of the buttons
-        playButton.disableProperty().bind(highlightedDeck.imageProperty().isNull()
-                .or(chooseOppBox.valueProperty().isNull()));
+        playButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
         showVisualButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
         removeDeckButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
         changeTitleButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
@@ -324,6 +266,7 @@ public class MenuWindow implements DisplayWindow {
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
         mainPane.setCenter(scrollPane);
+
         //making scrollbar scroll faster
         deckView.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
@@ -335,24 +278,7 @@ public class MenuWindow implements DisplayWindow {
             }
         });
     }
-
-//    public void disableButtons() {
-//        playButton.setDisable(true);
-//        showVisualButton.setDisable(true);
-//        removeDeckButton.setDisable(true);
-//    }
-
-//    public void enableButtons() {
-//        playButton.setDisable(false);
-//        showVisualButton.setDisable(false);
-//        removeDeckButton.setDisable(false);
-//    }
-
-    public void placeDeckOnScreen(Deck item) { //placing deck on the main window
-//        if (rowDrawIndex > 5) { //when there are too many decks
-//            return;
-//        }
-
+    public void placeDeckOnScreen(Deck item) {
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
         Text txt1 = new Text();
@@ -488,19 +414,6 @@ public class MenuWindow implements DisplayWindow {
     }
 
     public void addDeckToApp(ActionEvent event) {
-        //if there are too many decks... fixed already by startWindowPane.getCenter().setManaged(false);?
-//        if (this.rowDrawIndex > 5) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("Too many decks");
-//            alert.setContentText("You've reached the maximum amount of 40 decks.\nPlease free up space by deleting one of the decks.");
-//
-//            alert.initOwner(startWindowPane.getScene().getWindow());
-//            alert.initModality(Modality.APPLICATION_MODAL);
-//            alert.showAndWait();
-//
-//            return;
-//        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose a deck in .txt");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
@@ -787,13 +700,8 @@ public class MenuWindow implements DisplayWindow {
             System.out.println("Something's wrong with your deck.");
             return;
         }
-        if (chooseOppBox.getValue().equals(playersName)) {
-            System.out.println("You can't play with yourself");
-            return;
-        }
         Database.getInstance().saveToDatabase();
         checkingListThread.interrupt();
-        clientSender.println("READY:" + chooseOppBox.getValue());
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Waiting for the opponent");
@@ -1120,7 +1028,6 @@ public class MenuWindow implements DisplayWindow {
     private void connectToServer() {
         try {
             socket = new Socket(host, 5626);
-//            socket.setSoTimeout(30000);
             clientSender = new PrintWriter(socket.getOutputStream(), true);
             clientSender.println(playersName);
             clientReceiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));

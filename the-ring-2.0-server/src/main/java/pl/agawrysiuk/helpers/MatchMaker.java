@@ -51,9 +51,7 @@ public class MatchMaker extends Thread {
                 for (int j = 0; j < players.size() && !foundMatch; j++) {
                     Player player1 = players.get(i);
                     Player player2 = players.get(j);
-                    if (player1.isReady() && player2.isReady() &&
-                            player1.getOpponent().equals(player2.getPlayerName()) &&
-                            player2.getOpponent().equals(player1.getPlayerName())) {
+                    if (player1.isReady() && player2.isReady()) {
                         boolean first = new Random().nextBoolean();
                         player1.setInGame(true).setReady(false).setOpponent(player2).setStartingFirst(first).getOutput().println("OPPREADY");
                         player2.setInGame(true).setReady(false).setOpponent(player1).setStartingFirst(!first).getOutput().println("OPPREADY");

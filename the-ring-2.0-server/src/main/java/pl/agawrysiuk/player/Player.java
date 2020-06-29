@@ -3,7 +3,6 @@ package pl.agawrysiuk.player;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import pl.agawrysiuk.server.RunningInstance;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,14 +18,12 @@ public class Player extends Thread {
     private Socket socket;
     @ToString.Include
     private String playerName; //also a socket name?
-    private String opponentName; //
     private Player opponent;
     private boolean isReady;
     private boolean inGame; //inGame is to avoid server spamming us with playerslist and blocking us to enter the game sometimes
     private BufferedReader input;
     private PrintWriter output;
     private boolean isStartingFirst;
-    private Thread sendingPlayersList;
     private List<Player> players;
 
     public Player(Socket socket, BufferedReader input, PrintWriter output, List<Player> players) {
@@ -45,9 +42,6 @@ public class Player extends Thread {
             playerName = input.readLine();
             //todo send data to the client
 
-            configureSendingPlayersList();
-            sendingPlayersList.start();
-
             waitForReady();
             receivedReady();
         } catch (SocketException e) {
@@ -64,27 +58,6 @@ public class Player extends Thread {
         }
     }
 
-    private void configureSendingPlayersList() {
-        sendingPlayersList = new Thread(() -> {
-            while (!isReady && !inGame) {
-                try {
-                    if (!players.isEmpty()) {
-                        StringBuilder list = new StringBuilder();
-                        players.forEach(player -> {
-                            list.append(player.getPlayerName());
-                            list.append(",");
-                        });
-                        output.println(list.toString());
-                        Thread.sleep(10000);
-                    }
-                } catch (InterruptedException e) {
-                    log.info("Something interrupted");
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     private void waitForReady() throws IOException {
         while (!inGame && opponent == null) {
             String messageReceived = input.readLine();
@@ -93,8 +66,7 @@ public class Player extends Thread {
             }
             if (messageReceived.contains("READY:")) {
                 this.isReady = true;
-                this.opponentName = messageReceived.replace("READY:", "");
-                log.info(playerName + " opponent's will be: " + opponentName);
+                log.info(playerName + "'s ready!");
             }
             if (messageReceived.contains("DECK_TIME")) {
                 log.info(playerName + ": it's deck time!");
