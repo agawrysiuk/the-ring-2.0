@@ -308,20 +308,6 @@ public class MenuWindow implements DisplayWindow {
         }
     }
 
-    private void clearAndDrawAgain() {
-        deckView.getChildren().clear(); //clearing center view
-        highlightedCards.setText("");
-        highlightedDeck.setImage(null);
-        highlightedName.setText("");
-        highlightedType.setText("");
-        rowDrawIndex = 0;
-        columnDrawIndex = 0;
-        deckList.sort(activeComparator);
-        for (Deck deck : deckList) {
-            placeDeckOnScreen(deck);
-        }
-    }
-
     public void playButtonClicked(ActionEvent event) {
         if (activeDeck == null) {
             System.out.println("Something's wrong with your deck.");
