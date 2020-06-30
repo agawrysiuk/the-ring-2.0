@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.init;
+package pl.agawrysiuk.display.screens.init;
 
 import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
@@ -16,7 +16,7 @@ import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.creators.DialogCreator;
 import pl.agawrysiuk.display.creators.GridPaneCreator;
 import pl.agawrysiuk.display.creators.TextFieldCreator;
-import pl.agawrysiuk.display.menu.MenuWindow;
+import pl.agawrysiuk.display.screens.menu.MenuWindow;
 
 import java.util.Optional;
 

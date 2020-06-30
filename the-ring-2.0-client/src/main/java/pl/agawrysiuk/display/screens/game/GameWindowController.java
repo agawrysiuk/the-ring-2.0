@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.game;
+package pl.agawrysiuk.display.screens.game;
 
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -46,11 +46,11 @@ import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.game.components.Ability;
-import pl.agawrysiuk.display.game.components.Token;
-import pl.agawrysiuk.display.game.components.ViewCard;
-import pl.agawrysiuk.display.menu.MenuWindow;
-import pl.agawrysiuk.display.sideboard.Sideboard;
+import pl.agawrysiuk.display.screens.game.components.Ability;
+import pl.agawrysiuk.display.screens.game.components.Token;
+import pl.agawrysiuk.display.screens.game.components.ViewCard;
+import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.display.screens.sideboard.Sideboard;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 

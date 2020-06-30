@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.game.components;
+package pl.agawrysiuk.display.screens.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.menu.MenuWindow;
+import pl.agawrysiuk.display.screens.menu.MenuWindow;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

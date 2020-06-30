@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.menu;
+package pl.agawrysiuk.display.screens.menu;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -33,7 +33,7 @@ import lombok.Setter;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.game.GameWindowController;
+import pl.agawrysiuk.display.screens.game.GameWindowController;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 

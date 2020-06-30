@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.game.components;
+package pl.agawrysiuk.display.screens.game.components;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -12,7 +12,7 @@ import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.menu.MenuWindow;
+import pl.agawrysiuk.display.screens.menu.MenuWindow;
 import pl.agawrysiuk.model.Card;
 
 import java.awt.*;

@@ -1,5 +1,4 @@
-package pl.agawrysiuk.game.triggers;
-
+package pl.agawrysiuk.game.triggers.types;
 
 /**
  * The game checks the Triggers and when it happens, calls the card's trigger method.
@@ -7,5 +6,5 @@ package pl.agawrysiuk.game.triggers;
  * The game looks for the specific class in Factory and calls it's method that needs to happen.
  */
 
-public enum Action {
+public enum Trigger {
 }
