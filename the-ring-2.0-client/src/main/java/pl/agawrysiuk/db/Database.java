@@ -2,7 +2,6 @@ package pl.agawrysiuk.db;
 
 import javafx.scene.image.Image;
 import lombok.Getter;
-import lombok.Setter;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 
@@ -16,11 +15,10 @@ import java.util.TreeMap;
 @Getter
 public final class Database  {
     private static final Database instance = new Database();
-    private static final List<Card> databaseCards = new ArrayList<>();
-    private static final Map<String, Deck> databaseDecks = new TreeMap<>();
-    private static final Image backImage = new Image("file:database"+ File.separator +"cards"+ File.separator +"cardback.jpg");
-    @Setter
-    private static final List<String> settings = new ArrayList<>();
+    private final List<Card> databaseCards = new ArrayList<>();
+    private final Map<String, Deck> decks = new TreeMap<>();
+    private final Image backImage = new Image("file:database"+ File.separator +"cards"+ File.separator +"cardback.jpg");
+    private final List<String> settings = new ArrayList<>();
 
     private Database() {
     }
@@ -90,7 +88,7 @@ public final class Database  {
                     }
 
                     if(isGood) {
-                        databaseDecks.put(loadedDeck.getDeckName(), loadedDeck);
+                        decks.put(loadedDeck.getDeckName(), loadedDeck);
                         System.out.println("Deck " + loadedDeck.getDeckName() + " successfully loaded");
                     } else {
                         System.out.println("Couldn't load the deck " + loadedDeck.getDeckName());
@@ -147,7 +145,7 @@ public final class Database  {
                 (new BufferedOutputStream
                         (new FileOutputStream
                                 ("database" + File.separator +"decks.dat")))) {
-            for(Map.Entry<String, Deck> deckEntry : databaseDecks.entrySet()) {
+            for(Map.Entry<String, Deck> deckEntry : decks.entrySet()) {
                 deckFile.writeUTF(deckEntry.getValue().getDeckName());
                 deckFile.writeUTF(deckEntry.getValue().getDeckInfo());
                 deckFile.writeUTF(deckEntry.getValue().getCreationDate().toString());
@@ -236,7 +234,7 @@ public final class Database  {
         }
 
         if (numCards == numCardsAdded && numCards!=0) {
-            if(!forPlaying) databaseDecks.put(deck.getDeckName(), deck);
+            if(!forPlaying) decks.put(deck.getDeckName(), deck);
             System.out.println("Deck " + deck.getDeckName() + " successfully loaded");
         } else {
             System.out.println("Couldn't load the deck " + deck.getDeckName());
@@ -267,5 +265,9 @@ public final class Database  {
             }
         }
         return null;
+    }
+
+    public void setSettings(int number, String string) {
+        this.settings.add(number, string);
     }
 }
