@@ -3,12 +3,16 @@ package pl.agawrysiuk.player;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import pl.agawrysiuk.connection.MessageCode;
+import pl.agawrysiuk.database.DatabaseUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URISyntaxException;
+import java.rmi.server.ExportException;
 import java.util.List;
 
 @Slf4j
@@ -40,6 +44,7 @@ public class Player extends Thread {
     public void run() {
         try {
             playerName = input.readLine();
+            sendDatabaseCards();
             //todo send data to the client
 
             waitForReady();
@@ -55,6 +60,16 @@ public class Player extends Thread {
             } catch (IOException e) {
                 log.info("Couldn't close the connection.");
             }
+        }
+    }
+
+    private void sendDatabaseCards() {
+        try {
+            output.println(DatabaseUtils.getDatabaseCards());
+        } catch (Exception e) {
+            log.warn("Can't connect to the database!");
+            e.printStackTrace();
+            output.println(MessageCode.DATABASE_ISSUE);
         }
     }
 

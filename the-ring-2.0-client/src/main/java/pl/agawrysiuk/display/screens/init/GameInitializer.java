@@ -43,6 +43,7 @@ public class GameInitializer implements DisplayWindow {
         showConnectionDialogAndWaitForInput();
         saveSettings();
         this.messenger = connectToServer();
+        downloadCards();
         moveToMainWindow();
     }
 
@@ -97,6 +98,10 @@ public class GameInitializer implements DisplayWindow {
 
         // never reaches
         return null;
+    }
+
+    private void downloadCards() {
+
     }
 
     private void moveToMainWindow() {

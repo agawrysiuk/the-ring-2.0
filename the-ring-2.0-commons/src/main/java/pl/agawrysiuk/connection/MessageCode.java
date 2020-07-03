@@ -10,6 +10,8 @@ import lombok.Getter;
 public enum MessageCode {
     OK,
     CHECK_CARDS,
-    MISSING
+    MISSING,
+
+    DATABASE_ISSUE;
 }
 
