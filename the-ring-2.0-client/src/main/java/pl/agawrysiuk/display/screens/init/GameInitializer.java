@@ -15,6 +15,7 @@ import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.creators.DialogCreator;
 import pl.agawrysiuk.display.creators.GridPaneCreator;
 import pl.agawrysiuk.display.creators.TextFieldCreator;
+import pl.agawrysiuk.display.screens.loading.LoadingWindow;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
 
 import java.io.BufferedReader;
@@ -44,8 +45,7 @@ public class GameInitializer implements DisplayWindow {
         showConnectionDialogAndWaitForInput();
         saveSettings();
         this.messenger = connectToServer();
-        downloadCards();
-        moveToMainWindow();
+        moveToLoadingWindow();
     }
 
     private void loadSettings() {
@@ -101,27 +101,9 @@ public class GameInitializer implements DisplayWindow {
         return null;
     }
 
-    private void downloadCards() {
-        try {
-            String jsonCards = messenger.getClientReceiver().readLine();
-            if(jsonCards.equals(MessageCode.DATABASE_ISSUE.toString())) {
-                throw new IOException();
-            }
-            //todo map cards and check them with existing
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText(null);
-            alert.setContentText("Can't connect to the database. The program will exit now.");
-            alert.showAndWait();
-            System.exit(1);
-            e.printStackTrace();
-        }
-    }
-
-    private void moveToMainWindow() {
+    private void moveToLoadingWindow() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new MenuWindow(messenger));
+        context.setNewWindow(new LoadingWindow(messenger));
         context.showNewWindow(this);
     }
 }
