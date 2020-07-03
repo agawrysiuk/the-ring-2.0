@@ -12,3 +12,4 @@ public enum MessageCode {
     CHECK_CARDS,
     MISSING
 }
+
