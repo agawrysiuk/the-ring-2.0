@@ -1,7 +1,14 @@
 package pl.agawrysiuk.display.screens.loading;
 
+import javafx.concurrent.Task;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +23,7 @@ import java.io.IOException;
 public class LoadingWindow implements DisplayWindow {
 
     @Getter
-    private Pane mainPane = new Pane();
+    private Pane mainPane = new BorderPane();
 
     @Getter
     @Setter
@@ -30,8 +37,37 @@ public class LoadingWindow implements DisplayWindow {
 
     @Override
     public void initialize() {
-        downloadCards();
-        moveToMainWindow();
+        createPane();
+        checkDatabaseAndMoveToMenu();
+    }
+
+    private void createPane() {
+        ((BorderPane) mainPane).setCenter(createLoadingScreen());
+        ((BorderPane) mainPane).setBottom(createLoadingBar());
+    }
+
+    private Node createLoadingScreen() {
+        //todo move it to settings or pictures
+        Image image = new Image("file:mtg-logo.jpg");
+        return new ImageView(image);
+    }
+
+    private Node createLoadingBar() {
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setPrefWidth(Screen.getPrimary().getVisualBounds().getWidth());
+        return progressBar;
+    }
+
+    private void checkDatabaseAndMoveToMenu() {
+        Task<Void> clientDatabaseCheckTask = new Task<>() {
+            @Override
+            protected Void call() {
+                downloadCards();
+                return null;
+            }
+        };
+        clientDatabaseCheckTask.setOnSucceeded((event)-> moveToMainWindow());
+        new Thread(clientDatabaseCheckTask).start();
     }
 
     private void downloadCards() {
