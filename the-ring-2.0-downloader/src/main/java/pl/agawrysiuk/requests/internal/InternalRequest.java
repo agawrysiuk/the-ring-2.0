@@ -2,7 +2,7 @@ package pl.agawrysiuk.requests.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
-import pl.agawrysiuk.requests.Request;
+import pl.agawrysiuk.request.Request;
 
 import java.io.IOException;
 import java.net.URI;

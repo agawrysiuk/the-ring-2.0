@@ -7,6 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import pl.agawrysiuk.connection.MessageCode;
 import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
@@ -101,7 +102,21 @@ public class GameInitializer implements DisplayWindow {
     }
 
     private void downloadCards() {
-
+        try {
+            String jsonCards = messenger.getClientReceiver().readLine();
+            if(jsonCards.equals(MessageCode.DATABASE_ISSUE.toString())) {
+                throw new IOException();
+            }
+            //todo map cards and check them with existing
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText(null);
+            alert.setContentText("Can't connect to the database. The program will exit now.");
+            alert.showAndWait();
+            System.exit(1);
+            e.printStackTrace();
+        }
     }
 
     private void moveToMainWindow() {
