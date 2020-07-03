@@ -30,6 +30,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
+import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
@@ -77,11 +78,13 @@ public class MenuWindow implements DisplayWindow {
     private Comparator<Deck> comparatorByDate = (o1, o2) -> o2.getCreationDate().compareTo(o1.getCreationDate());
     private Comparator<Deck> comparatorByName = Comparator.comparing(Deck::getDeckName);
     private Comparator<Deck> activeComparator;
-    private Socket socket;
-    private PrintWriter clientSender;
-    private BufferedReader clientReceiver;
+    private Messenger messenger;
     private String playersName;
     private String host;
+
+    public MenuWindow(Messenger messenger) {
+        this.messenger = messenger;
+    }
 
     public void initialize() {
         mainPane = new BorderPane();
@@ -159,9 +162,6 @@ public class MenuWindow implements DisplayWindow {
         for (Deck deck : deckList) {
             placeDeckOnScreen(deck);
         }
-
-        //setting up connection
-        connectToServer();
 
         //setting up visibility of the buttons
         playButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
@@ -324,17 +324,17 @@ public class MenuWindow implements DisplayWindow {
                     protected Void call() throws Exception {
                         boolean oppIsFound = false;
                         while (!oppIsFound) {
-                            String incoming = clientReceiver.readLine();
+                            String incoming = messenger.getClientReceiver().readLine();
                             System.out.println(incoming);
                             if (incoming.contains("OPPREADY")) { //here, we have our opponent
                                 oppIsFound = true;
-                                clientSender.println("DECK_TIME");
+                                messenger.getClientSender().println("DECK_TIME");
                                 Platform.runLater(() -> { //here, we are preparing to launch the game
                                     alert.setContentText("Opponent found!\nSending and receiving decks...");
-                                    clientSender.println("DECK:" + activeDeck.getDeckInfo().replaceAll("\\R", ";"));
+                                    messenger.getClientSender().println("DECK:" + activeDeck.getDeckInfo().replaceAll("\\R", ";"));
                                     String deckInfoOpp = "";
                                     try {
-                                        deckInfoOpp = clientReceiver.readLine().replaceAll(";", System.lineSeparator()).replaceAll("DECK:", "");
+                                        deckInfoOpp = messenger.getClientReceiver().readLine().replaceAll(";", System.lineSeparator()).replaceAll("DECK:", "");
                                     } catch (IOException e) {
                                         e.printStackTrace(); //to fix
                                     }
@@ -357,11 +357,10 @@ public class MenuWindow implements DisplayWindow {
         if (result.isPresent() && result.get() == ButtonType.CANCEL) {
             gettingReadyThread.interrupt();
             try {
-                socket.close();
+                messenger.getSocket().close();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            connectToServer();
             return;
         }
 //            GridPane p = new GridPane(); -> to remember: just use this for
@@ -375,28 +374,7 @@ public class MenuWindow implements DisplayWindow {
         Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
         Database.getInstance().loadDeckFromTXT(yourDeck,true);
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket));
+        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, messenger));
         context.showNewWindow(this);
-    }
-
-    private void connectToServer() {
-        try {
-            socket = new Socket(host, 5626);
-            clientSender = new PrintWriter(socket.getOutputStream(), true);
-            clientSender.println(playersName);
-            clientReceiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("Client initialized.");
-        } catch (ConnectException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText(null);
-            alert.setContentText("Can't connect to the server. The program will exit now.");
-            alert.showAndWait();
-            System.exit(1);
-        } catch (IOException e) {
-            System.out.println("Can't connect to the database");
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 }

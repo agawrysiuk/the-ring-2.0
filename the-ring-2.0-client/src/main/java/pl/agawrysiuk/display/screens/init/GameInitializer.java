@@ -1,15 +1,13 @@
 package pl.agawrysiuk.display.screens.init;
 
 import javafx.application.Platform;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
@@ -18,6 +16,12 @@ import pl.agawrysiuk.display.creators.GridPaneCreator;
 import pl.agawrysiuk.display.creators.TextFieldCreator;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.Socket;
 import java.util.Optional;
 
 public class GameInitializer implements DisplayWindow {
@@ -27,16 +31,18 @@ public class GameInitializer implements DisplayWindow {
 
     @Getter
     private Pane mainPane = new Pane();
-    ;
 
     @Getter
     @Setter
     private Stage primaryStage;
 
+    private Messenger messenger;
+
     public void initialize() {
         loadSettings();
         showConnectionDialogAndWaitForInput();
         saveSettings();
+        this.messenger = connectToServer();
         moveToMainWindow();
     }
 
@@ -68,9 +74,34 @@ public class GameInitializer implements DisplayWindow {
         Database.getInstance().setSettings(1, host);
     }
 
+    private Messenger connectToServer() {
+        try {
+            Socket socket = new Socket(host, 5626);
+            PrintWriter clientSender = new PrintWriter(socket.getOutputStream(), true);
+            clientSender.println(playersName);
+            BufferedReader clientReceiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            System.out.println("Client initialized.");
+            return new Messenger(socket, clientSender, clientReceiver);
+        } catch (ConnectException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText(null);
+            alert.setContentText("Can't connect to the server. The program will exit now.");
+            alert.showAndWait();
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Can't connect to the database");
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        // never reaches
+        return null;
+    }
+
     private void moveToMainWindow() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new MenuWindow());
+        context.setNewWindow(new MenuWindow(messenger));
         context.showNewWindow(this);
     }
 }

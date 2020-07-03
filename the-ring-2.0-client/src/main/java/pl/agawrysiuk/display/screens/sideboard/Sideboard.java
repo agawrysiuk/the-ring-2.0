@@ -14,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
@@ -36,11 +37,10 @@ public class Sideboard implements DisplayWindow {
     @Setter
     private Stage primaryStage;
 
+    private Messenger messenger;
+
     @Getter
     private Pane mainPane;
-    private Socket socket;
-    private PrintWriter clientSender;
-    private BufferedReader clientReceiver;
     private Deck yourDeck;
     private Deck opponentDeck;
     private StackPane mainStackPane = new StackPane();
@@ -56,11 +56,9 @@ public class Sideboard implements DisplayWindow {
     private boolean youReady = false;
     private boolean oppReady = false;
 
-    public Sideboard(Deck deck, PrintWriter clientSender, BufferedReader clientReceiver, Socket socket) {
+    public Sideboard(Deck deck, Messenger messenger) {
         this.yourDeck = deck;
-        this.socket = socket;
-        this.clientSender = clientSender;
-        this.clientReceiver = clientReceiver;
+        this.messenger = messenger;
         handBorder.setOffsetY(0);
         handBorder.setOffsetX(0);
         handBorder.setRadius(200 * MenuWindow.X_WINDOW);
@@ -88,7 +86,7 @@ public class Sideboard implements DisplayWindow {
         quitBtn.setScaleX(2);
         quitBtn.setScaleY(2);
         quitBtn.setOnAction(actionEvent -> {
-            clientSender.println("EXIT:");
+            messenger.getClientSender().println("EXIT:");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("You have quit");
             alert.setHeaderText(null);
@@ -102,7 +100,7 @@ public class Sideboard implements DisplayWindow {
 //        sendBtn.setScaleX(2);
 //        sendBtn.setScaleY(2);
 //        sendBtn.setOnAction(actionEvent -> {
-//            clientSender.println("OPPREADY:" + mainList.size() + ":" + sideList.size());
+//            messenger.getClientSender().println("OPPREADY:" + mainList.size() + ":" + sideList.size());
 //            playAgainBtn.setDisable(true);
 //            this.youReady = true;
 //            if (this.oppReady) playAgainBtn.setDisable(false);
@@ -111,7 +109,7 @@ public class Sideboard implements DisplayWindow {
         playAgainBtn.setScaleX(2);
         playAgainBtn.setScaleY(2);
         playAgainBtn.setOnAction(actionEvent -> {
-            clientSender.println("OPPREADY:" + mainList.size() + ":" + sideList.size());
+            messenger.getClientSender().println("OPPREADY:" + mainList.size() + ":" + sideList.size());
             playAgainBtn.setDisable(true);
             this.youReady = true;
             if (this.oppReady) startTheGameAgain();
@@ -123,7 +121,7 @@ public class Sideboard implements DisplayWindow {
             @Override
             protected Object call() throws Exception {
                 try {
-                    String message = clientReceiver.readLine();
+                    String message = messenger.getClientReceiver().readLine();
                     System.out.println(LocalTime.now() + ", received message: " + message);
                     updateMessage(message);
                     //else if() ... here you listen to everything that your opponent does
@@ -245,9 +243,9 @@ public class Sideboard implements DisplayWindow {
 
     private void quitTheGame() {
         try {
-            socket.close();
+            messenger.getSocket().close();
             DisplayContext context = new DisplayContext();
-            context.setNewWindow(new MenuWindow());
+            context.setNewWindow(new MenuWindow(messenger));
             context.showNewWindow(this);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -257,7 +255,7 @@ public class Sideboard implements DisplayWindow {
 
     private void startTheGameAgain() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, clientSender, clientReceiver, socket));
+        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, messenger));
         context.showNewWindow(this);
     }
 }
