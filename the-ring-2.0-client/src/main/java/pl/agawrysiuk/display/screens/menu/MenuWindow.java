@@ -1,29 +1,18 @@
 package pl.agawrysiuk.display.screens.menu;
 
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,14 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.screens.game.GameWindowController;
+import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
-import pl.agawrysiuk.model.Deck;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,14 +39,11 @@ public class MenuWindow implements DisplayWindow {
     @Setter
     private Stage primaryStage;
 
-    private List<Deck> deckList;
-    private Deck activeDeck;
-    private Deck opponentDeck;
+    private List<DeckSimpleDto> deckList;
+    private DeckSimpleDto activeDeck;
+    private DeckSimpleDto opponentDeck;
     private GridPane deckView;
-    private ImageView highlightedDeck;
-    private javafx.scene.control.TextArea highlightedCards;
     private Text highlightedName;
-    private Text highlightedType;
     private Button playButton;
     private Button showVisualButton;
     @Getter
@@ -70,7 +52,7 @@ public class MenuWindow implements DisplayWindow {
     private int rowDrawIndex = 0;
     private int marginStackPane = 25;
     private int rowCards = 25;
-    private Comparator<Deck> comparatorByName = Comparator.comparing(Deck::getDeckName);
+    private Comparator<DeckSimpleDto> comparatorByName = Comparator.comparing(DeckSimpleDto::getTitle);
     private Messenger messenger;
 
     public MenuWindow(Messenger messenger) {
@@ -81,7 +63,7 @@ public class MenuWindow implements DisplayWindow {
         mainPane = new BorderPane();
 
         deckList = new ArrayList<>();
-        deckList.addAll(Database.getInstance().getDecks().values());
+        deckList.addAll(Database.getInstance().getNewDecks().values());
         deckList.sort(comparatorByName);
 
         //defining center
@@ -96,7 +78,7 @@ public class MenuWindow implements DisplayWindow {
         mainPane.setCenter(scrollPane);
         mainPane.getCenter().setManaged(false); //center will not move other space
 
-        for (Deck deck : deckList) {
+        for (DeckSimpleDto deck : deckList) {
             placeDeckOnScreen(deck);
         }
 
@@ -117,35 +99,13 @@ public class MenuWindow implements DisplayWindow {
         rightBox.setPadding(new Insets(25,25,25,25));
         rightBox.setSpacing(10);
 
-        VBox ivBox = new VBox();
-        ivBox.prefHeight(130);
-        ivBox.setAlignment(Pos.CENTER);
-        highlightedDeck = new ImageView();
-        ivBox.getChildren().add(highlightedDeck);
-        VBox.setMargin(ivBox,new Insets(0,-10,0,0));
-        rightBox.getChildren().add(ivBox);
-
         highlightedName = new Text();
         highlightedName.setStyle("-fx-font-weight: bold");
         rightBox.getChildren().add(highlightedName);
 
-        TextFlow textFlow = new TextFlow();
-        textFlow.prefWidth(300);
-        textFlow.setStyle("-fx-text-alignment: center");
-        textFlow.getChildren().add(new Text("Type: "));
-        highlightedType = new Text();
-        highlightedType.setStyle("-fx-font-weight: bold");
-        textFlow.getChildren().add(highlightedType);
-        rightBox.getChildren().add(textFlow);
-
-        showVisualButton = new Button("Show visual");
+        showVisualButton = new Button("Edit deck");
         showVisualButton.setOnAction(actionEvent -> lookUpDeck());
         rightBox.getChildren().add(showVisualButton);
-
-        highlightedCards = new TextArea();
-        highlightedCards.setWrapText(true);
-        rightBox.getChildren().add(highlightedCards);
-        VBox.setMargin(highlightedCards, new Insets(0, 30, 0, 0));
 
         playButton = new Button("PLAY");
         playButton.prefWidth(125);
@@ -155,105 +115,30 @@ public class MenuWindow implements DisplayWindow {
         rightBox.getChildren().add(playButton);
 
         mainPane.setRight(rightBox);
-
-        highlightedCards.setDisable(true);
-        highlightedCards.setPrefHeight(500*X_WINDOW);
         highlightedName.setFont(new Font(20));
-
-        //setting up visibility of the buttons
-        playButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
-        showVisualButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
     }
 
-    public void placeDeckOnScreen(Deck item) {
+    public void placeDeckOnScreen(DeckSimpleDto item) {
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
         Text txt1 = new Text();
-        txt1.setText(item.getDeckName());
-
-        BufferedImage mainImage = createDeckPreviewImage(item);
-        ImageView iv1 = new ImageView();
-        iv1.setImage(SwingFXUtils.toFXImage(mainImage, null));
+        txt1.setText(item.getTitle());
         GridPane.setRowIndex(vBox, rowDrawIndex);
         GridPane.setColumnIndex(vBox, columnDrawIndex);
-        vBox.getChildren().addAll(iv1, txt1);
+        vBox.getChildren().addAll(txt1);
         deckView.getChildren().add(vBox);
 
         //what after the click
-        iv1.setOnMouseClicked(e -> {
+        txt1.setOnMouseClicked(e -> {
             activeDeck = item;
-            highlightedDeck.setImage(SwingFXUtils.toFXImage(mainImage, null));
-            highlightedName.setText(item.getDeckName());
-            highlightedType.setText(item.getDeckType());
-            highlightedCards.setText(item.getDeckInfo());
-            iv1.requestFocus();
-        });
-
-        iv1.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
-        {
-            if (newValue) {
-                iv1.setEffect(new DropShadow(20, Color.DARKRED));
-            } else {
-                iv1.setEffect(null);
-            }
+            highlightedName.setText(item.getTitle());
         });
 
         columnDrawIndex++;
-
-    }
-
-    private BufferedImage createDeckPreviewImage(Deck deck) { //create deck preview image
-        javafx.scene.image.Image tempImage;
-        if (deck.getPreviewImage().equals("")) { //checking if deck has an image, if not, it's random
-            int imageNumber = (int) (Math.random() * deck.getCardsInDeck().size());
-            tempImage = deck.getCardsInDeck().get(imageNumber).getCardImg();
-        } else {
-            tempImage = Database.getInstance().getCard(deck.getPreviewImage()).getCardImg();
-
-        }
-        BufferedImage dimg = SwingFXUtils.fromFXImage(tempImage, null);
-        dimg = dimg.getSubimage(40, 80, 400, 280);
-
-        double ratio = 2.5;
-
-        int newW = (int) (dimg.getWidth() / ratio);
-        int newH = (int) (dimg.getHeight() / ratio);
-        Image tmp = dimg.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-        dimg = new BufferedImage(newW, newH, dimg.getType());
-        Graphics2D g2d = dimg.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-        return dimg;
     }
 
     public void lookUpDeck() {
-        this.rowCards = 25;
-        this.marginStackPane = 25;
-        StackPane stackPane = new StackPane();
-
-        stackPane.setAlignment(Pos.TOP_LEFT);
-
-        Stage secondStage = new Stage();
-        secondStage.setTitle(activeDeck.getDeckName());
-        secondStage.setScene(new Scene(stackPane, 1600, 900));
-
-        List<Card> sortedList = activeDeck.getCardsInDeck();
-        sortedList.sort(Comparator.comparingInt(Card::getTypeInt));
-
-        for (Card activeCard : sortedList) { //printing mainboard
-            printingCard(stackPane, activeCard, marginStackPane, rowCards);
-        }
-
-        this.rowCards += 260;
-        this.marginStackPane = 25;
-
-        for (Card activeCard : activeDeck.getCardsInSideboard()) { //printing sideboard
-            printingCard(stackPane, activeCard, marginStackPane, rowCards);
-        }
-
-        secondStage.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        secondStage.initOwner(mainPane.getScene().getWindow());
-        secondStage.show();
+        //todo change it to new screen
     }
 
     private void printingCard(StackPane stackPane, Card activeCard, int marginStackPane, int rowCards) {
@@ -310,25 +195,25 @@ public class MenuWindow implements DisplayWindow {
                             String incoming = messenger.getClientReceiver().readLine();
                             System.out.println(incoming);
                             if (incoming.contains("OPPREADY")) { //here, we have our opponent
+                                ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setDisable(true);
                                 oppIsFound = true;
                                 messenger.getClientSender().println("DECK_TIME");
                                 Platform.runLater(() -> { //here, we are preparing to launch the game
                                     alert.setContentText("Opponent found!\nSending and receiving decks...");
-                                    messenger.getClientSender().println("DECK:" + activeDeck.getDeckInfo().replaceAll("\\R", ";"));
+                                    messenger.getClientSender().println("DECK:" + activeDeck.getTitle());
+
+                                    //todo change the server side to send deck title!
                                     String deckInfoOpp = "";
                                     try {
-                                        deckInfoOpp = messenger.getClientReceiver().readLine().replaceAll(";", System.lineSeparator()).replaceAll("DECK:", "");
+                                        deckInfoOpp = messenger.getClientReceiver().readLine();
                                     } catch (IOException e) {
                                         e.printStackTrace(); //to fix
                                     }
-//                                System.out.println(deckInfoOpp);
-                                    Deck oppDeck = new Deck("Opp", deckInfoOpp);
+                                    DeckSimpleDto oppDeck = Database.getInstance().getNewDecks().get(opponentDeck);
                                     alert.setContentText("Opponent found!\nLoading opponent's deck...");
-                                    System.out.println("Loading deck: " + Database.getInstance().loadDeckFromTXT(oppDeck,true));
+                                    //todo load opponents deck here
                                     opponentDeck = oppDeck;
-                                    alert.setContentText("Opponent found!\nDeck loaded! Hit \"Play\" to enter the battlefield!");
-                                    alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-                                    alert.getDialogPane().lookupButton(ButtonType.CANCEL).setDisable(true);
+                                    alert.hide();
                                 });
                             }
                         }
@@ -346,6 +231,16 @@ public class MenuWindow implements DisplayWindow {
             }
             return;
         }
+
+        //todo commented until fixed this window
+//        Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
+//        Database.getInstance().loadDeckFromTXT(yourDeck,true);
+//        DisplayContext context = new DisplayContext();
+//        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, messenger));
+//        context.showNewWindow(this);
+    }
+
+//    private void transitionWindow() {
 //            GridPane p = new GridPane(); -> to remember: just use this for
 //            https://stackoverflow.com/questions/43761138/how-to-properly-switch-scenes-change-root-node-of-scene-in-javafx-without-fxml
 
@@ -353,11 +248,5 @@ public class MenuWindow implements DisplayWindow {
 //            ft.setFromValue(0);
 //            ft.setToValue(1);
 //            ft.play();
-
-        Deck yourDeck = new Deck("You",activeDeck.getDeckInfo());
-        Database.getInstance().loadDeckFromTXT(yourDeck,true);
-        DisplayContext context = new DisplayContext();
-        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, messenger));
-        context.showNewWindow(this);
-    }
+//    }
 }
