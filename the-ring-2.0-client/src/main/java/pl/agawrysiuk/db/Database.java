@@ -5,6 +5,7 @@ import lombok.Getter;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
+import pl.agawrysiuk.util.ApplicationUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -14,11 +15,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Getter
-public final class Database  {
+public final class Database {
     private static final Database instance = new Database();
     private final List<Card> databaseCards = new ArrayList<>();
+    private final List<CardDto> newDatabaseCards = new ArrayList<>();
     private final Map<String, Deck> decks = new TreeMap<>();
-    private final Image backImage = new Image("file:database"+ File.separator +"cards"+ File.separator +"cardback.jpg");
+    private final Image backImage = new Image("file:database" + File.separator + "cards" + File.separator + "cardback.jpg");
     private final List<String> settings = new ArrayList<>();
 
     private Database() {
@@ -29,33 +31,19 @@ public final class Database  {
     }
 
     public boolean loadDatabase() {
-        // dont move to static box! if it fails to load, controller will shut down the game or do something else
-        //loading cards
-        try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database"+ File.separator +"cards.dat")))) {
-            boolean eof = false;
-            while (!eof) {
-                try {
-                    String cardTitle = cardFile.readUTF();
-                    String cardJson = cardFile.readUTF();
-                    Card card = new Card(cardTitle,cardJson);
-                    databaseCards.add(card);
-                } catch (EOFException e) {
-                    eof = true;
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Cards file not found");
-            e.printStackTrace();
-            System.out.println("Creating new file cards.dat");
-            new File("database" + File.separator + "cards.dat");
+        //todo CHANGE LOADING!
+        try {
+            loadCards();
+            loadDecks();
+            loadSettings();
         } catch (IOException e) {
-            System.out.println("Issue with connecting to the database");
-            e.printStackTrace();
+            ApplicationUtils.closeApplication(1,"Problem occured while saving your database to file.");
         }
+        return true;
+    }
 
-        //loading decks
-        try (ObjectInputStream deckFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database"+ File.separator +"decks.dat")))) {
+    private void loadDecks() throws IOException {
+        try (ObjectInputStream deckFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "decks.dat")))) {
             boolean eof = false;
             while (!eof) {
                 try {
@@ -64,31 +52,31 @@ public final class Database  {
                     LocalDateTime deckCreationTime = LocalDateTime.parse(deckFile.readUTF());
                     String previewImage = deckFile.readUTF();
                     String deckType = deckFile.readUTF();
-                    Deck loadedDeck = new Deck(deckName,deckInfo,deckCreationTime,previewImage,deckType);
+                    Deck loadedDeck = new Deck(deckName, deckInfo, deckCreationTime, previewImage, deckType);
 
                     boolean isGood = true;
 
                     int mainSize = deckFile.readInt();
-                    for (int i = 0;i<mainSize;i++) {
+                    for (int i = 0; i < mainSize; i++) {
                         Card cardMain = getCard(deckFile.readUTF());
-                        if(cardMain==null) {
+                        if (cardMain == null) {
                             isGood = false;
                         }
-                        loadedDeck.addCard(cardMain,true);
+                        loadedDeck.addCard(cardMain, true);
                     }
 
                     int sideSize = deckFile.readInt();
-                    if(sideSize>0) {
-                        for(int i = 0; i < sideSize; i++) {
+                    if (sideSize > 0) {
+                        for (int i = 0; i < sideSize; i++) {
                             Card cardSide = getCard(deckFile.readUTF());
-                            if(cardSide==null) {
+                            if (cardSide == null) {
                                 isGood = false;
                             }
-                            loadedDeck.addCard(cardSide,false);
+                            loadedDeck.addCard(cardSide, false);
                         }
                     }
 
-                    if(isGood) {
+                    if (isGood) {
                         decks.put(loadedDeck.getDeckName(), loadedDeck);
                         System.out.println("Deck " + loadedDeck.getDeckName() + " successfully loaded");
                     } else {
@@ -100,16 +88,42 @@ public final class Database  {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Decks file not found");
-            e.printStackTrace();
-            System.out.println("Creating new file decks.dat");
             new File("database" + File.separator + "decks.dat");
+            System.out.println("Created new file decks.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
+            throw new IOException();
         }
+    }
 
-        //loading settings
-        try (ObjectInputStream settingsFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database"+ File.separator +"settings.dat")))) {
+    private void loadCards() throws IOException {
+        try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "cards.dat")))) {
+            boolean eof = false;
+            while (!eof) {
+                try {
+                    String cardTitle = cardFile.readUTF();
+                    String cardJson = cardFile.readUTF();
+                    CardDto card = CardDto.builder().title(cardTitle).json(cardJson).build();
+                    newDatabaseCards.add(card);
+                } catch (EOFException e) {
+                    eof = true;
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Cards file not found");
+            new File("database" + File.separator + "cards.dat");
+            System.out.println("Created new file cards.dat");
+        } catch (IOException e) {
+            System.out.println("Issue with connecting to the database");
+            e.printStackTrace();
+            throw new IOException();
+        }
+    }
+
+    private void loadSettings() throws IOException {
+        try (ObjectInputStream settingsFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "settings.dat")))) {
             boolean eof = false;
             while (!eof) {
                 try {
@@ -129,24 +143,42 @@ public final class Database  {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Settings file not found");
-            e.printStackTrace();
-            System.out.println("Creating new file settings.dat");
             new File("database" + File.separator + "settings.dat");
+            System.out.println("Created new file settings.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
+            throw new IOException();
         }
-
-        return true;
     }
 
     public void saveDatabase() {
-        //decks to .dat
+        //todo CHANGE SAVING!
+        saveCards();
+        saveDecks();
+        saveSettings();
+    }
+
+    private void saveCards() {
+        try (ObjectOutputStream cardFile = new ObjectOutputStream
+                (new BufferedOutputStream
+                        (new FileOutputStream
+                                ("database" + File.separator + "cards.dat")))) {
+            for (CardDto card : newDatabaseCards) {
+                cardFile.writeUTF(card.getTitle());
+                cardFile.writeUTF(card.getJson());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDecks() {
         try (ObjectOutputStream deckFile = new ObjectOutputStream
                 (new BufferedOutputStream
                         (new FileOutputStream
-                                ("database" + File.separator +"decks.dat")))) {
-            for(Map.Entry<String, Deck> deckEntry : decks.entrySet()) {
+                                ("database" + File.separator + "decks.dat")))) {
+            for (Map.Entry<String, Deck> deckEntry : decks.entrySet()) {
                 deckFile.writeUTF(deckEntry.getValue().getDeckName());
                 deckFile.writeUTF(deckEntry.getValue().getDeckInfo());
                 deckFile.writeUTF(deckEntry.getValue().getCreationDate().toString());
@@ -155,14 +187,14 @@ public final class Database  {
 
                 int mainSize = deckEntry.getValue().getCardsInDeck().size();
                 deckFile.writeInt(mainSize);
-                for(Card card : deckEntry.getValue().getCardsInDeck()) {
+                for (Card card : deckEntry.getValue().getCardsInDeck()) {
                     deckFile.writeUTF(card.getTitle());
                 }
 
                 int sideSize = deckEntry.getValue().getCardsInSideboard().size();
                 deckFile.writeInt(sideSize);
-                if(sideSize>0) {
-                    for(Card card : deckEntry.getValue().getCardsInSideboard()) {
+                if (sideSize > 0) {
+                    for (Card card : deckEntry.getValue().getCardsInSideboard()) {
                         deckFile.writeUTF(card.getTitle());
                     }
                 }
@@ -170,25 +202,13 @@ public final class Database  {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        //cards to dat
-        try (ObjectOutputStream cardFile = new ObjectOutputStream
-                (new BufferedOutputStream
-                        (new FileOutputStream
-                                ("database" + File.separator +"cards.dat")))) {
-            for(Card card : databaseCards) {
-                cardFile.writeUTF(card.getTitle());
-                cardFile.writeUTF(card.getJson());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //settings to dat
+    private void saveSettings() {
         try (ObjectOutputStream settingsFile = new ObjectOutputStream
                 (new BufferedOutputStream
                         (new FileOutputStream
-                                ("database" + File.separator +"settings.dat")))) {
+                                ("database" + File.separator + "settings.dat")))) {
             settingsFile.writeUTF(settings.get(0)); //name
             settingsFile.writeUTF(settings.get(1)); //IP
             settingsFile.writeUTF(settings.get(2)); //comparator
@@ -234,8 +254,8 @@ public final class Database  {
             }
         }
 
-        if (numCards == numCardsAdded && numCards!=0) {
-            if(!forPlaying) decks.put(deck.getDeckName(), deck);
+        if (numCards == numCardsAdded && numCards != 0) {
+            if (!forPlaying) decks.put(deck.getDeckName(), deck);
             System.out.println("Deck " + deck.getDeckName() + " successfully loaded");
         } else {
             System.out.println("Couldn't load the deck " + deck.getDeckName());
@@ -245,12 +265,12 @@ public final class Database  {
     }
 
     public Card getCard(String cardTitle) { //geting a reference to the card in databaseCards
-        for(Card currentCard : databaseCards) {
-            if(currentCard.getTitle().equals(cardTitle)) {
+        for (Card currentCard : databaseCards) {
+            if (currentCard.getTitle().equals(cardTitle)) {
                 return currentCard;
             } else if (cardTitle.contains(" // ")) { //checking for different writing formats
-                String newString = cardTitle.replace(" // ","/");
-                if(currentCard.getTitle().equals(newString)) {
+                String newString = cardTitle.replace(" // ", "/");
+                if (currentCard.getTitle().equals(newString)) {
                     return currentCard;
                 }
             } else if (cardTitle.contains(" / ")) { //checking for different writing formats
@@ -260,7 +280,7 @@ public final class Database  {
                 }
             } else if (cardTitle.contains(" // ")) {
                 String newString = cardTitle.split(" // ")[0];
-                if(currentCard.getTitle().equals(newString)) {
+                if (currentCard.getTitle().equals(newString)) {
                     return currentCard;
                 }
             }
@@ -273,6 +293,6 @@ public final class Database  {
     }
 
     public void addCards(List<CardDto> missingCards) {
-        //todo cards saving
+        this.newDatabaseCards.addAll(missingCards);
     }
 }
