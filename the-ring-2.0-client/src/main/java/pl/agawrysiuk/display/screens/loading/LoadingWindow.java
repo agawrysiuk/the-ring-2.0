@@ -1,5 +1,7 @@
 package pl.agawrysiuk.display.screens.loading;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.control.ProgressBar;
@@ -13,12 +15,19 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.connection.MessageCode;
 import pl.agawrysiuk.connection.Messenger;
+import pl.agawrysiuk.db.Database;
+import pl.agawrysiuk.db.DatabaseWatcher;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.util.ApplicationUtils;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LoadingWindow implements DisplayWindow {
 
@@ -62,25 +71,50 @@ public class LoadingWindow implements DisplayWindow {
         Task<Void> clientDatabaseCheckTask = new Task<>() {
             @Override
             protected Void call() {
+                loadDatabase();
                 checkClientCardsAndDecks();
                 return null;
             }
         };
-        clientDatabaseCheckTask.setOnSucceeded((event)-> moveToMainWindow());
+        clientDatabaseCheckTask.setOnSucceeded((event) -> moveToMainWindow());
         new Thread(clientDatabaseCheckTask).start();
+    }
+
+    private void loadDatabase() {
+        Database.getInstance().loadDatabase();
     }
 
     private void checkClientCardsAndDecks() {
         try {
-            String jsonDecks = messenger.getClientReceiver().readLine();
-            if(jsonDecks.equals(MessageCode.DATABASE_ISSUE.toString())) {
-                throw new IOException();
+            List<DeckSimpleDto> simpleDecks = downloadDecks();
+            DatabaseWatcher watcher = new DatabaseWatcher(Database.getInstance());
+            List<String> missing = watcher.cardsPresent(getCardTitles(simpleDecks));
+            if(missing.size() > 0) {
+                //todo cards are missing, download
+            } else {
+                //todo cards are not missing, check decks and update if needed
             }
-            //todo map cards and check them with existing
         } catch (IOException e) {
             e.printStackTrace();
-            ApplicationUtils.closeApplication(1,"Can't connect to the database.");
+            ApplicationUtils.closeApplication(1, "Can't connect to the database.");
         }
+    }
+
+    private List<DeckSimpleDto> downloadDecks() throws IOException {
+        String jsonDecks = messenger.getClientReceiver().readLine();
+        if (jsonDecks.equals(MessageCode.DATABASE_ISSUE.toString())) {
+            throw new IOException();
+        }
+        return new ObjectMapper().readValue(jsonDecks, new TypeReference<>(){});
+    }
+
+    private List<String> getCardTitles(List<DeckSimpleDto> deckList) {
+        return deckList.stream()
+                .map(DeckSimpleDto::getCards)
+                .map(Map::keySet)
+                .flatMap(Set::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void moveToMainWindow() {

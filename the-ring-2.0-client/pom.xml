@@ -42,7 +42,7 @@
             <version>12.0.2</version>
             <classifier>linux</classifier>
         </dependency>
-        <!--        EXTERNAL LIBRARIES-->
+        <!--        NON-JAVAFX LIBRARIES-->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -63,6 +63,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.1</version>
+        </dependency>
+        <!--        INTERNAL LIBRARIES-->
         <dependency>
             <groupId>pl.agawrysiuk</groupId>
             <artifactId>the-ring-2.0-commons</artifactId>
@@ -101,10 +107,13 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals><goal>shade</goal></goals>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <!-- fill this below with your class -->
                                     <mainClass>pl.agawrysiuk.App</mainClass>
                                 </transformer>
