@@ -43,13 +43,7 @@ public class Player extends Thread {
     public void run() {
         try {
             playerName = input.readLine();
-            sendDatabaseDecks();
-            String decksAnswer = input.readLine();
-            if(!decksAnswer.equals(MessageCode.OK.toString())) {
-                output.println(DatabaseUtils.getDatabaseCards(decksAnswer));
-            }
-            //todo send data to the client
-
+            updateClientIfNeeded();
             waitForReady();
             startMatch();
         } catch (SocketException e) {
@@ -64,6 +58,15 @@ public class Player extends Thread {
                 log.info("Couldn't close the connection.");
             }
         }
+    }
+
+    private void updateClientIfNeeded() throws InterruptedException, IOException, URISyntaxException {
+        sendDatabaseDecks();
+        String decksAnswer = input.readLine();
+        if(!decksAnswer.equals(MessageCode.OK.toString())) {
+            output.println(DatabaseUtils.getDatabaseCards(decksAnswer));
+        }
+
     }
 
     private void sendDatabaseDecks() {

@@ -7,7 +7,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import pl.agawrysiuk.connection.MessageCode;
 import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
@@ -16,7 +15,6 @@ import pl.agawrysiuk.display.creators.DialogCreator;
 import pl.agawrysiuk.display.creators.GridPaneCreator;
 import pl.agawrysiuk.display.creators.TextFieldCreator;
 import pl.agawrysiuk.display.screens.loading.LoadingWindow;
-import pl.agawrysiuk.display.screens.menu.MenuWindow;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,8 +78,8 @@ public class GameInitializer implements DisplayWindow {
         try {
             Socket socket = new Socket(host, 5626);
             PrintWriter clientSender = new PrintWriter(socket.getOutputStream(), true);
-            clientSender.println(playersName);
             BufferedReader clientReceiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            clientSender.println(playersName);
             System.out.println("Client initialized.");
             return new Messenger(socket, clientSender, clientReceiver);
         } catch (ConnectException e) {

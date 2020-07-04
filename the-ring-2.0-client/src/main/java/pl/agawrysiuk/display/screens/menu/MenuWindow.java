@@ -70,12 +70,8 @@ public class MenuWindow implements DisplayWindow {
     private int rowDrawIndex = 0;
     private int marginStackPane = 25;
     private int rowCards = 25;
-    private Comparator<Deck> comparatorByDate = (o1, o2) -> o2.getCreationDate().compareTo(o1.getCreationDate());
     private Comparator<Deck> comparatorByName = Comparator.comparing(Deck::getDeckName);
-    private Comparator<Deck> activeComparator;
     private Messenger messenger;
-    private String playersName;
-    private String host;
 
     public MenuWindow(Messenger messenger) {
         this.messenger = messenger;
@@ -84,12 +80,33 @@ public class MenuWindow implements DisplayWindow {
     public void initialize() {
         mainPane = new BorderPane();
 
+        deckList = new ArrayList<>();
+        deckList.addAll(Database.getInstance().getDecks().values());
+        deckList.sort(comparatorByName);
+
         //defining center
         deckView = new GridPane();
         deckView.setVgap(25);
         deckView.setHgap(25);
         deckView.setPadding(new Insets(50,50,50,50));
-        mainPane.centerProperty().set(deckView);
+
+        ScrollPane scrollPane = new ScrollPane(deckView);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        mainPane.setCenter(scrollPane);
+        mainPane.getCenter().setManaged(false); //center will not move other space
+
+        for (Deck deck : deckList) {
+            placeDeckOnScreen(deck);
+        }
+
+        //making scrollbar scroll faster
+        deckView.setOnScroll(event -> {
+            double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
+            double width = scrollPane.getContent().getBoundsInLocal().getWidth();
+            double vvalue = scrollPane.getVvalue();
+            scrollPane.setVvalue(vvalue + -deltaY / width); // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
+        });
 
         //defining right
         VBox rightBox = new VBox();
@@ -138,44 +155,16 @@ public class MenuWindow implements DisplayWindow {
         rightBox.getChildren().add(playButton);
 
         mainPane.setRight(rightBox);
-        playersName = Database.getInstance().getSettings().get(0);
-        host = Database.getInstance().getSettings().get(1);
-        if(Database.getInstance().getSettings().get(2).equals("date")) { //comparator
-            activeComparator = comparatorByDate;
-        } else {
-            activeComparator = comparatorByName;
-        }
-        deckList = new ArrayList<>();
-        deckList.addAll(Database.getInstance().getDecks().values());
-        deckList.sort(activeComparator);
 
         highlightedCards.setDisable(true);
         highlightedCards.setPrefHeight(500*X_WINDOW);
         highlightedName.setFont(new Font(20));
-        mainPane.getCenter().setManaged(false); //center will not move other space
-
-        for (Deck deck : deckList) {
-            placeDeckOnScreen(deck);
-        }
 
         //setting up visibility of the buttons
         playButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
         showVisualButton.disableProperty().bind(highlightedDeck.imageProperty().isNull());
-
-        //setting up scrollview
-        ScrollPane scrollPane = new ScrollPane(deckView);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
-        mainPane.setCenter(scrollPane);
-
-        //making scrollbar scroll faster
-        deckView.setOnScroll(event -> {
-            double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
-            double width = scrollPane.getContent().getBoundsInLocal().getWidth();
-            double vvalue = scrollPane.getVvalue();
-            scrollPane.setVvalue(vvalue + -deltaY / width); // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
-        });
     }
+
     public void placeDeckOnScreen(Deck item) {
         VBox vBox = new VBox(10);
         vBox.setAlignment(Pos.CENTER);
@@ -303,7 +292,6 @@ public class MenuWindow implements DisplayWindow {
             System.out.println("Something's wrong with your deck.");
             return;
         }
-        Database.getInstance().saveDatabase();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Waiting for the opponent");
