@@ -64,6 +64,7 @@ public class Player extends Thread {
         sendDatabaseDecks();
         String decksAnswer = input.readLine();
         if(!decksAnswer.equals(MessageCode.OK.toString())) {
+            log.info("Updating {}'s database.", playerName);
             output.println(DatabaseUtils.getDatabaseCards(decksAnswer));
         }
 
@@ -71,6 +72,7 @@ public class Player extends Thread {
 
     private void sendDatabaseDecks() {
         try {
+            log.info("Sending database decks to {}", playerName);
             output.println(DatabaseUtils.getDatabaseDecks());
         } catch (Exception e) {
             log.warn("Can't connect to the database!");

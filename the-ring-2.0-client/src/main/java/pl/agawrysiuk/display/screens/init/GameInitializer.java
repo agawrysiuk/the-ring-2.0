@@ -47,8 +47,13 @@ public class GameInitializer implements DisplayWindow {
     }
 
     private void loadSettings() {
-        playersName = Database.getInstance().getSettings().get(0);
-        host = Database.getInstance().getSettings().get(1);
+        try {
+            playersName = Database.getInstance().getSettings().get(0);
+            host = Database.getInstance().getSettings().get(1);
+        } catch (IndexOutOfBoundsException e) {
+            playersName = "";
+            host = "localhost";
+        }
     }
 
     private void showConnectionDialogAndWaitForInput() {
@@ -102,6 +107,6 @@ public class GameInitializer implements DisplayWindow {
     private void moveToLoadingWindow() {
         DisplayContext context = new DisplayContext();
         context.setNewWindow(new LoadingWindow(messenger));
-        context.showNewWindow(this);
+        context.showNewWindow(this, false);
     }
 }

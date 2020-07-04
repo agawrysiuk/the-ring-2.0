@@ -17,7 +17,8 @@ public class GridPaneCreator {
         int position = 0;
         for(int rowCount = 0; rowCount < rows; rowCount++) {
             for(int columnCount = 0; columnCount < columns; columnCount++) {
-                grid.add(nodes[position],columnCount, rowCount);
+                grid.add(nodes[position], columnCount, rowCount);
+                position++;
             }
         }
 

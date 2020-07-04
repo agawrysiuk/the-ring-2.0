@@ -16,8 +16,10 @@ public class DatabaseWatcher {
     }
 
     public List<String> cardsPresent(List<String> toCheck) {
-        toCheck.retainAll(getDatabaseCardTitles());
-        return toCheck;
+        List<String> existing = getDatabaseCardTitles();
+        return toCheck.stream()
+                .filter(card -> !existing.contains(card))
+                .collect(Collectors.toList());
     }
 
     private List<String> getDatabaseCardTitles() {

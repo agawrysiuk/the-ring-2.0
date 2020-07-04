@@ -88,10 +88,12 @@ public class LoadingWindow implements DisplayWindow {
 
     private void checkClientCardsAndDecks() {
         try {
+            System.out.println("Checking clients database.");
             List<DeckSimpleDto> simpleDecks = downloadDecks();
             watcher = new DatabaseWatcher(Database.getInstance());
             List<String> missing = watcher.cardsPresent(getCardTitles(simpleDecks));
             if(missing.size() > 0) {
+                System.out.println("Missing cards = " + missing);
                 downloadAndAddMissingCards(missing);
             } else {
                 messenger.getClientSender().println(MessageCode.OK);
@@ -122,8 +124,10 @@ public class LoadingWindow implements DisplayWindow {
     }
 
     private void downloadAndAddMissingCards(List<String> missing) throws IOException {
-        messenger.getClientSender().println(missing);
-        List<CardDto> missingCards = new ObjectMapper().readValue(messenger.getClientReceiver().readLine(), new TypeReference<>(){});
+        messenger.getClientSender().println(new ObjectMapper().writeValueAsString(missing));
+        String serverResponse = messenger.getClientReceiver().readLine();
+        List<CardDto> missingCards = new ObjectMapper().readValue(serverResponse, new TypeReference<>(){});
+        System.out.println("Adding missing cards to the database.");
         watcher.addMissingCards(missingCards);
     }
 

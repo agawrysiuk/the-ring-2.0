@@ -2,6 +2,7 @@ package pl.agawrysiuk.db;
 
 import javafx.scene.image.Image;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
@@ -55,10 +56,11 @@ public final class Database {
                     throw new IOException();
                 }
             }
+        } catch (EOFException e) {
+            System.out.println("Empty file, continue");
         } catch (FileNotFoundException e) {
             System.out.println("Decks file not found");
-            new File("database" + File.separator + "decks.dat");
-            System.out.println("Created new file decks.dat");
+            FileUtils.write(new File("database" + File.separator + "decks.dat"),"");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
@@ -80,9 +82,11 @@ public final class Database {
                 }
             }
 
+        } catch (EOFException e) {
+            System.out.println("Empty file, continue");
         } catch (FileNotFoundException e) {
             System.out.println("Cards file not found");
-            new File("database" + File.separator + "cards.dat");
+            FileUtils.write(new File("database" + File.separator + "cards.dat"),"");
             System.out.println("Created new file cards.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
@@ -110,9 +114,11 @@ public final class Database {
                     eof = true;
                 }
             }
+        } catch (EOFException e) {
+            System.out.println("Empty file, continue");
         } catch (FileNotFoundException e) {
             System.out.println("Settings file not found");
-            new File("database" + File.separator + "settings.dat");
+            FileUtils.write(new File("database" + File.separator + "settings.dat"),"");
             System.out.println("Created new file settings.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");

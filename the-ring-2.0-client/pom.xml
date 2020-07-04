@@ -68,6 +68,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.11.1</version>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.7</version>
+        </dependency>
         <!--        INTERNAL LIBRARIES-->
         <dependency>
             <groupId>pl.agawrysiuk</groupId>
