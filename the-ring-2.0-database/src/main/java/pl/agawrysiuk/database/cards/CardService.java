@@ -1,4 +1,4 @@
-package pl.agawrysiuk.database;
+package pl.agawrysiuk.database.cards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DatabaseService {
+public class CardService {
 
     private final CardRepository cardRepository;
 

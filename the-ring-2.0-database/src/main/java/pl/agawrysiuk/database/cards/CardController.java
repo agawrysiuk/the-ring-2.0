@@ -1,4 +1,4 @@
-package pl.agawrysiuk.database;
+package pl.agawrysiuk.database.cards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +11,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class DatabaseController {
+public class CardController {
 
-    private final DatabaseService service;
+    private final CardService service;
 
     @GetMapping("/cards")
     private List<Card> getCards() {

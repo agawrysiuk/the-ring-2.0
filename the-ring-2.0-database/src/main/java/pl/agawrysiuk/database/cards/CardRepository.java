@@ -1,4 +1,4 @@
-package pl.agawrysiuk.database;
+package pl.agawrysiuk.database.cards;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.agawrysiuk.model.Card;
