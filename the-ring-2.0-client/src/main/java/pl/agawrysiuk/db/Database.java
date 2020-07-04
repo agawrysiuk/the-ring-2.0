@@ -3,16 +3,13 @@ package pl.agawrysiuk.db;
 import javafx.scene.image.Image;
 import lombok.Getter;
 import pl.agawrysiuk.dto.CardDto;
+import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 import pl.agawrysiuk.util.ApplicationUtils;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Getter
 public final class Database {
@@ -20,6 +17,7 @@ public final class Database {
     private final List<Card> databaseCards = new ArrayList<>();
     private final List<CardDto> newDatabaseCards = new ArrayList<>();
     private final Map<String, Deck> decks = new TreeMap<>();
+    private final Map<String, DeckSimpleDto> newDecks = new HashMap<>();
     private final Image backImage = new Image("file:database" + File.separator + "cards" + File.separator + "cardback.jpg");
     private final List<String> settings = new ArrayList<>();
 
@@ -48,42 +46,13 @@ public final class Database {
             while (!eof) {
                 try {
                     String deckName = deckFile.readUTF();
-                    String deckInfo = deckFile.readUTF();
-                    LocalDateTime deckCreationTime = LocalDateTime.parse(deckFile.readUTF());
-                    String previewImage = deckFile.readUTF();
-                    String deckType = deckFile.readUTF();
-                    Deck loadedDeck = new Deck(deckName, deckInfo, deckCreationTime, previewImage, deckType);
-
-                    boolean isGood = true;
-
-                    int mainSize = deckFile.readInt();
-                    for (int i = 0; i < mainSize; i++) {
-                        Card cardMain = getCard(deckFile.readUTF());
-                        if (cardMain == null) {
-                            isGood = false;
-                        }
-                        loadedDeck.addCard(cardMain, true);
-                    }
-
-                    int sideSize = deckFile.readInt();
-                    if (sideSize > 0) {
-                        for (int i = 0; i < sideSize; i++) {
-                            Card cardSide = getCard(deckFile.readUTF());
-                            if (cardSide == null) {
-                                isGood = false;
-                            }
-                            loadedDeck.addCard(cardSide, false);
-                        }
-                    }
-
-                    if (isGood) {
-                        decks.put(loadedDeck.getDeckName(), loadedDeck);
-                        System.out.println("Deck " + loadedDeck.getDeckName() + " successfully loaded");
-                    } else {
-                        System.out.println("Couldn't load the deck " + loadedDeck.getDeckName());
-                    }
+                    Map<String, Long> cards = (Map<String, Long>) deckFile.readObject();
+                    newDecks.put(deckName, DeckSimpleDto.builder().title(deckName).cards(cards).build());
                 } catch (EOFException e) {
                     eof = true;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    throw new IOException();
                 }
             }
         } catch (FileNotFoundException e) {
@@ -178,26 +147,9 @@ public final class Database {
                 (new BufferedOutputStream
                         (new FileOutputStream
                                 ("database" + File.separator + "decks.dat")))) {
-            for (Map.Entry<String, Deck> deckEntry : decks.entrySet()) {
-                deckFile.writeUTF(deckEntry.getValue().getDeckName());
-                deckFile.writeUTF(deckEntry.getValue().getDeckInfo());
-                deckFile.writeUTF(deckEntry.getValue().getCreationDate().toString());
-                deckFile.writeUTF(deckEntry.getValue().getPreviewImage());
-                deckFile.writeUTF(deckEntry.getValue().getDeckType());
-
-                int mainSize = deckEntry.getValue().getCardsInDeck().size();
-                deckFile.writeInt(mainSize);
-                for (Card card : deckEntry.getValue().getCardsInDeck()) {
-                    deckFile.writeUTF(card.getTitle());
-                }
-
-                int sideSize = deckEntry.getValue().getCardsInSideboard().size();
-                deckFile.writeInt(sideSize);
-                if (sideSize > 0) {
-                    for (Card card : deckEntry.getValue().getCardsInSideboard()) {
-                        deckFile.writeUTF(card.getTitle());
-                    }
-                }
+            for (Map.Entry<String, DeckSimpleDto> deckEntry : newDecks.entrySet()) {
+                deckFile.writeUTF(deckEntry.getValue().getTitle());
+                deckFile.writeObject(deckEntry.getValue().getCards());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -294,5 +246,11 @@ public final class Database {
 
     public void addCards(List<CardDto> missingCards) {
         this.newDatabaseCards.addAll(missingCards);
+    }
+
+    public void addDecksIfNeeded(List<DeckSimpleDto> simpleDecks) {
+        for(DeckSimpleDto deck : simpleDecks) {
+            newDecks.put(deck.getTitle(), deck);
+        }
     }
 }

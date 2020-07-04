@@ -92,12 +92,12 @@ public class LoadingWindow implements DisplayWindow {
             watcher = new DatabaseWatcher(Database.getInstance());
             List<String> missing = watcher.cardsPresent(getCardTitles(simpleDecks));
             if(missing.size() > 0) {
-                downloadMissingCards(missing);
-                //todo cards are missing, download
+                downloadAndAddMissingCards(missing);
             } else {
                 messenger.getClientSender().println(MessageCode.OK);
-                //todo cards are not missing, check decks and update if needed
             }
+            checkDecksAndAddIfNeeded(simpleDecks);
+            watcher.saveDatabase();
         } catch (IOException e) {
             e.printStackTrace();
             ApplicationUtils.closeApplication(1, "Can't connect to the database.");
@@ -121,10 +121,14 @@ public class LoadingWindow implements DisplayWindow {
                 .collect(Collectors.toList());
     }
 
-    private void downloadMissingCards(List<String> missing) throws IOException {
+    private void downloadAndAddMissingCards(List<String> missing) throws IOException {
         messenger.getClientSender().println(missing);
         List<CardDto> missingCards = new ObjectMapper().readValue(messenger.getClientReceiver().readLine(), new TypeReference<>(){});
         watcher.addMissingCards(missingCards);
+    }
+
+    private void checkDecksAndAddIfNeeded(List<DeckSimpleDto> simpleDecks) {
+        watcher.addMissingDecksIfNeeded(simpleDecks);
     }
 
     private void moveToMainWindow() {
