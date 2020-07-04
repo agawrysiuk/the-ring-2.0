@@ -2,7 +2,6 @@ package pl.agawrysiuk.display.screens.loading;
 
 import javafx.concurrent.Task;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,6 +16,7 @@ import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.util.ApplicationUtils;
 
 import java.io.IOException;
 
@@ -62,7 +62,7 @@ public class LoadingWindow implements DisplayWindow {
         Task<Void> clientDatabaseCheckTask = new Task<>() {
             @Override
             protected Void call() {
-                downloadCards();
+                checkClientCardsAndDecks();
                 return null;
             }
         };
@@ -70,21 +70,16 @@ public class LoadingWindow implements DisplayWindow {
         new Thread(clientDatabaseCheckTask).start();
     }
 
-    private void downloadCards() {
+    private void checkClientCardsAndDecks() {
         try {
-            String jsonCards = messenger.getClientReceiver().readLine();
-            if(jsonCards.equals(MessageCode.DATABASE_ISSUE.toString())) {
+            String jsonDecks = messenger.getClientReceiver().readLine();
+            if(jsonDecks.equals(MessageCode.DATABASE_ISSUE.toString())) {
                 throw new IOException();
             }
             //todo map cards and check them with existing
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText(null);
-            alert.setContentText("Can't connect to the database. The program will exit now.");
-            alert.showAndWait();
-            System.exit(1);
             e.printStackTrace();
+            ApplicationUtils.closeApplication(1,"Can't connect to the database.");
         }
     }
 

@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.URISyntaxException;
-import java.rmi.server.ExportException;
 import java.util.List;
 
 @Slf4j
@@ -44,7 +42,7 @@ public class Player extends Thread {
     public void run() {
         try {
             playerName = input.readLine();
-            sendDatabaseCards();
+            sendDatabaseDecks();
             //todo send data to the client
 
             waitForReady();
@@ -63,9 +61,9 @@ public class Player extends Thread {
         }
     }
 
-    private void sendDatabaseCards() {
+    private void sendDatabaseDecks() {
         try {
-            output.println(DatabaseUtils.getDatabaseCards());
+            output.println(DatabaseUtils.getDatabaseDecks());
         } catch (Exception e) {
             log.warn("Can't connect to the database!");
             e.printStackTrace();

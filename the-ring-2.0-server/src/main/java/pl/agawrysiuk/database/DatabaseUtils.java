@@ -10,9 +10,15 @@ import java.net.URISyntaxException;
 @UtilityClass
 public class DatabaseUtils extends Request {
 
-    private final String DATABASE_HOST = "http://localhost:8090/cards";
+    private final String CARDS_LINK = "http://localhost:8090/cards";
+    private final String DECKS_LINK = "http://localhost:8090/decks";
 
     public String getDatabaseCards() throws InterruptedException, IOException, URISyntaxException {
-        return getResponse(new URI(DATABASE_HOST));
+        return getResponse(new URI(CARDS_LINK));
     }
+
+    public String getDatabaseDecks() throws InterruptedException, IOException, URISyntaxException {
+        return getResponse(new URI(DECKS_LINK));
+    }
+
 }
