@@ -40,12 +40,7 @@ import pl.agawrysiuk.model.Deck;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ConnectException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -308,7 +303,7 @@ public class MenuWindow implements DisplayWindow {
             System.out.println("Something's wrong with your deck.");
             return;
         }
-        Database.getInstance().saveToDatabase();
+        Database.getInstance().saveDatabase();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Waiting for the opponent");

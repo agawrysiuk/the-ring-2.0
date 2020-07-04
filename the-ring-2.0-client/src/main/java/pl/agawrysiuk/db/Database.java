@@ -2,6 +2,7 @@ package pl.agawrysiuk.db;
 
 import javafx.scene.image.Image;
 import lombok.Getter;
+import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 
@@ -139,7 +140,7 @@ public final class Database  {
         return true;
     }
 
-    public void saveToDatabase() {
+    public void saveDatabase() {
         //decks to .dat
         try (ObjectOutputStream deckFile = new ObjectOutputStream
                 (new BufferedOutputStream
@@ -269,5 +270,9 @@ public final class Database  {
 
     public void setSettings(int number, String string) {
         this.settings.add(number, string);
+    }
+
+    public void addCards(List<CardDto> missingCards) {
+        //todo cards saving
     }
 }

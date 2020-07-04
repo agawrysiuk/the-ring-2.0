@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -43,13 +44,17 @@ public class Player extends Thread {
         try {
             playerName = input.readLine();
             sendDatabaseDecks();
+            String decksAnswer = input.readLine();
+            if(!decksAnswer.equals(MessageCode.OK.toString())) {
+                output.println(DatabaseUtils.getDatabaseCards(decksAnswer));
+            }
             //todo send data to the client
 
             waitForReady();
-            receivedReady();
+            startMatch();
         } catch (SocketException e) {
             log.info("Socket closed down prematurely.");
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | URISyntaxException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -90,7 +95,7 @@ public class Player extends Thread {
         }
     }
 
-    private void receivedReady() throws IOException {
+    private void startMatch() throws IOException {
         //todo definitely to change after setting up new architecture
         while (opponent != null) {
             String messageReceived = input.readLine();

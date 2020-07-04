@@ -1,5 +1,6 @@
 package pl.agawrysiuk.db;
 
+import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.model.Card;
 
 import java.util.List;
@@ -22,5 +23,10 @@ public class DatabaseWatcher {
         return database.getDatabaseCards().stream()
                 .map(Card::getTitle)
                 .collect(Collectors.toList());
+    }
+
+    public void addMissingCards(List<CardDto> missingCards) {
+        database.addCards(missingCards);
+        database.saveDatabase();
     }
 }

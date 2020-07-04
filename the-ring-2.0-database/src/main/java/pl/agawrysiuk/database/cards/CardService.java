@@ -2,6 +2,7 @@ package pl.agawrysiuk.database.cards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.model.Card;
 
 import java.util.List;
@@ -15,6 +16,13 @@ public class CardService {
 
     public List<Card> getCards() {
         return cardRepository.findAll();
+    }
+
+    public List<CardDto> getClientMissingCards(List<String> missing) {
+        List<Card> cards = cardRepository.findByTitleIn(missing);
+        return cards.stream()
+                .map(card -> CardDto.builder().title(card.getTitle()).json(card.getJson()).build())
+                .collect(Collectors.toList());
     }
 
     public List<String> checkCardsDatabase(List<String> cardsToCheck) {

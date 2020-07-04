@@ -17,6 +17,10 @@ public class DatabaseUtils extends Request {
         return getResponse(new URI(CARDS_LINK));
     }
 
+    public String getDatabaseCards(String missing) throws InterruptedException, IOException, URISyntaxException {
+        return postResponse(new URI(CARDS_LINK), missing);
+    }
+
     public String getDatabaseDecks() throws InterruptedException, IOException, URISyntaxException {
         return getResponse(new URI(DECKS_LINK));
     }

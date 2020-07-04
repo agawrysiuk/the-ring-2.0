@@ -20,6 +20,7 @@ import pl.agawrysiuk.db.DatabaseWatcher;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.util.ApplicationUtils;
 
@@ -39,6 +40,7 @@ public class LoadingWindow implements DisplayWindow {
     private Stage primaryStage;
 
     private Messenger messenger;
+    private DatabaseWatcher watcher;
 
     public LoadingWindow(Messenger messenger) {
         this.messenger = messenger;
@@ -87,11 +89,13 @@ public class LoadingWindow implements DisplayWindow {
     private void checkClientCardsAndDecks() {
         try {
             List<DeckSimpleDto> simpleDecks = downloadDecks();
-            DatabaseWatcher watcher = new DatabaseWatcher(Database.getInstance());
+            watcher = new DatabaseWatcher(Database.getInstance());
             List<String> missing = watcher.cardsPresent(getCardTitles(simpleDecks));
             if(missing.size() > 0) {
+                downloadMissingCards(missing);
                 //todo cards are missing, download
             } else {
+                messenger.getClientSender().println(MessageCode.OK);
                 //todo cards are not missing, check decks and update if needed
             }
         } catch (IOException e) {
@@ -115,6 +119,12 @@ public class LoadingWindow implements DisplayWindow {
                 .flatMap(Set::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private void downloadMissingCards(List<String> missing) throws IOException {
+        messenger.getClientSender().println(missing);
+        List<CardDto> missingCards = new ObjectMapper().readValue(messenger.getClientReceiver().readLine(), new TypeReference<>(){});
+        watcher.addMissingCards(missingCards);
     }
 
     private void moveToMainWindow() {
