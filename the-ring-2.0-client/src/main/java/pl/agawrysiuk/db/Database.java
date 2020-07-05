@@ -85,12 +85,12 @@ public final class Database {
                     .map(Path::toString)
                     .collect(Collectors.toList());
             for (String fileName : cardFiles) {
-                loadCard(directoryPath + fileName);
+                loadCardFromFile(directoryPath + fileName);
             }
         }
     }
 
-    private void loadCard(String fullPath) throws IOException {
+    private void loadCardFromFile(String fullPath) throws IOException {
         LineIterator it = FileUtils.lineIterator(new File(fullPath), "UTF-8");
         try {
             List<String> lines = new ArrayList<>();
@@ -185,51 +185,6 @@ public final class Database {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public boolean loadDeckFromTXT(Deck deck, boolean forPlaying) {
-        //import options
-        boolean sideboard = false;
-        int numCards = 0; //number of cards in the file
-        int numCardsAdded = 0; //number of cards added (for missing info)
-
-        String[] deckLine = deck.getDeckInfo().split(System.lineSeparator());
-        for (String line : deckLine) {
-            if (line.equals("") || line.toLowerCase().equals("sideboard")) {
-                sideboard = true;
-                continue;
-            }
-            String[] lineSplit = line.split(" ", 2);
-            int quantity = Integer.parseInt(lineSplit[0]); //todo - check if the file is okay and this is the integer InputMismatchException
-            numCards += quantity;
-            String cardName = lineSplit[1]; //todo - what if you upload a version from MTGArena?
-            Card currentCard = getCard(cardName);
-
-            if (currentCard != null && !sideboard) {
-                for (int i = 0; i < quantity; i++) {
-                    deck.getCardsInDeck().add(currentCard);
-                    numCardsAdded++;
-                }
-            } else if (currentCard != null && sideboard) {
-                for (int i = 0; i < quantity; i++) {
-                    deck.getCardsInSideboard().add(currentCard);
-                    numCardsAdded++;
-                }
-            } else {
-                System.out.println("Card " + cardName + " not found in the database, not added to the deck");
-                System.out.println("Loader stopped. Couldn't load the deck " + deck.getDeckName());
-                return false;
-            }
-        }
-
-        if (numCards == numCardsAdded && numCards != 0) {
-            if (!forPlaying) decks.put(deck.getDeckName(), deck);
-            System.out.println("Deck " + deck.getDeckName() + " successfully loaded");
-        } else {
-            System.out.println("Couldn't load the deck " + deck.getDeckName());
-            return false;
-        }
-        return true;
     }
 
     public Card getCard(String cardTitle) { //geting a reference to the card in databaseCards

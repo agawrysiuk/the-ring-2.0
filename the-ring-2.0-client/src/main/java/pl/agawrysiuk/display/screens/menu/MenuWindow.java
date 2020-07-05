@@ -72,15 +72,15 @@ public class MenuWindow implements DisplayWindow {
         deckView.setHgap(25);
         deckView.setPadding(new Insets(50,50,50,50));
 
+        for (DeckSimpleDto deck : deckList) {
+            placeDeckOnScreen(deck);
+        }
+
         ScrollPane scrollPane = new ScrollPane(deckView);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
         mainPane.setCenter(scrollPane);
         mainPane.getCenter().setManaged(false); //center will not move other space
-
-        for (DeckSimpleDto deck : deckList) {
-            placeDeckOnScreen(deck);
-        }
 
         //making scrollbar scroll faster
         deckView.setOnScroll(event -> {
@@ -103,7 +103,7 @@ public class MenuWindow implements DisplayWindow {
         highlightedName.setStyle("-fx-font-weight: bold");
         rightBox.getChildren().add(highlightedName);
 
-        showVisualButton = new Button("Edit deck");
+        showVisualButton = new Button("Show deck");
         showVisualButton.setOnAction(actionEvent -> lookUpDeck());
         rightBox.getChildren().add(showVisualButton);
 
