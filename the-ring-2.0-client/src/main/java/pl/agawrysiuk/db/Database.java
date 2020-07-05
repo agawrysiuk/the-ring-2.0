@@ -3,6 +3,7 @@ package pl.agawrysiuk.db;
 import javafx.scene.image.Image;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
@@ -83,36 +84,26 @@ public final class Database {
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .collect(Collectors.toList());
-            for (String filePath : cardFiles) {
-                List<String> lines = FileUtils.readLines(new File(directoryPath + filePath), Charset.defaultCharset());
-                System.out.println("Loading card " + lines.get(0));
-                newDatabaseCards.add(CardDto.builder().title(lines.get(0)).json(lines.get(1)).build());
+            for (String fileName : cardFiles) {
+                loadCard(directoryPath + fileName);
             }
+            System.out.println("asd");
         }
-//        try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "cards.dat")))) {
-//            boolean eof = false;
-//            while (!eof) {
-//                try {
-//                    String cardTitle = cardFile.readUTF();
-//                    String cardJson = cardFile.readUTF();
-//                    CardDto card = CardDto.builder().title(cardTitle).json(cardJson).build();
-//                    newDatabaseCards.add(card);
-//                } catch (EOFException e) {
-//                    eof = true;
-//                }
-//            }
-//
-//        } catch (EOFException e) {
-//            System.out.println("Empty file cards.dat, continue");
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Cards file not found");
-//            FileUtils.write(new File("database" + File.separator + "cards.dat"),"", Charset.defaultCharset());
-//            System.out.println("Created new file cards.dat");
-//        } catch (IOException e) {
-//            System.out.println("Issue with connecting to the database");
-//            e.printStackTrace();
-//            throw new IOException();
-//        }
+    }
+
+    private void loadCard(String fullPath) throws IOException {
+        LineIterator it = FileUtils.lineIterator(new File(fullPath), "UTF-8");
+        try {
+            List<String> lines = new ArrayList<>();
+            while (it.hasNext()) {
+                String line = it.nextLine();
+                lines.add(line);
+            }
+            System.out.println("Loading card " + lines.get(0));
+            newDatabaseCards.add(CardDto.builder().title(lines.get(0)).json(lines.get(1)).build());
+        } finally {
+            LineIterator.closeQuietly(it);
+        }
     }
 
     private void loadSettings() throws IOException {
