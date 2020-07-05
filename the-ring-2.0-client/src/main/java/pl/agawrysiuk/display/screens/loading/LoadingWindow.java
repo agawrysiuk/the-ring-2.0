@@ -99,7 +99,6 @@ public class LoadingWindow implements DisplayWindow {
                 messenger.getClientSender().println(MessageCode.OK);
             }
             checkDecksAndAddIfNeeded(simpleDecks);
-            watcher.saveDatabase();
         } catch (IOException e) {
             e.printStackTrace();
             ApplicationUtils.closeApplication(1, "Can't connect to the database.");
@@ -138,6 +137,6 @@ public class LoadingWindow implements DisplayWindow {
     private void moveToMainWindow() {
         DisplayContext context = new DisplayContext();
         context.setNewWindow(new MenuWindow(messenger));
-        context.showNewWindow(this);
+        context.showNewWindow(this, true);
     }
 }

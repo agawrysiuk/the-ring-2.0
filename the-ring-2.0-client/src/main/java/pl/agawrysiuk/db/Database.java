@@ -87,7 +87,6 @@ public final class Database {
             for (String fileName : cardFiles) {
                 loadCard(directoryPath + fileName);
             }
-            System.out.println("asd");
         }
     }
 
@@ -281,5 +280,6 @@ public final class Database {
         for(DeckSimpleDto deck : simpleDecks) {
             newDecks.put(deck.getTitle(), deck);
         }
+        saveDecks();
     }
 }

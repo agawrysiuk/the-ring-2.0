@@ -2,7 +2,6 @@ package pl.agawrysiuk.db;
 
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
-import pl.agawrysiuk.model.Card;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,8 +22,8 @@ public class DatabaseWatcher {
     }
 
     private List<String> getDatabaseCardTitles() {
-        return database.getDatabaseCards().stream()
-                .map(Card::getTitle)
+        return database.getNewDatabaseCards().stream()
+                .map(CardDto::getTitle)
                 .collect(Collectors.toList());
     }
 
