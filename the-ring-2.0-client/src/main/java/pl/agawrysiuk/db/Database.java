@@ -10,7 +10,13 @@ import pl.agawrysiuk.model.Deck;
 import pl.agawrysiuk.util.ApplicationUtils;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 public final class Database {
@@ -36,6 +42,7 @@ public final class Database {
             loadDecks();
             loadSettings();
         } catch (IOException e) {
+            e.printStackTrace();
             ApplicationUtils.closeApplication(1,"Problem occured while saving your database to file.");
         }
         return true;
@@ -57,10 +64,10 @@ public final class Database {
                 }
             }
         } catch (EOFException e) {
-            System.out.println("Empty file, continue");
+            System.out.println("Empty file decks.dat, continue");
         } catch (FileNotFoundException e) {
             System.out.println("Decks file not found");
-            FileUtils.write(new File("database" + File.separator + "decks.dat"),"");
+            FileUtils.write(new File("database" + File.separator + "decks.dat"),"", Charset.defaultCharset());
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
             e.printStackTrace();
@@ -69,30 +76,43 @@ public final class Database {
     }
 
     private void loadCards() throws IOException {
-        try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "cards.dat")))) {
-            boolean eof = false;
-            while (!eof) {
-                try {
-                    String cardTitle = cardFile.readUTF();
-                    String cardJson = cardFile.readUTF();
-                    CardDto card = CardDto.builder().title(cardTitle).json(cardJson).build();
-                    newDatabaseCards.add(card);
-                } catch (EOFException e) {
-                    eof = true;
-                }
+        String directoryPath = "database" + File.separator + "cards" + File.separator;
+        try (Stream<Path> stream = Files.walk(Paths.get(directoryPath), 1)) {
+            List<String> cardFiles = stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+            for (String filePath : cardFiles) {
+                List<String> lines = FileUtils.readLines(new File(directoryPath + filePath), Charset.defaultCharset());
+                System.out.println("Loading card " + lines.get(0));
+                newDatabaseCards.add(CardDto.builder().title(lines.get(0)).json(lines.get(1)).build());
             }
-
-        } catch (EOFException e) {
-            System.out.println("Empty file, continue");
-        } catch (FileNotFoundException e) {
-            System.out.println("Cards file not found");
-            FileUtils.write(new File("database" + File.separator + "cards.dat"),"");
-            System.out.println("Created new file cards.dat");
-        } catch (IOException e) {
-            System.out.println("Issue with connecting to the database");
-            e.printStackTrace();
-            throw new IOException();
         }
+//        try (ObjectInputStream cardFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("database" + File.separator + "cards.dat")))) {
+//            boolean eof = false;
+//            while (!eof) {
+//                try {
+//                    String cardTitle = cardFile.readUTF();
+//                    String cardJson = cardFile.readUTF();
+//                    CardDto card = CardDto.builder().title(cardTitle).json(cardJson).build();
+//                    newDatabaseCards.add(card);
+//                } catch (EOFException e) {
+//                    eof = true;
+//                }
+//            }
+//
+//        } catch (EOFException e) {
+//            System.out.println("Empty file cards.dat, continue");
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Cards file not found");
+//            FileUtils.write(new File("database" + File.separator + "cards.dat"),"", Charset.defaultCharset());
+//            System.out.println("Created new file cards.dat");
+//        } catch (IOException e) {
+//            System.out.println("Issue with connecting to the database");
+//            e.printStackTrace();
+//            throw new IOException();
+//        }
     }
 
     private void loadSettings() throws IOException {
@@ -115,10 +135,10 @@ public final class Database {
                 }
             }
         } catch (EOFException e) {
-            System.out.println("Empty file, continue");
+            System.out.println("Empty file settings.dat, continue");
         } catch (FileNotFoundException e) {
             System.out.println("Settings file not found");
-            FileUtils.write(new File("database" + File.separator + "settings.dat"),"");
+            FileUtils.write(new File("database" + File.separator + "settings.dat"),"", Charset.defaultCharset());
             System.out.println("Created new file settings.dat");
         } catch (IOException e) {
             System.out.println("Issue with connecting to the database");
@@ -129,7 +149,7 @@ public final class Database {
 
     public void saveDatabase() {
         //todo CHANGE SAVING!
-        saveCards();
+//        saveCards();
         saveDecks();
         saveSettings();
     }
@@ -252,6 +272,18 @@ public final class Database {
 
     public void addCards(List<CardDto> missingCards) {
         this.newDatabaseCards.addAll(missingCards);
+        for (CardDto cardDto : missingCards) {
+            try {
+                String toWrite = cardDto.getTitle() + System.lineSeparator() + cardDto.getJson();
+                FileUtils.write(
+                        new File("database" + File.separator + "cards" + File.separator + cardDto.getTitle().replaceAll("[^a-z]", "")),
+                        toWrite,
+                        Charset.defaultCharset());
+                System.out.println("Saving card " + cardDto.getTitle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void addDecksIfNeeded(List<DeckSimpleDto> simpleDecks) {

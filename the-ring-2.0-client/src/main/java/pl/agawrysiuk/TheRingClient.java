@@ -2,7 +2,6 @@ package pl.agawrysiuk;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.screens.init.GameInitializer;
 
 /** THE GAME:
@@ -62,10 +61,10 @@ public class TheRingClient extends Application {
         gameInitializer.initialize();
     }
 
-    @Override
-    public void init() {
-        Database.getInstance().loadDatabase();
-    }
+//    @Override
+//    public void init() {
+//        Database.getInstance().loadDatabase();
+//    }
 
     @Override
     public void stop() {
