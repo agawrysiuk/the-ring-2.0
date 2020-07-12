@@ -123,8 +123,7 @@ public class MenuWindow implements DisplayWindow {
         label.setStyle("-fx-text-fill:transparent;");//so it cant be seen
         StackPane.setMargin(addedCard, new Insets(marginStackPane, 0, 0, rowCards));
 
-        stackPane.getChildren().add(label);
-        stackPane.getChildren().add(addedCard);
+        stackPane.getChildren().addAll(label, addedCard);
 
         this.marginStackPane += 35; //changing horizontal space
         if (this.marginStackPane % 550 == 0) { //checking if we are at the bottom
@@ -134,6 +133,7 @@ public class MenuWindow implements DisplayWindow {
     }
 
     public void playButtonClicked(ActionEvent event) {
+        // todo move it to the next window?
         if (activeDeck == null) {
             System.out.println("Something's wrong with your deck.");
             return;
