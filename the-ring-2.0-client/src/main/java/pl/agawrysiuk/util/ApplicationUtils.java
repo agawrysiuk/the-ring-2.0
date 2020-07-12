@@ -2,18 +2,18 @@ package pl.agawrysiuk.util;
 
 import javafx.scene.control.Alert;
 import lombok.experimental.UtilityClass;
-import pl.agawrysiuk.display.creators.AlertCreator;
+import pl.agawrysiuk.display.creators.AlertBuilder;
 
 @UtilityClass
 public class ApplicationUtils {
 
     public void closeApplication(int exitCode) {
-        Alert alert = AlertCreator.createWarningAlert();
+        Alert alert = AlertBuilder.WarningAlert();
         showAlertEndExit(alert, exitCode);
     }
 
     public void closeApplication(int exitCode, String message) {
-        Alert alert = AlertCreator.createWarningAlert(message);
+        Alert alert = AlertBuilder.WarningAlert(message);
         showAlertEndExit(alert, exitCode);
     }
 

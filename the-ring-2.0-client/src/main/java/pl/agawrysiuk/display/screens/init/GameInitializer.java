@@ -11,9 +11,9 @@ import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.creators.DialogCreator;
-import pl.agawrysiuk.display.creators.GridPaneCreator;
-import pl.agawrysiuk.display.creators.TextFieldCreator;
+import pl.agawrysiuk.display.creators.DialogBuilder;
+import pl.agawrysiuk.display.creators.GridPaneBuilder;
+import pl.agawrysiuk.display.creators.TextFieldBuilder;
 import pl.agawrysiuk.display.screens.loading.LoadingWindow;
 
 import java.io.BufferedReader;
@@ -58,11 +58,12 @@ public class GameInitializer implements DisplayWindow {
 
     private void showConnectionDialogAndWaitForInput() {
         do {
-            TextField name = TextFieldCreator.TextField(playersName, "Your nickname");
-            TextField serverIp = TextFieldCreator.TextField(host, "IP of the server");
-            GridPane grid = GridPaneCreator.GridPane(2, 2,
+            TextField name = TextFieldBuilder.TextField(playersName, "Your nickname");
+            TextField serverIp = TextFieldBuilder.TextField(host, "IP of the server");
+            GridPane grid = GridPaneBuilder.GridPane(2, 2,
                     new Label("Username:"), name, new Label("Server IP:"), serverIp);
-            Dialog<ButtonType> dialog = DialogCreator.DialogOkButton("Choose your name and connect to server", grid);
+            GridPaneBuilder.setGapAndPadding(grid, 10, 10, 20, 150, 10, 10);
+            Dialog<ButtonType> dialog = DialogBuilder.DialogOkButton("Choose your name and connect to server", grid);
 
             Platform.runLater(name::requestFocus);
 

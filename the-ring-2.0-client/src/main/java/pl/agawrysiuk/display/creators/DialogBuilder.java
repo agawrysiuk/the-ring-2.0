@@ -6,7 +6,7 @@ import javafx.scene.control.Dialog;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class DialogCreator {
+public class DialogBuilder {
 
     public Dialog<ButtonType> DialogOkButton(String title, Node content) {
         Dialog<ButtonType> dialog = new Dialog<>();

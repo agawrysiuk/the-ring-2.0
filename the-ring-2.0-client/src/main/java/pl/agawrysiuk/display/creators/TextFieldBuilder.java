@@ -4,7 +4,7 @@ import javafx.scene.control.TextField;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class TextFieldCreator {
+public class TextFieldBuilder {
 
     public TextField TextField(String text, String promptText) {
         TextField textField = new TextField();

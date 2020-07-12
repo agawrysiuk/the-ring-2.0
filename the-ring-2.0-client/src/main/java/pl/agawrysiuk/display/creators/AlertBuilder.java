@@ -4,9 +4,9 @@ import javafx.scene.control.Alert;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class AlertCreator {
+public class AlertBuilder {
 
-    public Alert createWarningAlert() {
+    public Alert WarningAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(null);
@@ -14,7 +14,7 @@ public class AlertCreator {
         return alert;
     }
 
-    public Alert createWarningAlert(String message) {
+    public Alert WarningAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(null);
