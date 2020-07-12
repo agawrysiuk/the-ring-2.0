@@ -48,6 +48,7 @@ import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.game.components.Ability;
+import pl.agawrysiuk.display.screens.game.components.PositionType;
 import pl.agawrysiuk.display.screens.game.components.Token;
 import pl.agawrysiuk.display.screens.game.components.ViewCard;
 import pl.agawrysiuk.display.screens.sideboard.Sideboard;
@@ -235,14 +236,14 @@ public class GameWindowController implements DisplayWindow {
             ViewCard viewCard = new ViewCard(card);
             viewCard.setOpponentsCard(false);
             heroListDeck.add(viewCard);
-            viewCard.setUltimatePosition(ViewCard.PositionType.DECK);
+            viewCard.setUltimatePosition(PositionType.DECK);
             bringCardToGame(viewCard, true);
         }
         for (Card card : deck.getCardsInSideboard()) {
             ViewCard viewCard = new ViewCard(card);
             viewCard.setOpponentsCard(false);
             heroListSideboard.add(viewCard);
-            viewCard.setUltimatePosition(ViewCard.PositionType.SIDEBOARD);
+            viewCard.setUltimatePosition(PositionType.SIDEBOARD);
             bringCardToGame(viewCard, true);
             viewCard.getCard(true, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
 
@@ -253,14 +254,14 @@ public class GameWindowController implements DisplayWindow {
             ViewCard viewCardOpp = new ViewCard();
             viewCardOpp.setOpponentsCard(true);
             oppListDeck.add(viewCardOpp);
-            viewCardOpp.setUltimatePosition(ViewCard.PositionType.DECK);
+            viewCardOpp.setUltimatePosition(PositionType.DECK);
             bringCardToGame(viewCardOpp, false);
         }
         for (Card card : opponentDeck.getCardsInSideboard()) {
             ViewCard viewCardOpp = new ViewCard();
             viewCardOpp.setOpponentsCard(true);
             oppListSideboard.add(viewCardOpp);
-            viewCardOpp.setUltimatePosition(ViewCard.PositionType.SIDEBOARD);
+            viewCardOpp.setUltimatePosition(PositionType.SIDEBOARD);
             bringCardToGame(viewCardOpp, false);
         }
     }
@@ -632,7 +633,7 @@ public class GameWindowController implements DisplayWindow {
                 ViewCard newCard = new ViewCard(Database.getInstance().getCard(viewCard.getTitle()));
                 newCard.setOpponentsCard(true);
                 oppListDeck.add(0,newCard);
-                newCard.setUltimatePosition(ViewCard.PositionType.DECK);
+                newCard.setUltimatePosition(PositionType.DECK);
                 bringCardToGame(newCard, false);
                 drawCards(1,false);
             } else if (message.contains("LOOK_UP:")) {
@@ -654,7 +655,7 @@ public class GameWindowController implements DisplayWindow {
                 List<ViewCard> list = (List<ViewCard>) getListPos(listName).get(0);
                 ViewCard viewCard = list.get(number);
                 resetCardState(viewCard);
-                viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+                viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                 oppListGraveyard.add(viewCard);
                 if (!viewCard.isVisibleToYou()) {
                     viewCard.revealOppCard(messageArray[2]);
@@ -673,7 +674,7 @@ public class GameWindowController implements DisplayWindow {
                 ViewCard viewCard = list.get(number);
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " to the exile.");
                 resetCardState(viewCard);
-                viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+                viewCard.setUltimatePosition(PositionType.EXILE);
                 oppListExile.add(viewCard);
                 updateGraveyardView(false);
                 updateExileView(false);
@@ -689,7 +690,7 @@ public class GameWindowController implements DisplayWindow {
                 resetCardState(viewCard);
                 moveToHand(viewCard, false);
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " to his hand.");
-                viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                viewCard.setUltimatePosition(PositionType.HAND);
                 viewCard.setRotate(180);
                 updateDeckView(false);
                 updateExileView(false);
@@ -705,7 +706,7 @@ public class GameWindowController implements DisplayWindow {
                     viewCard.revealOppCard(messageArray[2]);
                 }
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " onto the battlefield.");
-                viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+                viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                 oppListBattlefield.add(viewCard);
                 viewCard.setImage(viewCard.getSmallCard());
                 mainPane.getChildren().remove(viewCard);
@@ -783,7 +784,7 @@ public class GameWindowController implements DisplayWindow {
                 } else {
                     mainPane.getChildren().removeAll(heroListHand);
                     for (ViewCard viewCard : heroListHand) {
-                        viewCard.setUltimatePosition(ViewCard.PositionType.DECK);
+                        viewCard.setUltimatePosition(PositionType.DECK);
                     }
                     heroListDeck.addAll(heroListHand);
                     Collections.shuffle(heroListDeck);
@@ -834,7 +835,7 @@ public class GameWindowController implements DisplayWindow {
             viewCard.relocate((layoutX + (250 * ScreenUtils.WIDTH_MULTIPLIER * cardNumber) - (insetRight * cardNumber)), layoutY);
             mainPane.getChildren().add(viewCard);
             listHand.add(viewCard);
-            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+            viewCard.setUltimatePosition(PositionType.HAND);
             listDeck.remove(0);
             if (!hero) {
                 viewCard.setRotate(180);
@@ -870,7 +871,7 @@ public class GameWindowController implements DisplayWindow {
         if (!skipMakingSmallCard) {
             viewCard.setImage(viewCard.getSmallCard());
             viewCard.setEffect(battlefieldBorder);
-            viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
             viewCard.setViewOrder(-1);
             listBattlefield.add(viewCard);
         }
@@ -964,7 +965,7 @@ public class GameWindowController implements DisplayWindow {
     }
 
     private void castToStack(ViewCard viewCard) {
-        viewCard.setUltimatePosition(ViewCard.PositionType.CAST);
+        viewCard.setUltimatePosition(PositionType.CAST);
         listCastingStack.add(viewCard);
         TranslateTransition tt = new TranslateTransition(Duration.millis(250), viewCard);
         tt.setFromX(viewCard.getTranslateX());
@@ -998,7 +999,7 @@ public class GameWindowController implements DisplayWindow {
     private void moveToGraveyard(ViewCard viewCard, boolean hero) {
         List<ViewCard> listGraveyard = (hero) ? heroListGraveyard : oppListGraveyard;
         resetCardState(viewCard);
-        viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+        viewCard.setUltimatePosition(PositionType.GRAVEYARD);
         listGraveyard.add(viewCard);
         updateGraveyardView(hero);
 //        TranslateTransition tt = new TranslateTransition(Duration.millis(1275), viewCard);
@@ -1015,7 +1016,7 @@ public class GameWindowController implements DisplayWindow {
     private void moveToExile(ViewCard viewCard, boolean hero) {
         List<ViewCard> listExile = (hero) ? heroListExile : oppListExile;
         resetCardState(viewCard);
-        viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+        viewCard.setUltimatePosition(PositionType.EXILE);
         listExile.add(viewCard);
         updateExileView(hero);
 //        TranslateTransition tt = new TranslateTransition(Duration.millis(1275), viewCard);
@@ -1310,31 +1311,31 @@ public class GameWindowController implements DisplayWindow {
     private List<Object> getListPos(String message) {
         List<Object> listToReturn = new ArrayList<>();
         List<ViewCard> ObjectAt0List;
-        ViewCard.PositionType ObjectAt1Position;
+        PositionType ObjectAt1Position;
         switch (message) {
             case "HAND":
                 ObjectAt0List = oppListHand;
-                ObjectAt1Position = ViewCard.PositionType.HAND;
+                ObjectAt1Position = PositionType.HAND;
                 break;
             case "BATTLEFIELD":
                 ObjectAt0List = oppListBattlefield;
-                ObjectAt1Position = ViewCard.PositionType.BATTLEFIELD;
+                ObjectAt1Position = PositionType.BATTLEFIELD;
                 break;
             case "DECK":
                 ObjectAt0List = oppListDeck;
-                ObjectAt1Position = ViewCard.PositionType.DECK;
+                ObjectAt1Position = PositionType.DECK;
                 break;
             case "GRAVEYARD":
                 ObjectAt0List = oppListGraveyard;
-                ObjectAt1Position = ViewCard.PositionType.GRAVEYARD;
+                ObjectAt1Position = PositionType.GRAVEYARD;
                 break;
             case "EXILE":
                 ObjectAt0List = oppListExile;
-                ObjectAt1Position = ViewCard.PositionType.EXILE;
+                ObjectAt1Position = PositionType.EXILE;
                 break;
             case "SIDEBOARD":
                 ObjectAt0List = oppListSideboard;
-                ObjectAt1Position = ViewCard.PositionType.SIDEBOARD;
+                ObjectAt1Position = PositionType.SIDEBOARD;
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + message);
@@ -1391,7 +1392,7 @@ public class GameWindowController implements DisplayWindow {
             List<ViewCard> listDeck = (hero) ? heroListDeck : oppListDeck;
             Text deckCardsNumber = (hero) ? heroDeckCardsNumber : oppDeckCardsNumber;
             resetCardState(viewCard);
-            viewCard.setUltimatePosition(ViewCard.PositionType.DECK);
+            viewCard.setUltimatePosition(PositionType.DECK);
             listContainingCard.remove(viewCard);
             if (!listDeck.contains(viewCard)) {
                 listDeck.add(place, viewCard);
@@ -2061,7 +2062,7 @@ public class GameWindowController implements DisplayWindow {
         viewCard.setCustomViewOrder(viewOrder);
         if (!hero) {
             viewCard.setOnMouseEntered(e -> {
-                if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
+                if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
                     viewCard.setViewOrder(-3);
                 }
                 previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null));
@@ -2072,11 +2073,11 @@ public class GameWindowController implements DisplayWindow {
             });
 
             viewCard.setOnMouseExited(e -> {
-                if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
+                if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
                     viewCard.setViewOrder(viewOrder);
                 }
                 previewIV.setImage(null);
-                if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+                if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                     viewCard.setViewOrder(viewOrder);
 //                    viewCard.setEffect(null);
                 }
@@ -2085,7 +2086,7 @@ public class GameWindowController implements DisplayWindow {
 
             viewCard.setOnMousePressed(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
-                    if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+                    if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                         if (viewCard.getEffect() == null) {
                             viewCard.setEffect(highlightBorder); //token have the same;
                             messenger.getClientSender().println("HIGHLIGHT_HAND:" + oppListHand.indexOf(viewCard) + ":" + new Random().nextInt());
@@ -2094,7 +2095,7 @@ public class GameWindowController implements DisplayWindow {
                             messenger.getClientSender().println("HIGHLIGHT_NOT_HAND:" + oppListHand.indexOf(viewCard) + ":" + new Random().nextInt());
                         }
                     }
-                    if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.BATTLEFIELD) && phasesIterator != 2) {
+                    if (viewCard.getUltimatePosition().equals(PositionType.BATTLEFIELD) && phasesIterator != 2) {
                         if (viewCard.getEffect().equals(battlefieldBorder)) {
                             viewCard.setEffect(highlightBorder); //token have the same;
                             messenger.getClientSender().println("HIGHLIGHT:" + oppListBattlefield.indexOf(viewCard) + ":" + new Random().nextInt());
@@ -2102,7 +2103,7 @@ public class GameWindowController implements DisplayWindow {
                             viewCard.setEffect(battlefieldBorder);
                             messenger.getClientSender().println("HIGHLIGHT_NOT:" + oppListBattlefield.indexOf(viewCard) + ":" + new Random().nextInt());
                         }
-                    } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.BATTLEFIELD) &&
+                    } else if (viewCard.getUltimatePosition().equals(PositionType.BATTLEFIELD) &&
                             phasesIterator == 2 && !yourTurn && yourMove) {
                         if (attackBlock != null) {
                             attackBlock.setEndX(viewCard.getLayoutX()
@@ -2145,7 +2146,7 @@ public class GameWindowController implements DisplayWindow {
                             ViewCard newCard = new ViewCard(Database.getInstance().getCard(viewCard.getTitle()));
                             newCard.setOpponentsCard(false);
                             heroListDeck.add(0,newCard);
-                            newCard.setUltimatePosition(ViewCard.PositionType.DECK);
+                            newCard.setUltimatePosition(PositionType.DECK);
                             bringCardToGame(newCard, true);
                             drawCards(1,true);
                         });
@@ -2166,11 +2167,11 @@ public class GameWindowController implements DisplayWindow {
 //            scaleTrans.setToY(1.2);
 
         viewCard.setOnMouseEntered(e -> {
-            if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
+            if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
                 viewCard.setViewOrder(-3);
             }
             previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null));
-            if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                 if (yourMove) viewCard.setEffect(handBorder);
                 if (!viewCard.isDragging()) {
                     viewCard.setTranslateY(-135 * ScreenUtils.WIDTH_MULTIPLIER);
@@ -2183,11 +2184,11 @@ public class GameWindowController implements DisplayWindow {
         });
 
         viewCard.setOnMouseExited(e -> {
-            if (!viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
+            if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
                 viewCard.setViewOrder(viewOrder);
             }
             previewIV.setImage(null);
-            if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                 viewCard.setViewOrder(viewOrder);
                 if (yourMove) viewCard.setEffect(null);
                 if (!viewCard.isDragging()) {
@@ -2259,7 +2260,7 @@ public class GameWindowController implements DisplayWindow {
                 return;
             }
 
-            if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     viewCard.setEffect(handBorder);
                     viewCard.setDragging(true);
@@ -2275,7 +2276,7 @@ public class GameWindowController implements DisplayWindow {
                             messenger.getClientSender().println("MOVEBATTLEFIELD:HAND:" + heroListHand.indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+                            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             heroListBattlefield.add(viewCard);
                             reArrangeBattlefield();
                             reArrangeHand(-1, 0, true);
@@ -2287,7 +2288,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
                             resetCardState(viewCard);
                             viewCard.setVisibleToYou();
-                            viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+                            viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             heroListGraveyard.add(viewCard);
                             updateGraveyardView(true);
                             reArrangeHand(-1, 0, true);
@@ -2301,7 +2302,7 @@ public class GameWindowController implements DisplayWindow {
                                 chatMessages.add("You move [UNKNOWN] to the exile.");
                             }
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+                            viewCard.setUltimatePosition(PositionType.EXILE);
                             heroListExile.add(viewCard);
                             updateExileView(true);
                             reArrangeHand(-1, 0, true);
@@ -2312,7 +2313,7 @@ public class GameWindowController implements DisplayWindow {
                     });
                 }
                 e.consume();
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.BATTLEFIELD)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.BATTLEFIELD)) {
                 if (e.getButton() == MouseButton.PRIMARY) { //left click on the battlefield
                     //remember tokens have the same code
                     if (phasesIterator == 2 && yourTurn && yourMove &&
@@ -2369,7 +2370,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand.");
                             resetCardState(viewCard);
                             moveToHand(viewCard, true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                            viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
                         });
                         moveGraveyard.setOnAction(cAction -> {
@@ -2377,7 +2378,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
                             resetCardState(viewCard);
                             viewCard.setVisibleToYou();
-                            viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+                            viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             heroListGraveyard.add(viewCard);
                             updateGraveyardView(true);
                             reArrangeBattlefield();
@@ -2387,7 +2388,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the exile.");
                             messenger.getClientSender().println("MOVEEXILE:BATTLEFIELD:" + heroListBattlefield.indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+                            viewCard.setUltimatePosition(PositionType.EXILE);
                             heroListExile.add(viewCard);
                             updateExileView(true);
                             reArrangeBattlefield();
@@ -2407,7 +2408,7 @@ public class GameWindowController implements DisplayWindow {
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.DECK)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.DECK)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     //empty?
                 } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -2420,7 +2421,7 @@ public class GameWindowController implements DisplayWindow {
                             messenger.getClientSender().println("MOVEBATTLEFIELD:DECK:" + heroListDeck.indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+                            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             updateDeckView(true);
                             heroListBattlefield.add(viewCard);
                             reArrangeBattlefield();
@@ -2432,7 +2433,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
                             resetCardState(viewCard);
                             viewCard.setVisibleToYou();
-                            viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+                            viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             updateDeckView(true);
                             heroListGraveyard.add(viewCard);
                             updateGraveyardView(true);
@@ -2444,7 +2445,7 @@ public class GameWindowController implements DisplayWindow {
                             resetCardState(viewCard);
                             updateDeckView(true);
 
-                            viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+                            viewCard.setUltimatePosition(PositionType.EXILE);
                             heroListExile.add(viewCard);
                             updateExileView(true);
                             reArrangeBattlefield();
@@ -2456,14 +2457,14 @@ public class GameWindowController implements DisplayWindow {
                             resetCardState(viewCard);
                             updateDeckView(true);
                             moveToHand(viewCard, true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                            viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
                         });
                         rightClickMenu.getItems().setAll(moveBattlefield, moveGraveyard, moveExile, moveHand, reveal);
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.GRAVEYARD)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.GRAVEYARD)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
 
                 } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -2474,7 +2475,7 @@ public class GameWindowController implements DisplayWindow {
                             resetCardState(viewCard);
                             updateGraveyardView(true);
                             moveToHand(viewCard, true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                            viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
                         });
                         moveBattlefield.setOnAction(cAction -> {
@@ -2485,7 +2486,7 @@ public class GameWindowController implements DisplayWindow {
                             messenger.getClientSender().println("MOVEBATTLEFIELD:GRAVEYARD:" + heroListGraveyard.indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+                            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             updateGraveyardView(true);
                             heroListBattlefield.add(viewCard);
                             reArrangeBattlefield();
@@ -2497,7 +2498,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the exile.");
                             resetCardState(viewCard);
                             updateGraveyardView(true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
+                            viewCard.setUltimatePosition(PositionType.EXILE);
                             heroListExile.add(viewCard);
                             updateExileView(true);
                             reArrangeBattlefield();
@@ -2510,7 +2511,7 @@ public class GameWindowController implements DisplayWindow {
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.EXILE)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.EXILE)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
 
                 } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -2521,7 +2522,7 @@ public class GameWindowController implements DisplayWindow {
                             resetCardState(viewCard);
                             updateExileView(true);
                             moveToHand(viewCard, true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                            viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
                         });
                         moveBattlefield.setOnAction(cAction -> {
@@ -2532,7 +2533,7 @@ public class GameWindowController implements DisplayWindow {
                             messenger.getClientSender().println("MOVEBATTLEFIELD:EXILE:" + heroListExile.indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
                             resetCardState(viewCard);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+                            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             updateExileView(true);
                             heroListBattlefield.add(viewCard);
                             reArrangeBattlefield();
@@ -2547,7 +2548,7 @@ public class GameWindowController implements DisplayWindow {
                             updateExileView(true);
                             heroListGraveyard.add(viewCard);
                             updateGraveyardView(true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.GRAVEYARD);
+                            viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             cAction.consume();
                         });
                         exileShow.setOnAction(cAction -> {
@@ -2564,7 +2565,7 @@ public class GameWindowController implements DisplayWindow {
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.CAST)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.CAST)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
 
                 } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -2581,7 +2582,7 @@ public class GameWindowController implements DisplayWindow {
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
-            } else if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.SIDEBOARD)) {
+            } else if (viewCard.getUltimatePosition().equals(PositionType.SIDEBOARD)) {
                 if (e.getButton() == MouseButton.PRIMARY) {
 
                 } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -2591,7 +2592,7 @@ public class GameWindowController implements DisplayWindow {
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand from the sideboard.");
                             resetCardState(viewCard);
                             moveToHand(viewCard, true);
-                            viewCard.setUltimatePosition(ViewCard.PositionType.HAND);
+                            viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
                         });
                         rightClickMenu.getItems().setAll(moveHand);
@@ -2606,7 +2607,7 @@ public class GameWindowController implements DisplayWindow {
             if (!yourMove) {
                 return;
             }
-            if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                 viewCard.setEffect(handBorder);
                 if (e.getSceneY() - viewCard.getPositionY() < -300 * ScreenUtils.WIDTH_MULTIPLIER) {
                     viewCard.setEffect(handClickBorder);
@@ -2623,7 +2624,7 @@ public class GameWindowController implements DisplayWindow {
             if (!yourMove) {
                 return;
             }
-            if (viewCard.getUltimatePosition().equals(ViewCard.PositionType.HAND)) {
+            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
                 viewCard.setEffect(null);
                 if (e.getSceneY() - viewCard.getPositionY() < -300 * ScreenUtils.WIDTH_MULTIPLIER) {
 //                        scaleTrans.stop();
@@ -2698,7 +2699,7 @@ public class GameWindowController implements DisplayWindow {
         Token token = new Token(attack, defense, color, type, additionalText);
         token.setOnMouseEntered(e -> previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(token.getCardImg(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null)));
         token.setOnMouseExited(e -> previewIV.setImage(null));
-        token.setUltimatePosition(ViewCard.PositionType.BATTLEFIELD);
+        token.setUltimatePosition(PositionType.BATTLEFIELD);
         token.setEffect(battlefieldBorder);
 
         if (hero) {

@@ -44,10 +44,6 @@ public class ViewCard extends ImageView {
     private double positionY = 0;
     private PositionType position;
 
-    public enum PositionType {
-        DECK, EXILE, HAND, BATTLEFIELD, CAST, GRAVEYARD, SIDEBOARD
-    }
-
     public ViewCard() {
         super();
         this.title = "[UNKNOWN]";
