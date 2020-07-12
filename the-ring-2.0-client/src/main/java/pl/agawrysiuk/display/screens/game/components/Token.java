@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
 import pl.agawrysiuk.db.Database;
-import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.display.utils.ScreenUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -52,30 +52,30 @@ public class Token extends ViewCard {
         Rectangle previewBack = new Rectangle();
         previewBack.setX(0);
         previewBack.setY(0);
-        previewBack.setArcHeight(40* MenuWindow.X_WINDOW);
-        previewBack.setArcWidth(40* MenuWindow.X_WINDOW);
-        previewBack.setWidth(480* MenuWindow.X_WINDOW);
-        previewBack.setHeight(680* MenuWindow.X_WINDOW);
+        previewBack.setArcHeight(40* ScreenUtils.WIDTH_MULTIPLIER);
+        previewBack.setArcWidth(40* ScreenUtils.WIDTH_MULTIPLIER);
+        previewBack.setWidth(480* ScreenUtils.WIDTH_MULTIPLIER);
+        previewBack.setHeight(680* ScreenUtils.WIDTH_MULTIPLIER);
         previewBack.setFill(color);
         sPane.getChildren().add(previewBack);
 
         Text attDef = new Text();
         attDef.setFill(Color.WHITE);
-        attDef.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 120* MenuWindow.X_WINDOW));
+        attDef.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 120* ScreenUtils.WIDTH_MULTIPLIER));
         attDef.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
         attDef.setText(attack + " / " + defense);
-        StackPane.setMargin(attDef,new Insets(-270* MenuWindow.X_WINDOW,0,0,0));
+        StackPane.setMargin(attDef,new Insets(-270* ScreenUtils.WIDTH_MULTIPLIER,0,0,0));
         sPane.getChildren().add(attDef);
 
         Text addText = new Text();
-        addText.prefWidth(400* MenuWindow.X_WINDOW);
-        addText.setWrappingWidth(350* MenuWindow.X_WINDOW);
+        addText.prefWidth(400* ScreenUtils.WIDTH_MULTIPLIER);
+        addText.setWrappingWidth(350* ScreenUtils.WIDTH_MULTIPLIER);
         addText.setTextAlignment(TextAlignment.LEFT);
         addText.setFill(Color.WHITE);
-        addText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20* MenuWindow.X_WINDOW));
+        addText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20* ScreenUtils.WIDTH_MULTIPLIER));
         addText.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
         addText.setText(additionalText);
-        StackPane.setMargin(addText,new Insets(160* MenuWindow.X_WINDOW,0,0,0));
+        StackPane.setMargin(addText,new Insets(160* ScreenUtils.WIDTH_MULTIPLIER,0,0,0));
         sPane.getChildren().add(addText);
 
         SnapshotParameters parameters = new SnapshotParameters();
@@ -84,8 +84,8 @@ public class Token extends ViewCard {
 
         //creating small card
         BufferedImage artImg = (SwingFXUtils.fromFXImage(this.cardImg, null))
-                .getSubimage((int) (25* MenuWindow.X_WINDOW), (int) (25* MenuWindow.X_WINDOW), (int) (430* MenuWindow.X_WINDOW), (int) (357* MenuWindow.X_WINDOW)); //15,15,450,370
-        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS);
+                .getSubimage((int) (25* ScreenUtils.WIDTH_MULTIPLIER), (int) (25* ScreenUtils.WIDTH_MULTIPLIER), (int) (430* ScreenUtils.WIDTH_MULTIPLIER), (int) (357* ScreenUtils.WIDTH_MULTIPLIER)); //15,15,450,370
+        artImg = Scalr.resize(artImg, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120* ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS);
         this.smallCard = SwingFXUtils.toFXImage(artImg, null);
 
         this.setImage(smallCard);
@@ -107,14 +107,14 @@ public class Token extends ViewCard {
         Image image = this.smallCard;
 
         //drawing counters on the screen
-        Canvas canvas = new Canvas((int) image.getWidth()+10* MenuWindow.X_WINDOW, (int) image.getHeight()+10* MenuWindow.X_WINDOW);
+        Canvas canvas = new Canvas((int) image.getWidth()+10* ScreenUtils.WIDTH_MULTIPLIER, (int) image.getHeight()+10* ScreenUtils.WIDTH_MULTIPLIER);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
-        gc.fillOval((int) image.getWidth()-10* MenuWindow.X_WINDOW,(int) image.getHeight()-10* MenuWindow.X_WINDOW,20* MenuWindow.X_WINDOW,20* MenuWindow.X_WINDOW);
+        gc.fillOval((int) image.getWidth()-10* ScreenUtils.WIDTH_MULTIPLIER,(int) image.getHeight()-10* ScreenUtils.WIDTH_MULTIPLIER,20* ScreenUtils.WIDTH_MULTIPLIER,20* ScreenUtils.WIDTH_MULTIPLIER);
         gc.setFill(Color.WHITE);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(Integer.toString(this.counters),(int) image.getWidth(),(int) image.getHeight()+5* MenuWindow.X_WINDOW);
-        WritableImage countersImage = new WritableImage((int) (image.getWidth()+10* MenuWindow.X_WINDOW), (int) (image.getHeight()+10* MenuWindow.X_WINDOW));
+        gc.fillText(Integer.toString(this.counters),(int) image.getWidth(),(int) image.getHeight()+5* ScreenUtils.WIDTH_MULTIPLIER);
+        WritableImage countersImage = new WritableImage((int) (image.getWidth()+10* ScreenUtils.WIDTH_MULTIPLIER), (int) (image.getHeight()+10* ScreenUtils.WIDTH_MULTIPLIER));
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
         Image snapshot = canvas.snapshot(parameters,countersImage);
@@ -122,7 +122,7 @@ public class Token extends ViewCard {
         //combining bf image with counters
         BufferedImage activeBI = SwingFXUtils.fromFXImage(image,null);
         BufferedImage countersBI = SwingFXUtils.fromFXImage(snapshot,null);
-        BufferedImage combined = new BufferedImage((int) (image.getWidth()+10* MenuWindow.X_WINDOW), (int) (image.getHeight()+10* MenuWindow.X_WINDOW),BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combined = new BufferedImage((int) (image.getWidth()+10* ScreenUtils.WIDTH_MULTIPLIER), (int) (image.getHeight()+10* ScreenUtils.WIDTH_MULTIPLIER),BufferedImage.TYPE_INT_ARGB);
         Graphics g = combined.getGraphics();
         g.drawImage(activeBI,0,0,null);
         g.drawImage(countersBI,0,0,null);

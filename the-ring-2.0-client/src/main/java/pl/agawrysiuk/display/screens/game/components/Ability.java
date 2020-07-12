@@ -15,7 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.imgscalr.Scalr;
-import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.display.utils.ScreenUtils;
 
 public class Ability extends ViewCard {
     private ViewCard viewCard;
@@ -44,25 +44,25 @@ public class Ability extends ViewCard {
         pane.getChildren().add(iv);
 
         Text textOnImg = new Text(this.text);
-        textOnImg.setWrappingWidth(480* MenuWindow.X_WINDOW);
-        textOnImg.prefWidth(480* MenuWindow.X_WINDOW);
+        textOnImg.setWrappingWidth(480* ScreenUtils.WIDTH_MULTIPLIER);
+        textOnImg.prefWidth(480* ScreenUtils.WIDTH_MULTIPLIER);
         textOnImg.setTextAlignment(TextAlignment.CENTER);
         textOnImg.setFill(Color.WHITE);
         textOnImg.setViewOrder(-1);
-        textOnImg.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 90* MenuWindow.X_WINDOW));
+        textOnImg.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 90* ScreenUtils.WIDTH_MULTIPLIER));
         textOnImg.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
-        textOnImg.relocate(0,180* MenuWindow.X_WINDOW);
+        textOnImg.relocate(0,180* ScreenUtils.WIDTH_MULTIPLIER);
         pane.getChildren().add(textOnImg);
 
         Text textDescription = new Text(this.description);
-        textDescription.setWrappingWidth(480* MenuWindow.X_WINDOW);
-        textDescription.prefWidth(480* MenuWindow.X_WINDOW);
+        textDescription.setWrappingWidth(480* ScreenUtils.WIDTH_MULTIPLIER);
+        textDescription.prefWidth(480* ScreenUtils.WIDTH_MULTIPLIER);
         textDescription.setTextAlignment(TextAlignment.CENTER);
         textDescription.setFill(Color.WHITE);
         textDescription.setViewOrder(-1);
-        textDescription.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 30* MenuWindow.X_WINDOW));
+        textDescription.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 30* ScreenUtils.WIDTH_MULTIPLIER));
         textDescription.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(1, 1, 1, 1), 4, 0.9, 0, 0));
-        textDescription.relocate(0,300* MenuWindow.X_WINDOW);
+        textDescription.relocate(0,300* ScreenUtils.WIDTH_MULTIPLIER);
         pane.getChildren().add(textDescription);
 
         SnapshotParameters parameters = new SnapshotParameters();
@@ -79,7 +79,7 @@ public class Ability extends ViewCard {
         snapshot = pane.snapshot(parameters,null);
 
         this.abilityImg = SwingFXUtils.toFXImage(Scalr.resize(SwingFXUtils.fromFXImage(snapshot,null),
-                Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (250* MenuWindow.X_WINDOW), 0, Scalr.OP_ANTIALIAS),null);
+                Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (250* ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS),null);
 //                SwingFXUtils.toFXImage(Scalr.resize(SwingFXUtils.fromFXImage(snapshot,null)
 //               .getSubimage(0,0,480,480), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, 250, 0, Scalr.OP_ANTIALIAS),null);
 

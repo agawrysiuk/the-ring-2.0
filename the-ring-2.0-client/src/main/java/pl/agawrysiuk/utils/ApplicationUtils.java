@@ -1,4 +1,4 @@
-package pl.agawrysiuk.util;
+package pl.agawrysiuk.utils;
 
 import javafx.scene.control.Alert;
 import lombok.experimental.UtilityClass;

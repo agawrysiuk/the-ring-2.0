@@ -8,7 +8,7 @@ import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
-import pl.agawrysiuk.util.ApplicationUtils;
+import pl.agawrysiuk.utils.ApplicationUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;

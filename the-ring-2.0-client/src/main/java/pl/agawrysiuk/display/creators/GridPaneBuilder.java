@@ -9,11 +9,20 @@ import lombok.experimental.UtilityClass;
 public class GridPaneBuilder {
 
     public GridPane GridPane(int columns, int rows, Node... nodes) {
+        GridPane grid = GridPane();
+        setChildren(grid, columns, rows, nodes);
+        return grid;
+    }
+
+    public GridPane GridPane() {
         GridPane grid = new GridPane();
         grid.setHgap(25);
         grid.setVgap(25);
         grid.setPadding(new Insets(50, 50, 50, 50));
+        return grid;
+    }
 
+    public void setChildren(GridPane grid, int columns, int rows, Node... nodes) {
         int position = 0;
         for(int rowCount = 0; rowCount < rows; rowCount++) {
             for(int columnCount = 0; columnCount < columns; columnCount++) {
@@ -21,8 +30,6 @@ public class GridPaneBuilder {
                 position++;
             }
         }
-
-        return grid;
     }
 
     public void setGapAndPadding(GridPane grid, double hgap, double vgap, double insetTop, double insetRight, double insetBottom, double insetLeft) {

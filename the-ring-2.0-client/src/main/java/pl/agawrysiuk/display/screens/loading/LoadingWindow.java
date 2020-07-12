@@ -22,7 +22,7 @@ import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.dto.DeckSimpleDto;
-import pl.agawrysiuk.util.ApplicationUtils;
+import pl.agawrysiuk.utils.ApplicationUtils;
 
 import java.io.IOException;
 import java.util.List;

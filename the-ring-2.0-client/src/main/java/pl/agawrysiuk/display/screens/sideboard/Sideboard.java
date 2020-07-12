@@ -20,13 +20,11 @@ import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.game.GameWindowController;
 import pl.agawrysiuk.display.screens.menu.MenuWindow;
+import pl.agawrysiuk.display.utils.ScreenUtils;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +59,10 @@ public class Sideboard implements DisplayWindow {
         this.messenger = messenger;
         handBorder.setOffsetY(0);
         handBorder.setOffsetX(0);
-        handBorder.setRadius(200 * MenuWindow.X_WINDOW);
+        handBorder.setRadius(200 * ScreenUtils.WIDTH_MULTIPLIER);
         handBorder.setColor(Color.AQUA);
-        handBorder.setWidth(25 * MenuWindow.X_WINDOW);
-        handBorder.setHeight(25 * MenuWindow.X_WINDOW);
+        handBorder.setWidth(25 * ScreenUtils.WIDTH_MULTIPLIER);
+        handBorder.setHeight(25 * ScreenUtils.WIDTH_MULTIPLIER);
         handBorder.setSpread(0.80);
         deck.sortCards();
         for (Card card : deck.getCardsInDeck()) {
@@ -80,9 +78,9 @@ public class Sideboard implements DisplayWindow {
         mainPane.prefWidth(1920);
         mainPane.prefHeight(1080);
 
-        textMain.relocate(25 * MenuWindow.X_WINDOW, 5 * MenuWindow.X_WINDOW);
-        textSide.relocate(1325 * MenuWindow.X_WINDOW, 5 * MenuWindow.X_WINDOW);
-        quitBtn.relocate(1550 * MenuWindow.X_WINDOW, 980 * MenuWindow.X_WINDOW);
+        textMain.relocate(25 * ScreenUtils.WIDTH_MULTIPLIER, 5 * ScreenUtils.WIDTH_MULTIPLIER);
+        textSide.relocate(1325 * ScreenUtils.WIDTH_MULTIPLIER, 5 * ScreenUtils.WIDTH_MULTIPLIER);
+        quitBtn.relocate(1550 * ScreenUtils.WIDTH_MULTIPLIER, 980 * ScreenUtils.WIDTH_MULTIPLIER);
         quitBtn.setScaleX(2);
         quitBtn.setScaleY(2);
         quitBtn.setOnAction(actionEvent -> {
@@ -105,7 +103,7 @@ public class Sideboard implements DisplayWindow {
 //            this.youReady = true;
 //            if (this.oppReady) playAgainBtn.setDisable(false);
 //        });
-        playAgainBtn.relocate(1750 * MenuWindow.X_WINDOW, 980 * MenuWindow.X_WINDOW);
+        playAgainBtn.relocate(1750 * ScreenUtils.WIDTH_MULTIPLIER, 980 * ScreenUtils.WIDTH_MULTIPLIER);
         playAgainBtn.setScaleX(2);
         playAgainBtn.setScaleY(2);
         playAgainBtn.setOnAction(actionEvent -> {
@@ -198,41 +196,41 @@ public class Sideboard implements DisplayWindow {
         mainPane.getChildren().removeAll(mainList);
         mainPane.getChildren().removeAll(sideList);
         mainPane.getChildren().removeAll(textMain, textSide);
-        int width = (int) (25 * MenuWindow.X_WINDOW);
-        int height = (int) (25 * MenuWindow.X_WINDOW);
+        int width = (int) (25 * ScreenUtils.WIDTH_MULTIPLIER);
+        int height = (int) (25 * ScreenUtils.WIDTH_MULTIPLIER);
         int number = 0;
         for (ImageView iv : mainList) {
-            iv.setFitWidth(250 * MenuWindow.X_WINDOW);
+            iv.setFitWidth(250 * ScreenUtils.WIDTH_MULTIPLIER);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
             mainPane.getChildren().add(iv);
-            height += 40 * MenuWindow.X_WINDOW;
+            height += 40 * ScreenUtils.WIDTH_MULTIPLIER;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25 * MenuWindow.X_WINDOW);
+                height = (int) (25 * ScreenUtils.WIDTH_MULTIPLIER);
                 width += 260;
             }
         }
 
-        width = (int) (1325 * MenuWindow.X_WINDOW);
-        height = (int) (25 * MenuWindow.X_WINDOW);
+        width = (int) (1325 * ScreenUtils.WIDTH_MULTIPLIER);
+        height = (int) (25 * ScreenUtils.WIDTH_MULTIPLIER);
         number = 0;
 
         for (ImageView iv : sideList) {
-            iv.setFitWidth(250 * MenuWindow.X_WINDOW);
+            iv.setFitWidth(250 * ScreenUtils.WIDTH_MULTIPLIER);
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             iv.setCache(true);
             iv.relocate(width, height);
             mainPane.getChildren().add(iv);
-            height += 40 * MenuWindow.X_WINDOW;
+            height += 40 * ScreenUtils.WIDTH_MULTIPLIER;
             number++;
             if (number == 15) {
                 number = 0;
-                height = (int) (25 * MenuWindow.X_WINDOW);
+                height = (int) (25 * ScreenUtils.WIDTH_MULTIPLIER);
                 width += 260;
             }
         }

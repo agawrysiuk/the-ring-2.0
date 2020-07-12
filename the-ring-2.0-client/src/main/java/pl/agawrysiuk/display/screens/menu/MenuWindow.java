@@ -13,15 +13,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayWindow;
+import pl.agawrysiuk.display.creators.*;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
 
@@ -32,8 +30,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class MenuWindow implements DisplayWindow {
-
-    public static final double X_WINDOW = Screen.getPrimary().getVisualBounds().getWidth() / 1920;
 
     @Getter
     @Setter
@@ -67,62 +63,37 @@ public class MenuWindow implements DisplayWindow {
         deckList.sort(comparatorByName);
 
         //defining center
-        deckView = new GridPane();
-        deckView.setVgap(25);
-        deckView.setHgap(25);
-        deckView.setPadding(new Insets(50,50,50,50));
+        deckView = GridPaneBuilder.GridPane();
 
         for (DeckSimpleDto deck : deckList) {
             placeDeckOnScreen(deck);
         }
 
-        ScrollPane scrollPane = new ScrollPane(deckView);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
+        ScrollPane scrollPane = ScrollPaneBuilder.ScrollPane(deckView);
         mainPane.setCenter(scrollPane);
         mainPane.getCenter().setManaged(false); //center will not move other space
 
-        //making scrollbar scroll faster
-        deckView.setOnScroll(event -> {
-            double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
-            double width = scrollPane.getContent().getBoundsInLocal().getWidth();
-            double vvalue = scrollPane.getVvalue();
-            scrollPane.setVvalue(vvalue + -deltaY / width); // deltaY/width to make the scrolling equally fast regardless of the actual width of the component
-        });
-
         //defining right
-        VBox rightBox = new VBox();
-        rightBox.prefWidth(300);
-        rightBox.setMaxWidth(300);
-        rightBox.setAlignment(Pos.TOP_CENTER);
+        VBox rightBox = VBoxBuilder.VBox(Pos.TOP_CENTER, 300, 300);
         rightBox.setStyle("-fx-background-color: #FAFAFA");
-        rightBox.setPadding(new Insets(25,25,25,25));
-        rightBox.setSpacing(10);
 
-        highlightedName = new Text();
-        highlightedName.setStyle("-fx-font-weight: bold");
+        highlightedName = TextBuilder.Text(new Font(20), "-fx-font-weight: bold");
         rightBox.getChildren().add(highlightedName);
 
         showVisualButton = new Button("Show deck");
         showVisualButton.setOnAction(actionEvent -> lookUpDeck());
         rightBox.getChildren().add(showVisualButton);
 
-        playButton = new Button("PLAY");
-        playButton.prefWidth(125);
-        playButton.prefHeight(50);
-        playButton.setOnAction(this::playButtonClicked);
+        playButton = ButtonBuilder.Button("PLAY", this::playButtonClicked, 125, 50);
         playButton.setStyle("-fx-font-size: 32");
         rightBox.getChildren().add(playButton);
 
         mainPane.setRight(rightBox);
-        highlightedName.setFont(new Font(20));
     }
 
     public void placeDeckOnScreen(DeckSimpleDto item) {
-        VBox vBox = new VBox(10);
-        vBox.setAlignment(Pos.CENTER);
-        Text txt1 = new Text();
-        txt1.setText(item.getTitle());
+        VBox vBox = VBoxBuilder.VBox(Pos.CENTER);
+        Text txt1 = new Text(item.getTitle());
         GridPane.setRowIndex(vBox, rowDrawIndex);
         GridPane.setColumnIndex(vBox, columnDrawIndex);
         vBox.getChildren().addAll(txt1);
@@ -142,23 +113,13 @@ public class MenuWindow implements DisplayWindow {
     }
 
     private void printingCard(StackPane stackPane, Card activeCard, int marginStackPane, int rowCards) {
-        ImageView addedCard = new ImageView();
-        addedCard.setImage(activeCard.getCardImg());
-        addedCard.setFitWidth(250);
-        addedCard.setPreserveRatio(true);
-        addedCard.setSmooth(true);
-        addedCard.setCache(true);
+        ImageView addedCard = ImageViewBuilder.ImageView(activeCard.getCardImg(), 250);
         StackPane.setMargin(addedCard, new Insets(marginStackPane, 0, 0, rowCards)); //sets the place where the card image will be printed
 
         //preview
-        Tooltip tooltip = new Tooltip();
-        tooltip.setGraphic(new ImageView(activeCard.getCardImg()));
-        tooltip.setShowDelay(Duration.millis(100));
-        tooltip.setShowDuration(Duration.seconds(30));
-        Tooltip.install(addedCard, tooltip);
+        TooltipBuilder.Tooltip(addedCard, new ImageView(activeCard.getCardImg()));
 
-        Label label = new Label();
-        label.setText(activeCard.getTitle());
+        Label label = new Label(activeCard.getTitle());
         label.setStyle("-fx-text-fill:transparent;");//so it cant be seen
         StackPane.setMargin(addedCard, new Insets(marginStackPane, 0, 0, rowCards));
 
@@ -178,14 +139,12 @@ public class MenuWindow implements DisplayWindow {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Waiting for the opponent");
-        alert.setHeaderText(null);
-        alert.setContentText("Waiting for the opponent...");
+        Alert alert = AlertBuilder.ConfirmationAlert(
+                "Waiting for the opponent",
+                "Waiting for the opponent...",
+                mainPane.getScene().getWindow());
         alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
         ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Play");
-        alert.initOwner(mainPane.getScene().getWindow());
-        alert.initStyle(StageStyle.UNDECORATED);
         Thread gettingReadyThread =
                 new Thread(new Task<Void>() {
                     @Override
