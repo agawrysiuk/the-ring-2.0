@@ -5,7 +5,10 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -20,6 +23,8 @@ import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.creators.*;
+import pl.agawrysiuk.display.utils.ImageUtils;
+import pl.agawrysiuk.display.utils.JSONObjectUtils;
 import pl.agawrysiuk.dto.DeckSimpleDto;
 import pl.agawrysiuk.model.Card;
 
@@ -69,8 +74,7 @@ public class MenuWindow implements DisplayWindow {
             placeDeckOnScreen(deck);
         }
 
-        ScrollPane scrollPane = ScrollPaneBuilder.ScrollPane(deckView);
-        mainPane.setCenter(scrollPane);
+        mainPane.setCenter(deckView);
         mainPane.getCenter().setManaged(false); //center will not move other space
 
         //defining right
@@ -92,12 +96,13 @@ public class MenuWindow implements DisplayWindow {
     }
 
     public void placeDeckOnScreen(DeckSimpleDto item) {
-        VBox vBox = VBoxBuilder.VBox(Pos.CENTER);
         Text txt1 = new Text(item.getTitle());
-        GridPane.setRowIndex(vBox, rowDrawIndex);
-        GridPane.setColumnIndex(vBox, columnDrawIndex);
-        vBox.getChildren().addAll(txt1);
-        deckView.getChildren().add(vBox);
+
+        VBox vBox = VBoxBuilder.VBox(Pos.CENTER, 200);
+        ImageView image = ImageViewBuilder.ImageView(ImageUtils.decodeBase64ToImage(JSONObjectUtils.getEncodedImageFromCardTitle(item.getTitle())), 250);
+        vBox.getChildren().addAll(image, txt1);
+
+        deckView.add(vBox, columnDrawIndex, rowDrawIndex);
 
         //what after the click
         txt1.setOnMouseClicked(e -> {
@@ -109,6 +114,7 @@ public class MenuWindow implements DisplayWindow {
     }
 
     public void lookUpDeck() {
+        System.out.println("asd");
         //todo change it to new screen
     }
 

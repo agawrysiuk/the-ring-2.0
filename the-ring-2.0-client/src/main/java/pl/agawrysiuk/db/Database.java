@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 public final class Database {
     private static final Database instance = new Database();
     private final List<Card> databaseCards = new ArrayList<>();
-    private final List<CardDto> newDatabaseCards = new ArrayList<>();
+    private final Map<String, CardDto> newDatabaseCards = new HashMap<>();
     private final Map<String, Deck> decks = new TreeMap<>();
     private final Map<String, DeckSimpleDto> newDecks = new HashMap<>();
     private final Image backImage = new Image("file:database" + File.separator + "cards" + File.separator + "cardback.jpg");
@@ -99,7 +100,7 @@ public final class Database {
                 lines.add(line);
             }
             System.out.println("Loading card " + lines.get(0));
-            newDatabaseCards.add(CardDto.builder().title(lines.get(0)).json(lines.get(1)).build());
+            newDatabaseCards.put(lines.get(0), CardDto.builder().title(lines.get(0)).json(lines.get(1)).build());
         } finally {
             LineIterator.closeQuietly(it);
         }
@@ -149,7 +150,7 @@ public final class Database {
                 (new BufferedOutputStream
                         (new FileOutputStream
                                 ("database" + File.separator + "cards.dat")))) {
-            for (CardDto card : newDatabaseCards) {
+            for (CardDto card : newDatabaseCards.values()) {
                 cardFile.writeUTF(card.getTitle());
                 cardFile.writeUTF(card.getJson());
             }
@@ -216,7 +217,7 @@ public final class Database {
     }
 
     public void addCards(List<CardDto> missingCards) {
-        this.newDatabaseCards.addAll(missingCards);
+        this.newDatabaseCards.putAll(missingCards.stream().collect(Collectors.toMap(CardDto::getTitle, Function.identity())));
         for (CardDto cardDto : missingCards) {
             try {
                 String toWrite = cardDto.getTitle() + System.lineSeparator() + cardDto.getJson();

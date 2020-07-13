@@ -7,13 +7,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ScrollPaneBuilder {
 
-    public ScrollPane ScrollPane(Node child) {
-        ScrollPane scrollPane = new ScrollPane(child);
+    public ScrollPane ScrollPane(Node content) {
+        //todo doesn't work, fix it?
+        ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
 
         //making scrollbar scroll faster
-        child.setOnScroll(event -> {
+        content.setOnScroll(event -> {
             double deltaY = event.getDeltaY() * 6; // *6 to make the scrolling a bit faster
             double width = scrollPane.getContent().getBoundsInLocal().getWidth();
             double vvalue = scrollPane.getVvalue();

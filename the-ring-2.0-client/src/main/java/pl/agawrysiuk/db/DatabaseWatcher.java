@@ -22,7 +22,7 @@ public class DatabaseWatcher {
     }
 
     private List<String> getDatabaseCardTitles() {
-        return database.getNewDatabaseCards().stream()
+        return database.getNewDatabaseCards().values().stream()
                 .map(CardDto::getTitle)
                 .collect(Collectors.toList());
     }
