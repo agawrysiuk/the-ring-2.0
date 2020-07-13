@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.creators;
+package pl.agawrysiuk.display.creators.elements;
 
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;

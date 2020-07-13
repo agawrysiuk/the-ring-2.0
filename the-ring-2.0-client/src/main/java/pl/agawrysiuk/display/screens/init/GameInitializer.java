@@ -11,9 +11,9 @@ import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.creators.DialogBuilder;
-import pl.agawrysiuk.display.creators.GridPaneBuilder;
-import pl.agawrysiuk.display.creators.TextFieldBuilder;
+import pl.agawrysiuk.display.creators.elements.TextFieldBuilder;
+import pl.agawrysiuk.display.creators.panes.GridPaneBuilder;
+import pl.agawrysiuk.display.creators.popups.DialogBuilder;
 import pl.agawrysiuk.display.screens.loading.LoadingWindow;
 
 import java.io.BufferedReader;

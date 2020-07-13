@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.creators;
+package pl.agawrysiuk.display.creators.panes;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;

@@ -1,6 +1,6 @@
 package pl.agawrysiuk.display;
 
-import javafx.scene.layout.Pane;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 public interface DisplayWindow {
@@ -8,7 +8,7 @@ public interface DisplayWindow {
 
     void setPrimaryStage(Stage primaryStage);
 
-    Pane getMainPane();
+    Parent getMainPane();
 
     void initialize();
 }

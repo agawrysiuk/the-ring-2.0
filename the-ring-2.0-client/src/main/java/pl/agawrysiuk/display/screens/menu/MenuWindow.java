@@ -5,16 +5,11 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -22,7 +17,12 @@ import lombok.Setter;
 import pl.agawrysiuk.connection.Messenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayWindow;
-import pl.agawrysiuk.display.creators.*;
+import pl.agawrysiuk.display.creators.elements.ImageViewBuilder;
+import pl.agawrysiuk.display.creators.elements.TooltipBuilder;
+import pl.agawrysiuk.display.creators.panes.FlowPaneBuilder;
+import pl.agawrysiuk.display.creators.panes.ScrollPaneBuilder;
+import pl.agawrysiuk.display.creators.panes.VBoxBuilder;
+import pl.agawrysiuk.display.creators.popups.AlertBuilder;
 import pl.agawrysiuk.display.utils.ImageUtils;
 import pl.agawrysiuk.display.utils.JSONObjectUtils;
 import pl.agawrysiuk.dto.DeckSimpleDto;
@@ -43,14 +43,9 @@ public class MenuWindow implements DisplayWindow {
     private List<DeckSimpleDto> deckList;
     private DeckSimpleDto activeDeck;
     private DeckSimpleDto opponentDeck;
-    private GridPane deckView;
-    private Text highlightedName;
-    private Button playButton;
-    private Button showVisualButton;
     @Getter
-    private BorderPane mainPane;
-    private int columnDrawIndex = 0;
-    private int rowDrawIndex = 0;
+    private ScrollPane mainPane;
+    private FlowPane flowPane;
     private int marginStackPane = 25;
     private int rowCards = 25;
     private Comparator<DeckSimpleDto> comparatorByName = Comparator.comparing(DeckSimpleDto::getTitle);
@@ -61,61 +56,31 @@ public class MenuWindow implements DisplayWindow {
     }
 
     public void initialize() {
-        mainPane = new BorderPane();
-
+        flowPane = FlowPaneBuilder.FlowPane(1800);
         deckList = new ArrayList<>();
         deckList.addAll(Database.getInstance().getNewDecks().values());
         deckList.sort(comparatorByName);
-
-        //defining center
-        deckView = GridPaneBuilder.GridPane();
 
         for (DeckSimpleDto deck : deckList) {
             placeDeckOnScreen(deck);
         }
 
-        mainPane.setCenter(deckView);
-        mainPane.getCenter().setManaged(false); //center will not move other space
-
-        //defining right
-        VBox rightBox = VBoxBuilder.VBox(Pos.TOP_CENTER, 300, 300);
-        rightBox.setStyle("-fx-background-color: #FAFAFA");
-
-        highlightedName = TextBuilder.Text(new Font(20), "-fx-font-weight: bold");
-        rightBox.getChildren().add(highlightedName);
-
-        showVisualButton = new Button("Show deck");
-        showVisualButton.setOnAction(actionEvent -> lookUpDeck());
-        rightBox.getChildren().add(showVisualButton);
-
-        playButton = ButtonBuilder.Button("PLAY", this::playButtonClicked, 125, 50);
-        playButton.setStyle("-fx-font-size: 32");
-        rightBox.getChildren().add(playButton);
-
-        mainPane.setRight(rightBox);
+        mainPane = ScrollPaneBuilder.ScrollPane(flowPane);
     }
 
     public void placeDeckOnScreen(DeckSimpleDto item) {
         Text txt1 = new Text(item.getTitle());
 
-        VBox vBox = VBoxBuilder.VBox(Pos.CENTER, 200);
+        VBox vBox = VBoxBuilder.VBox(Pos.CENTER, 250);
         ImageView image = ImageViewBuilder.ImageView(ImageUtils.decodeBase64ToImage(JSONObjectUtils.getEncodedImageFromCardTitle(item.getTitle())), 250);
         vBox.getChildren().addAll(image, txt1);
 
-        deckView.add(vBox, columnDrawIndex, rowDrawIndex);
+        flowPane.getChildren().add(vBox);
 
         //what after the click
-        txt1.setOnMouseClicked(e -> {
-            activeDeck = item;
-            highlightedName.setText(item.getTitle());
+        image.setOnMouseClicked(e -> {
+            //todo go to deck details
         });
-
-        columnDrawIndex++;
-    }
-
-    public void lookUpDeck() {
-        System.out.println("asd");
-        //todo change it to new screen
     }
 
     private void printingCard(StackPane stackPane, Card activeCard, int marginStackPane, int rowCards) {

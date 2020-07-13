@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.creators;
+package pl.agawrysiuk.display.creators.popups;
 
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.creators;
+package pl.agawrysiuk.display.creators.panes;
 
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -8,10 +8,10 @@ import lombok.experimental.UtilityClass;
 public class ScrollPaneBuilder {
 
     public ScrollPane ScrollPane(Node content) {
-        //todo doesn't work, fix it?
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
+//        scrollPane.setStyle("-fx-focus-color: transparent;");
 
         //making scrollbar scroll faster
         content.setOnScroll(event -> {

@@ -1,4 +1,4 @@
-package pl.agawrysiuk.display.creators;
+package pl.agawrysiuk.display.creators.elements;
 
 import javafx.scene.control.TextField;
 import lombok.experimental.UtilityClass;
