@@ -28,11 +28,8 @@ public class DisplayContext {
         primaryStage = previousWindow.getPrimaryStage();
         newWindow.initialize();
         newWindow.setPrimaryStage(primaryStage);
-        preparePrimaryStage(maximized, fullScreen);
-        //todo change it to replace scene's root instead of creating new scene
-        //todo primaryStage.getScene().setRoot(newWindow.getMainPane());
-        //todo then change the size dynamically
         primaryStage.setScene(new Scene(newWindow.getMainPane(), this.width, this.height));
+        preparePrimaryStage(maximized, fullScreen);
         primaryStage.show();
     }
 
