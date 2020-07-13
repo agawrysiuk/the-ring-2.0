@@ -13,7 +13,6 @@ public class FlowPaneBuilder {
         flowPane.setVgap(25);
         flowPane.setHgap(25);
         flowPane.setPrefWrapLength(wrapLength); // preferred width allows for two columns
-        flowPane.setStyle("-fx-background-color: DAE6F3;");
         return flowPane;
     }
 }

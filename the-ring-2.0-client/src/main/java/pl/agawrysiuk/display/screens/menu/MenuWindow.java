@@ -23,6 +23,7 @@ import pl.agawrysiuk.display.creators.panes.FlowPaneBuilder;
 import pl.agawrysiuk.display.creators.panes.ScrollPaneBuilder;
 import pl.agawrysiuk.display.creators.panes.VBoxBuilder;
 import pl.agawrysiuk.display.creators.popups.AlertBuilder;
+import pl.agawrysiuk.display.creators.transitions.FadeTransitionBuilder;
 import pl.agawrysiuk.display.utils.ImageUtils;
 import pl.agawrysiuk.display.utils.JSONObjectUtils;
 import pl.agawrysiuk.dto.DeckSimpleDto;
@@ -76,6 +77,16 @@ public class MenuWindow implements DisplayWindow {
         vBox.getChildren().addAll(image, txt1);
 
         flowPane.getChildren().add(vBox);
+        vBox.setOpacity(0.3);
+
+        vBox.setOnMouseEntered(e -> {
+            vBox.setOpacity(1);
+            FadeTransitionBuilder.FadeTransition(vBox, 500, 0.3, 1).play();
+        });
+
+        vBox.setOnMouseExited(e -> {
+            FadeTransitionBuilder.FadeTransition(vBox, 500, 1, 0.3).play();
+        });
 
         //what after the click
         image.setOnMouseClicked(e -> {

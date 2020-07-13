@@ -11,7 +11,7 @@ public class ScrollPaneBuilder {
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
-//        scrollPane.setStyle("-fx-focus-color: transparent;");
+        scrollPane.setStyle("-fx-focus-color: transparent;");
 
         //making scrollbar scroll faster
         content.setOnScroll(event -> {
