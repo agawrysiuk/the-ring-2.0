@@ -85,34 +85,23 @@ public class GameWindowController implements DisplayWindow {
 
     private ImageView previewIV = new ImageView();
     private Spinner<Integer> scryDrawSpinner;
-    private Button drawCardBtn;
-    private Button scryButton;
-    private Button shuffleDeckBtn;
     private Button resolveButton;
-    private String resolveDefBtnStyle = "-fx-background-color: linear-gradient(#ff5400, #be1d00);" +
+    private final String resolveDefBtnStyle = "-fx-background-color: linear-gradient(#ff5400, #be1d00);" +
             "-fx-background-radius: 5;" +
             "-fx-background-insets: 0;" +
             "-fx-text-fill: white;";
-    private Button skipTurnBtn;
-    private Button coinTossBtn;
-    private Button addTokenBtn;
-    private Button revealBtn;
-    private Button sideboardBtn;
-    private Button forfeitBtn;
-    private Button untapAll;
-    private Button sendChatBtn;
     private Button attackAll;
     private Button unblockAll;
     private TextField chatField;
 
     private boolean buttonsRelocated = false;
-    private List<Control> buttonsList = new ArrayList<Control>();
+    private final List<Control> buttonsList = new ArrayList<Control>();
     private ContextMenu rightClickMenu = new ContextMenu();
 
     private SocketMessenger socketMessenger;
 
-    private Deck yourDeck;
-    private Deck opponentDeck;
+    private final Deck yourDeck;
+    private final Deck opponentDeck;
     private ImageView oppDeckIV = new ImageView();
     private ImageView oppGraveyardIV = new ImageView();
     private ImageView oppExileIV = new ImageView();
@@ -137,12 +126,9 @@ public class GameWindowController implements DisplayWindow {
     private boolean yourTurn;
     private boolean yourMove;
 
-    Task<Void> receiveMessageTask;
-
     Thread receiveThread = new Thread();
     private ListView<String> chatView = new ListView<>();
     private ObservableList<String> chatMessages = FXCollections.observableArrayList();
-
 
     {
         Collections.addAll(listPhases,
@@ -209,23 +195,30 @@ public class GameWindowController implements DisplayWindow {
     }
 
     public GameWindowController(Deck deck, Deck opponentDeck, SocketMessenger socketMessenger) {
-//    GameWindowController(Deck deck, Deck opponentDeck) { //single player version
-
-        //importing deck to the game
         this.yourDeck = deck;
         this.opponentDeck = opponentDeck;
         this.socketMessenger = socketMessenger;
-        Collections.shuffle(deck.getCardsInDeck());
-        Collections.shuffle(opponentDeck.getCardsInDeck());
-        //setting up your deck
-        for (Card card : deck.getCardsInDeck()) {
+        setUpDecks();
+    }
+
+    private void setUpDecks() {
+        setUpHeroDeck();
+        setUpOpponentDeck();
+    }
+
+    private void setUpHeroDeck() {
+        Collections.shuffle(yourDeck.getCardsInDeck());
+
+        for (Card card : yourDeck.getCardsInDeck()) {
             ViewCard viewCard = new ViewCard(card);
             viewCard.setOpponentsCard(false);
             cardList.getHeroListDeck().add(viewCard);
             viewCard.setUltimatePosition(PositionType.DECK);
             bringCardToGame(viewCard, true);
         }
-        for (Card card : deck.getCardsInSideboard()) {
+
+        //todo no Sideboard in Commander, delete later
+        for (Card card : yourDeck.getCardsInSideboard()) {
             ViewCard viewCard = new ViewCard(card);
             viewCard.setOpponentsCard(false);
             cardList.getHeroListSideboard().add(viewCard);
@@ -234,8 +227,11 @@ public class GameWindowController implements DisplayWindow {
             viewCard.getCard(true, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
 
         }
+    }
 
-        //setting up opponents deck
+    private void setUpOpponentDeck() {
+        Collections.shuffle(opponentDeck.getCardsInDeck());
+
         for (Card card : opponentDeck.getCardsInDeck()) {
             ViewCard viewCardOpp = new ViewCard();
             viewCardOpp.setOpponentsCard(true);
@@ -243,6 +239,8 @@ public class GameWindowController implements DisplayWindow {
             viewCardOpp.setUltimatePosition(PositionType.DECK);
             bringCardToGame(viewCardOpp, false);
         }
+
+        //todo no Sideboard in Commander, delete later
         for (Card card : opponentDeck.getCardsInSideboard()) {
             ViewCard viewCardOpp = new ViewCard();
             viewCardOpp.setOpponentsCard(true);
@@ -263,22 +261,6 @@ public class GameWindowController implements DisplayWindow {
 //        });
 
         socketMessenger.getSender().println("Game Window Controller loaded.");
-
-//        try {
-//            String isFirst = messenger.getClientReceiver().readLine();
-//            System.out.println(isFirst);
-//            if (isFirst.equals("!FIRST!")) {
-//                chatMessages.add("You go first");
-//                yourTurn = true;
-//                yourMove = true;
-//            } else if(isFirst.equals("!NOT_FIRST!")) {
-//                chatMessages.add("You go second");
-//                yourTurn = false;
-//                yourMove = false;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         settingUpGameControls();
         settingUpView(true);
@@ -1532,7 +1514,7 @@ public class GameWindowController implements DisplayWindow {
         });
         mainPane.getChildren().add(chatField);
 
-        sendChatBtn = new Button("Send");
+        Button sendChatBtn = new Button("Send");
         sendChatBtn.relocate(1850 * ScreenUtils.WIDTH_MULTIPLIER, 501 * ScreenUtils.WIDTH_MULTIPLIER);
         mainPane.getChildren().add(sendChatBtn);
         sendChatBtn.setOnAction(e -> {
@@ -1565,7 +1547,7 @@ public class GameWindowController implements DisplayWindow {
         scryDrawSpinner.setPrefWidth(60);
         scryDrawSpinner.setEditable(true);
         mainPane.getChildren().add(scryDrawSpinner);
-        scryButton = new Button("Scry");
+        Button scryButton = new Button("Scry");
         scryButton.relocate(1720 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
         scryButton.setOnAction(e -> {
             if (cardList.getHeroListDeck().size() == 0) {
@@ -1581,7 +1563,7 @@ public class GameWindowController implements DisplayWindow {
         });
         mainPane.getChildren().add(scryButton);
         //setting up buttons for draw card
-        drawCardBtn = new Button("Draw");
+        Button drawCardBtn = new Button("Draw");
         drawCardBtn.relocate(1620 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
         drawCardBtn.setOnAction(e -> {
             socketMessenger.getSender().println("DRAW:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
@@ -1592,7 +1574,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(drawCardBtn);
 
         //setting up reveal hand
-        revealBtn = new Button("Reveal");
+        Button revealBtn = new Button("Reveal");
         revealBtn.relocate(1950 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
         revealBtn.setOnAction(e -> {
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -1682,7 +1664,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(revealBtn);
 
         //setting up untap all
-        untapAll = new Button("Untap all");
+        Button untapAll = new Button("Untap all");
         untapAll.relocate(1640 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER); //2075,650
         untapAll.setOnAction(e -> {
             for (ViewCard viewCard : cardList.getHeroListBattlefield()) {
@@ -1694,7 +1676,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(untapAll);
 
         //sideboardBtn
-        sideboardBtn = new Button("Sideboard");
+        Button sideboardBtn = new Button("Sideboard");
         sideboardBtn.relocate(1955 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
         sideboardBtn.setOnAction(e -> {
             printNewView(cardList.getHeroListSideboard());
@@ -1702,7 +1684,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(sideboardBtn);
 
         //skip turn button
-        skipTurnBtn = new Button("Skip turn");
+        Button skipTurnBtn = new Button("Skip turn");
         skipTurnBtn.relocate(1800 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
 
         skipTurnBtn.setOnAction(e -> {
@@ -1738,7 +1720,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(skipTurnBtn);
 
         //setting up cointoss button
-        coinTossBtn = new Button("Coin");
+        Button coinTossBtn = new Button("Coin");
         coinTossBtn.relocate(2110 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
         coinTossBtn.setOnAction(e -> {
             String coin = (new Random().nextBoolean()) ? "HEADS" : "TAILS";
@@ -1748,7 +1730,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(coinTossBtn);
 
         //settingup forfeit button
-        forfeitBtn = new Button("Quit");
+        Button forfeitBtn = new Button("Quit");
         forfeitBtn.relocate(2110 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
         forfeitBtn.setStyle("-fx-background-color: linear-gradient(#636363, #4a4a4a);" +
                 "-fx-background-radius: 5;" +
@@ -1784,7 +1766,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(forfeitBtn);
 
         //setting up button for shuffling deck
-        shuffleDeckBtn = new Button("Shuffle deck");
+        Button shuffleDeckBtn = new Button("Shuffle deck");
         shuffleDeckBtn.relocate(2075 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER); //1620,725
         shuffleDeckBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -1807,7 +1789,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(shuffleDeckBtn);
 
         //setting up token button
-        addTokenBtn = new Button("Add token");
+        Button addTokenBtn = new Button("Add token");
         addTokenBtn.relocate(1965 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
         addTokenBtn.setOnAction(e -> {
             addTokenDialog();
