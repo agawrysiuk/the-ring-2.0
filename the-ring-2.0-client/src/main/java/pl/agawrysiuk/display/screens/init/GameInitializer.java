@@ -7,7 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import pl.agawrysiuk.connection.Messenger;
+import pl.agawrysiuk.connection.SocketMessenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
@@ -36,13 +36,13 @@ public class GameInitializer implements DisplayWindow {
     @Setter
     private Stage primaryStage;
 
-    private Messenger messenger;
+    private SocketMessenger socketMessenger;
 
     public void initialize() {
         loadSettings();
         showConnectionDialogAndWaitForInput();
         saveSettings();
-        this.messenger = connectToServer();
+        this.socketMessenger = connectToServer();
         moveToLoadingWindow();
     }
 
@@ -80,14 +80,14 @@ public class GameInitializer implements DisplayWindow {
         Database.getInstance().setSettings(1, host);
     }
 
-    private Messenger connectToServer() {
+    private SocketMessenger connectToServer() {
         try {
             Socket socket = new Socket(host, 5626);
             PrintWriter clientSender = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader clientReceiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             clientSender.println(playersName);
             System.out.println("Client initialized.");
-            return new Messenger(socket, clientSender, clientReceiver);
+            return new SocketMessenger(socket, clientSender, clientReceiver);
         } catch (ConnectException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning");
@@ -107,7 +107,7 @@ public class GameInitializer implements DisplayWindow {
 
     private void moveToLoadingWindow() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new LoadingWindow(messenger));
+        context.setNewWindow(new LoadingWindow(socketMessenger));
         context.showNewWindow(this, false);
     }
 }

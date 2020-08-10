@@ -14,7 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import pl.agawrysiuk.connection.Messenger;
+import pl.agawrysiuk.connection.SocketMessenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.creators.elements.ImageViewBuilder;
@@ -50,10 +50,10 @@ public class MenuWindow implements DisplayWindow {
     private int marginStackPane = 25;
     private int rowCards = 25;
     private Comparator<DeckSimpleDto> comparatorByName = Comparator.comparing(DeckSimpleDto::getTitle);
-    private Messenger messenger;
+    private SocketMessenger socketMessenger;
 
-    public MenuWindow(Messenger messenger) {
-        this.messenger = messenger;
+    public MenuWindow(SocketMessenger socketMessenger) {
+        this.socketMessenger = socketMessenger;
     }
 
     public void initialize() {
@@ -133,20 +133,20 @@ public class MenuWindow implements DisplayWindow {
                     protected Void call() throws Exception {
                         boolean oppIsFound = false;
                         while (!oppIsFound) {
-                            String incoming = messenger.getClientReceiver().readLine();
+                            String incoming = socketMessenger.getReceiver().readLine();
                             System.out.println(incoming);
                             if (incoming.contains("OPPREADY")) { //here, we have our opponent
                                 ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setDisable(true);
                                 oppIsFound = true;
-                                messenger.getClientSender().println("DECK_TIME");
+                                socketMessenger.getSender().println("DECK_TIME");
                                 Platform.runLater(() -> { //here, we are preparing to launch the game
                                     alert.setContentText("Opponent found!\nSending and receiving decks...");
-                                    messenger.getClientSender().println("DECK:" + activeDeck.getTitle());
+                                    socketMessenger.getSender().println("DECK:" + activeDeck.getTitle());
 
                                     //todo change the server side to send deck title!
                                     String deckInfoOpp = "";
                                     try {
-                                        deckInfoOpp = messenger.getClientReceiver().readLine();
+                                        deckInfoOpp = socketMessenger.getReceiver().readLine();
                                     } catch (IOException e) {
                                         e.printStackTrace(); //to fix
                                     }
@@ -166,7 +166,7 @@ public class MenuWindow implements DisplayWindow {
         if (result.isPresent() && result.get() == ButtonType.CANCEL) {
             gettingReadyThread.interrupt();
             try {
-                messenger.getSocket().close();
+                socketMessenger.getSocket().close();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

@@ -14,7 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import pl.agawrysiuk.connection.Messenger;
+import pl.agawrysiuk.connection.SocketMessenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
@@ -35,7 +35,7 @@ public class Sideboard implements DisplayWindow {
     @Setter
     private Stage primaryStage;
 
-    private Messenger messenger;
+    private SocketMessenger socketMessenger;
 
     @Getter
     private Pane mainPane;
@@ -54,9 +54,9 @@ public class Sideboard implements DisplayWindow {
     private boolean youReady = false;
     private boolean oppReady = false;
 
-    public Sideboard(Deck deck, Messenger messenger) {
+    public Sideboard(Deck deck, SocketMessenger socketMessenger) {
         this.yourDeck = deck;
-        this.messenger = messenger;
+        this.socketMessenger = socketMessenger;
         handBorder.setOffsetY(0);
         handBorder.setOffsetX(0);
         handBorder.setRadius(200 * ScreenUtils.WIDTH_MULTIPLIER);
@@ -84,7 +84,7 @@ public class Sideboard implements DisplayWindow {
         quitBtn.setScaleX(2);
         quitBtn.setScaleY(2);
         quitBtn.setOnAction(actionEvent -> {
-            messenger.getClientSender().println("EXIT:");
+            socketMessenger.getSender().println("EXIT:");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("You have quit");
             alert.setHeaderText(null);
@@ -107,7 +107,7 @@ public class Sideboard implements DisplayWindow {
         playAgainBtn.setScaleX(2);
         playAgainBtn.setScaleY(2);
         playAgainBtn.setOnAction(actionEvent -> {
-            messenger.getClientSender().println("OPPREADY:" + mainList.size() + ":" + sideList.size());
+            socketMessenger.getSender().println("OPPREADY:" + mainList.size() + ":" + sideList.size());
             playAgainBtn.setDisable(true);
             this.youReady = true;
             if (this.oppReady) startTheGameAgain();
@@ -119,7 +119,7 @@ public class Sideboard implements DisplayWindow {
             @Override
             protected Object call() throws Exception {
                 try {
-                    String message = messenger.getClientReceiver().readLine();
+                    String message = socketMessenger.getReceiver().readLine();
                     System.out.println(LocalTime.now() + ", received message: " + message);
                     updateMessage(message);
                     //else if() ... here you listen to everything that your opponent does
@@ -241,9 +241,9 @@ public class Sideboard implements DisplayWindow {
 
     private void quitTheGame() {
         try {
-            messenger.getSocket().close();
+            socketMessenger.getSocket().close();
             DisplayContext context = new DisplayContext();
-            context.setNewWindow(new MenuWindow(messenger));
+            context.setNewWindow(new MenuWindow(socketMessenger));
             context.showNewWindow(this);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -253,7 +253,7 @@ public class Sideboard implements DisplayWindow {
 
     private void startTheGameAgain() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, messenger));
+        context.setNewWindow(new GameWindowController(yourDeck, opponentDeck, socketMessenger));
         context.showNewWindow(this);
     }
 }

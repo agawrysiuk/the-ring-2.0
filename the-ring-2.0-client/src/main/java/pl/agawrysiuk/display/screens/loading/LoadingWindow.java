@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import pl.agawrysiuk.connection.MessageCode;
-import pl.agawrysiuk.connection.Messenger;
+import pl.agawrysiuk.connection.SocketMessenger;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.db.DatabaseWatcher;
 import pl.agawrysiuk.display.DisplayContext;
@@ -39,11 +39,11 @@ public class LoadingWindow implements DisplayWindow {
     @Setter
     private Stage primaryStage;
 
-    private Messenger messenger;
+    private SocketMessenger socketMessenger;
     private DatabaseWatcher watcher;
 
-    public LoadingWindow(Messenger messenger) {
-        this.messenger = messenger;
+    public LoadingWindow(SocketMessenger socketMessenger) {
+        this.socketMessenger = socketMessenger;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class LoadingWindow implements DisplayWindow {
                 System.out.println("Missing cards = " + missing);
                 downloadAndAddMissingCards(missing);
             } else {
-                messenger.getClientSender().println(MessageCode.OK);
+                socketMessenger.getSender().println(MessageCode.OK);
             }
             checkDecksAndAddIfNeeded(simpleDecks);
         } catch (IOException e) {
@@ -106,7 +106,7 @@ public class LoadingWindow implements DisplayWindow {
     }
 
     private List<DeckSimpleDto> downloadDecks() throws IOException {
-        String jsonDecks = messenger.getClientReceiver().readLine();
+        String jsonDecks = socketMessenger.getReceiver().readLine();
         if (jsonDecks.equals(MessageCode.DATABASE_ISSUE.toString())) {
             throw new IOException();
         }
@@ -123,8 +123,8 @@ public class LoadingWindow implements DisplayWindow {
     }
 
     private void downloadAndAddMissingCards(List<String> missing) throws IOException {
-        messenger.getClientSender().println(new ObjectMapper().writeValueAsString(missing));
-        String serverResponse = messenger.getClientReceiver().readLine();
+        socketMessenger.getSender().println(new ObjectMapper().writeValueAsString(missing));
+        String serverResponse = socketMessenger.getReceiver().readLine();
         List<CardDto> missingCards = new ObjectMapper().readValue(serverResponse, new TypeReference<>(){});
         System.out.println("Adding missing cards to the database.");
         watcher.addMissingCards(missingCards);
@@ -136,7 +136,7 @@ public class LoadingWindow implements DisplayWindow {
 
     private void moveToMainWindow() {
         DisplayContext context = new DisplayContext();
-        context.setNewWindow(new MenuWindow(messenger));
+        context.setNewWindow(new MenuWindow(socketMessenger));
         context.showNewWindow(this, true);
     }
 }

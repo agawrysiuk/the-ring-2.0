@@ -9,8 +9,8 @@ import java.net.Socket;
 
 @Getter
 @AllArgsConstructor
-public class Messenger {
+public class SocketMessenger {
     private final Socket socket;
-    private final PrintWriter clientSender;
-    private final BufferedReader clientReceiver;
+    private final PrintWriter sender;
+    private final BufferedReader receiver;
 }
