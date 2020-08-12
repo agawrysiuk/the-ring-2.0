@@ -1,35 +1,31 @@
 package pl.agawrysiuk.display.screens.game;
 
 import javafx.animation.ParallelTransition;
-import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -37,7 +33,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,6 +43,8 @@ import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.DisplayContext;
 import pl.agawrysiuk.display.DisplayWindow;
 import pl.agawrysiuk.display.screens.game.components.*;
+import pl.agawrysiuk.display.screens.game.utils.Actions;
+import pl.agawrysiuk.display.screens.game.utils.GameWindowViewResolver;
 import pl.agawrysiuk.display.screens.sideboard.Sideboard;
 import pl.agawrysiuk.display.utils.ScreenUtils;
 import pl.agawrysiuk.model.Card;
@@ -67,67 +64,110 @@ public class GameWindowController implements DisplayWindow {
     @Getter
     private Pane mainPane;
 
+    @Getter
     private CardList cardList = new CardList();
 
+    @Getter
     private ImageView heroDeckIV = new ImageView();
+    @Getter
     private ImageView heroGraveyardIV = new ImageView();
     private ImageView heroExileIV = new ImageView();
+    @Getter
     private Text heroDeckCardsNumber = new Text();
 
+    @Getter
     private DropShadow handBorder = new DropShadow();
+    @Getter
     private DropShadow handClickBorder = new DropShadow();
+    @Getter
     private DropShadow battlefieldBorder = new DropShadow();
+    @Getter
     private DropShadow highlightBorder = new DropShadow();
 
+    @Getter
+    @Setter
     private Line attackBlock;
+    @Getter
     private List<Line> attackBlockList = new ArrayList<>();
+    @Getter
+    @Setter
     private ViewCard blockingCard;
 
+    @Getter
     private ImageView previewIV = new ImageView();
-    private Spinner<Integer> scryDrawSpinner;
+    @Getter
+    @Setter
     private Button resolveButton;
+    @Getter
     private final String resolveDefBtnStyle = "-fx-background-color: linear-gradient(#ff5400, #be1d00);" +
             "-fx-background-radius: 5;" +
             "-fx-background-insets: 0;" +
             "-fx-text-fill: white;";
+    @Getter
+    @Setter
     private Button attackAll;
+    @Getter
+    @Setter
     private Button unblockAll;
-    private TextField chatField;
 
     private boolean buttonsRelocated = false;
+    @Getter
     private final List<Control> buttonsList = new ArrayList<Control>();
+    @Getter
     private ContextMenu rightClickMenu = new ContextMenu();
 
+    @Getter
     private SocketMessenger socketMessenger;
 
     private final Deck yourDeck;
     private final Deck opponentDeck;
+    @Getter
     private ImageView oppDeckIV = new ImageView();
+    @Getter
     private ImageView oppGraveyardIV = new ImageView();
     private ImageView oppExileIV = new ImageView();
+    @Getter
     private Text oppDeckCardsNumber = new Text();
+    @Getter
+    @Setter
     private StackPane popupPane;
+    @Getter
+    @Setter
     private Stage printNewViewStage;
 
     private Text yourLifeTXT = new Text(String.valueOf(20)); //900,800
     private Text opponentsLifeTXT = new Text(String.valueOf(20)); //900,140
 
+    @Getter
     private Text yourTurnText = new Text("Your turn");
+    @Getter
     private Text opponentsTurnText = new Text("Opponent's turn");
 
+    @Getter
     private List<Token> uglyTokenSolution = new ArrayList<>(); //yes, i am ashamed
+    @Getter
+    @Setter
     private Button extendContractBTNS;
 
+    @Getter
     private List<Text> listPhases = new ArrayList<>();
+    @Getter
     private List<Tooltip> phasesTooltipYourTurn = new ArrayList<>();
+    @Getter
     private List<Tooltip> phasesTooltipNotYourTurn = new ArrayList<>();
+    @Getter
+    @Setter
     private int phasesIterator = 0;
     private boolean mulligan = true;
+    @Getter
+    @Setter
     private boolean yourTurn;
+    @Getter
+    @Setter
     private boolean yourMove;
 
     Thread receiveThread = new Thread();
-    private ListView<String> chatView = new ListView<>();
+    @Getter
     private ObservableList<String> chatMessages = FXCollections.observableArrayList();
 
     {
@@ -262,7 +302,7 @@ public class GameWindowController implements DisplayWindow {
 
         socketMessenger.getSender().println("Game Window Controller loaded.");
 
-        settingUpGameControls();
+        GameWindowViewResolver.configure(this);
         settingUpView(true);
         settingUpView(false);
 
@@ -295,7 +335,7 @@ public class GameWindowController implements DisplayWindow {
                             if (!(yourTurn && message.contains("END_TURN") && (phasesIterator == listPhases.size() - 1))) {
                                 yourMove = !yourMove;
                             }
-                            disableEnableBtns();
+                            Actions.disableEnableBtns(GameWindowController.this);
                         }
                         updateMessage(message);
                         if (message.contains("QUIT:")) {
@@ -322,7 +362,7 @@ public class GameWindowController implements DisplayWindow {
                 //RESPOND:REQUEST_NEXT_PHASE goes to the next phase?
                 //====CRITICAL====
                 yourMove = true;
-                disableEnableBtns();
+                Actions.disableEnableBtns(this);
             } else if (message.contains("QUIT:")) {
                 chatMessages.add("RE:Opponent decided to quit the game.");
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -348,7 +388,7 @@ public class GameWindowController implements DisplayWindow {
                 //====CRITICAL====
                 chatMessages.add("RE:Opponent decided to go to the next phase.");
                 if (yourTurn) {
-                    nextPhase();
+                    Actions.nextPhase(this);
                 }
             } else if (message.contains("SKIP_TURN:")) { //only for the player on the PLAY
                 //critical move, it's your time to respond
@@ -368,10 +408,10 @@ public class GameWindowController implements DisplayWindow {
                     mainPane.getChildren().remove(lastCardInStack);
                 } else if (lastCardInStack.getType().toLowerCase().equals("sorcery") ||
                         lastCardInStack.getType().toLowerCase().equals("instant")) {
-                    moveToGraveyard(lastCardInStack, !lastCardInStack.isOpponentsCard());
+                    Actions.moveToGraveyard(this, lastCardInStack, !lastCardInStack.isOpponentsCard());
                 } else {
 
-                    putOnBattlefield(lastCardInStack, false, !lastCardInStack.isOpponentsCard());
+                    Actions.putOnBattlefield(this, lastCardInStack, false, !lastCardInStack.isOpponentsCard());
                 }
                 chatMessages.add("RE:Opponent resolved " + lastCardInStack.getTitle() + ".");
                 cardList.getListCastingStack().remove(cardList.getListCastingStack().size() - 1);
@@ -384,18 +424,18 @@ public class GameWindowController implements DisplayWindow {
                     viewCard.revealOppCard(cardTitle);
                 }
                 chatMessages.add("Opponent played " + viewCard.getTitle() + ".");
-                putOnBattlefield(viewCard, false, false);
+                Actions.putOnBattlefield(this, viewCard, false, false);
                 cardList.getOppListHand().remove(viewCard);
-                Platform.runLater(() -> reArrangeHand(-1, 0, false));
+                Platform.runLater(() -> Actions.reArrangeHand(this, -1, 0, false));
             } else if (message.contains("CAST:")) { //
                 String cardTitle = message.split(":")[2];
                 ViewCard viewCard = cardList.getOppListHand().get(Integer.parseInt(message.split(":")[1]));
                 viewCard.setRotate(0);
                 viewCard.revealOppCard(cardTitle);
                 chatMessages.add("RE:Opponent casts " + viewCard.getTitle() + ".");
-                castToStack(viewCard);
+                Actions.castToStack(this, viewCard);
                 cardList.getOppListHand().remove(viewCard);
-                Platform.runLater(() -> reArrangeHand(-1, 0, false));
+                Platform.runLater(() -> Actions.reArrangeHand(this, -1, 0, false));
 //                //====CRITICAL====
 //                yourMove = true;
 //                disableEnableBtns();
@@ -406,11 +446,11 @@ public class GameWindowController implements DisplayWindow {
                 for (int i = 1; i < (ability.length - 1); i++) { //removing the card number and last number
                     sb.append(ability[i]);
                 }
-                castAbTr(viewCard, "Ability", sb.toString());
+                Actions.castAbTr(this, viewCard, "Ability", sb.toString());
                 chatMessages.add("RE:Opponent activated ability of " + viewCard.getTitle() + ".");
             } else if (message.contains("TRANSFORM:")) {
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.replace("TRANSFORM:", "").split(":")[0]));
-                castAbTr(viewCard, "Transform", "");
+                Actions.castAbTr(this, viewCard, "Transform", "");
                 chatMessages.add("RE:Opponent transforms " + viewCard.getTitle() + ".");
             } else if (message.contains("HIGHLIGHT:")) {
                 cardList.getHeroListBattlefield().get(Integer.parseInt(message.replace("HIGHLIGHT:", "").split(":")[0]))
@@ -427,15 +467,15 @@ public class GameWindowController implements DisplayWindow {
             } else if (message.contains("ATTACK:")) {
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.replace("ATTACK:", "").split(":")[0]));
                 viewCard.setEffect(highlightBorder);
-                tapCard(viewCard, false, true);
+                Actions.tapCard(this, viewCard, false, true);
             } else if (message.contains("ATTACK_NOT:")) {
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.replace("ATTACK_NOT:", "").split(":")[0]));
-                untapCard(viewCard, false, false);
+                Actions.untapCard(this, viewCard, false, false);
             } else if (message.contains("ATTACK_ALL:")) {
                 for (ViewCard viewCard : cardList.getOppListBattlefield()) {
                     if (viewCard.getType().toLowerCase().equals("creature")) {
                         viewCard.setEffect(highlightBorder);
-                        tapCard(viewCard, false, true);
+                        Actions.tapCard(this, viewCard, false, true);
                     }
                 }
             } else if (message.contains("UNBLOCK_ALL:")) {
@@ -445,7 +485,7 @@ public class GameWindowController implements DisplayWindow {
                 message = message.replace("BLOCK:", "");
                 ViewCard blockCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.split(":")[0]));
                 ViewCard attackCard = cardList.getHeroListBattlefield().get(Integer.parseInt(message.split(":")[1]));
-                Line line = createLine();
+                Line line = Actions.createLine(this);
                 line.setStartX(blockCard.getLayoutX()
                         + blockCard.getTranslateX()
                         + (60 * ScreenUtils.WIDTH_MULTIPLIER));
@@ -467,18 +507,18 @@ public class GameWindowController implements DisplayWindow {
                 chatMessages.add("Opponent changed " + viewCard.getTitle() + "'s type from " +
                         viewCard.getType() + " to " + messageArray[1] + ".");
                 viewCard.setType(messageArray[1]);
-                reArrangeBattlefield();
+                Actions.reArrangeBattlefield(this);
             } else if (message.contains("TAP:")) {
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.split(":")[1]));
-                tapCard(viewCard, false, false);
+                Actions.tapCard(this, viewCard, false, false);
                 chatMessages.add("Opponent tapped " + viewCard.getTitle() + ".");
             } else if (message.contains("UNTAP_:")) {
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(message.split(":")[1]));
-                untapCard(viewCard, false, false);
+                Actions.untapCard(this, viewCard, false, false);
                 chatMessages.add("Opponent untapped " + viewCard.getTitle() + ".");
             } else if (message.contains("UNTAPALL:")) {
                 for (ViewCard viewCard : cardList.getOppListBattlefield()) {
-                    untapCard(viewCard, false, true);
+                    Actions.untapCard(this, viewCard, false, true);
                 }
                 chatMessages.add("Opponent untapped all cards.");
             } else if (message.contains("REVEAL:")) {
@@ -493,7 +533,7 @@ public class GameWindowController implements DisplayWindow {
                 String cardTitle = messageArray[3];
                 oppList.get(cardIndex).revealOppCard(cardTitle);
                 chatMessages.add("Opponent reveals to you " + cardTitle + ".");
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
                 updateExileView(false);
             } else if (message.contains("REVEAL_HAND:")) {
                 String[] messageArray = message.replace("REVEAL_HAND:", "").split(":");
@@ -510,7 +550,7 @@ public class GameWindowController implements DisplayWindow {
                     viewCard.revealOppCard(messageArray[i]);
                     i++;
                 }
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
                 chatMessages.add("Opponent revealed his deck.");
             } else if (message.contains("REVEAL_ALL:")) {
                 String[] handArray = message.replace("REVEAL_ALL:", "").split("%")[0].split(":");
@@ -525,7 +565,7 @@ public class GameWindowController implements DisplayWindow {
                     viewCard.revealOppCard(deckArray[i]);
                     i++;
                 }
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
                 chatMessages.add("Opponent revealed his hand and deck.");
             } else if (message.contains("REVEAL_X:")) {
                 int number = Integer.parseInt(message.split(":")[1]);
@@ -534,7 +574,7 @@ public class GameWindowController implements DisplayWindow {
                     cardList.getOppListDeck().get(i).revealOppCard(messageArray[i + 1]);
                 }
                 chatMessages.add("Opponent revealed " + number + " cards from the top of his deck.");
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
             } else if (message.contains("COUNTERS:")) {
                 String[] messageArray = message.replace("COUNTERS:", "").split(":");
                 ViewCard viewCard = cardList.getOppListBattlefield().get(Integer.parseInt(messageArray[0]));
@@ -547,14 +587,14 @@ public class GameWindowController implements DisplayWindow {
                 }
                 chatMessages.add("Opponent shuffled his deck.");
                 Collections.shuffle(cardList.getOppListDeck());
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
             } else if (message.contains("CHAT:")) {
                 chatMessages.add("Opponent: " + message.replace("CHAT:", "").split(":")[0]);
             } else if (message.contains("MULLIGAN:")) {
                 chatMessages.add("Opponent did a mulligan " + message.replace("MULLIGAN:", "").split(":")[0] + " times.");
             } else if (message.contains("DRAW:")) {
                 int number = Integer.parseInt(message.replace("DRAW:", "").split(":")[0]);
-                drawCards(number, false);
+                Actions.drawCards(this, number, false);
                 chatMessages.add((number > 1) ? ("Opponent draws " + number + " cards.") : "Opponent draws a card.");
             } else if (message.contains("SCRY:")) {
                 int number = Integer.parseInt(message.replace("SCRY:", "").split(":")[0]);
@@ -567,7 +607,7 @@ public class GameWindowController implements DisplayWindow {
                 String[] messageArray = message.replace("TOKEN:ADD:", "").split(":");
                 int tokenNumber = Integer.parseInt(messageArray[5]);
                 for (int i = 0; i < tokenNumber; i++) {
-                    addToken(Integer.parseInt(messageArray[0]), Integer.parseInt(messageArray[1]),
+                    Actions.addToken(this, Integer.parseInt(messageArray[0]), Integer.parseInt(messageArray[1]),
                             messageArray[2], messageArray[3], messageArray[4], false);
                 }
                 boolean multiple = tokenNumber > 1;
@@ -575,7 +615,7 @@ public class GameWindowController implements DisplayWindow {
                         messageArray[3] + (multiple ? "s" : "") +
                         ((messageArray[4].equals("")) ? (" without a text.") : (" with text: " + messageArray[4] + ".")));
             } else if (message.contains("TOKEN:REMOVE:")) {
-                removeToken((Token) cardList.getOppListBattlefield().get(Integer.parseInt(message.replace("TOKEN:REMOVE:", "").split(":")[0])), false);
+                Actions.removeToken(this, (Token) cardList.getOppListBattlefield().get(Integer.parseInt(message.replace("TOKEN:REMOVE:", "").split(":")[0])), false);
                 chatMessages.add("Opponent removed token from the battlefield.");
             } else if (message.contains("COINTOSS:")) {
                 String coin = message.replace("COINTOSS:", "").split(":")[0];
@@ -584,28 +624,28 @@ public class GameWindowController implements DisplayWindow {
                 String[] messageArray = message.replace("STEAL_CARD:", "").split(":");
                 String listName = messageArray[0];
                 int number = Integer.parseInt(messageArray[1]);
-                List<ViewCard> list = returnListFromString(listName,true);
+                List<ViewCard> list = returnListFromString(listName, true);
                 ViewCard viewCard = list.get(number);
-                chatMessages.add("RE:Opponent stole " + (viewCard.isVisibleToYou()? "UNKNOWN" : viewCard.getTitle()) + " from your " + listName + ".");
+                chatMessages.add("RE:Opponent stole " + (viewCard.isVisibleToYou() ? "UNKNOWN" : viewCard.getTitle()) + " from your " + listName + ".");
 
-                resetCardState(viewCard);
+                Actions.resetCardState(this, viewCard);
                 list.remove(viewCard);
 //                viewCard.setUltimatePosition(ViewCard.PositionType.EXILE);
 //                cardList.getHeroListExile().add(viewCard);
-                updateGraveyardView(true);
+                Actions.updateGraveyardView(this, true);
                 updateExileView(true);
-                updateDeckView(true);
-                reArrangeHand(-1, 0, true);
-                reArrangeBattlefield();
+                Actions.updateDeckView(this, true);
+                Actions.reArrangeHand(this, -1, 0, true);
+                Actions.reArrangeBattlefield(this);
 
                 ViewCard newCard = new ViewCard(Database.getInstance().getCard(viewCard.getTitle()));
                 newCard.setOpponentsCard(true);
-                cardList.getOppListDeck().add(0,newCard);
+                cardList.getOppListDeck().add(0, newCard);
                 newCard.setUltimatePosition(PositionType.DECK);
                 bringCardToGame(newCard, false);
-                drawCards(1,false);
+                Actions.drawCards(this, 1, false);
             } else if (message.contains("LOOK_UP:")) {
-                message = message.replace("LOOK_UP:","");
+                message = message.replace("LOOK_UP:", "");
                 int position = Integer.parseInt(message.split(":")[0]);
                 chatMessages.add("Opponent looked up " + cardList.getOppListExile().get(position).getTitle() + " in his exile.");
             } else if (message.contains("MOVEDECK:")) {
@@ -622,18 +662,18 @@ public class GameWindowController implements DisplayWindow {
                 int number = Integer.parseInt(messageArray[1]);
                 List<ViewCard> list = (List<ViewCard>) getListPos(listName).get(0);
                 ViewCard viewCard = list.get(number);
-                resetCardState(viewCard);
+                Actions.resetCardState(this, viewCard);
                 viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                 cardList.getOppListGraveyard().add(viewCard);
                 if (!viewCard.isVisibleToYou()) {
                     viewCard.revealOppCard(messageArray[2]);
                 }
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " to the graveyard.");
-                updateGraveyardView(false);
+                Actions.updateGraveyardView(this, false);
                 updateExileView(false);
-                updateDeckView(false);
-                reArrangeHand(-1, 0, false);
-                reArrangeBattlefield();
+                Actions.updateDeckView(this, false);
+                Actions.reArrangeHand(this, -1, 0, false);
+                Actions.reArrangeBattlefield(this);
             } else if (message.contains("MOVEEXILE:")) {
                 String[] messageArray = message.replace("MOVEEXILE:", "").split(":");
                 String listName = messageArray[0];
@@ -641,35 +681,35 @@ public class GameWindowController implements DisplayWindow {
                 List<ViewCard> list = (List<ViewCard>) getListPos(listName).get(0);
                 ViewCard viewCard = list.get(number);
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " to the exile.");
-                resetCardState(viewCard);
+                Actions.resetCardState(this, viewCard);
                 viewCard.setUltimatePosition(PositionType.EXILE);
                 cardList.getOppListExile().add(viewCard);
-                updateGraveyardView(false);
+                Actions.updateGraveyardView(this, false);
                 updateExileView(false);
-                updateDeckView(false);
-                reArrangeHand(-1, 0, false);
-                reArrangeBattlefield();
+                Actions.updateDeckView(this, false);
+                Actions.reArrangeHand(this, -1, 0, false);
+                Actions.reArrangeBattlefield(this);
             } else if (message.contains("MOVEHAND:")) {
                 String[] messageArray = message.replace("MOVEHAND:", "").split(":");
                 String listName = messageArray[0];
                 int number = Integer.parseInt(messageArray[1]);
                 List<ViewCard> list = (List<ViewCard>) getListPos(listName).get(0);
                 ViewCard viewCard = list.get(number);
-                resetCardState(viewCard);
+                Actions.resetCardState(this, viewCard);
                 moveToHand(viewCard, false);
                 chatMessages.add("Opponent moves " + viewCard.getTitle() + " to his hand.");
                 viewCard.setUltimatePosition(PositionType.HAND);
                 viewCard.setRotate(180);
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
                 updateExileView(false);
-                updateGraveyardView(false);
+                Actions.updateGraveyardView(this, false);
             } else if (message.contains("MOVEBATTLEFIELD:")) {
                 String[] messageArray = message.replace("MOVEBATTLEFIELD:", "").split(":");
                 String listName = messageArray[0];
                 int number = Integer.parseInt(messageArray[1]);
                 List<ViewCard> list = (List<ViewCard>) getListPos(listName).get(0);
                 ViewCard viewCard = list.get(number);
-                resetCardState(viewCard);
+                Actions.resetCardState(this, viewCard);
                 if (!viewCard.isVisibleToYou()) {
                     viewCard.revealOppCard(messageArray[2]);
                 }
@@ -679,12 +719,12 @@ public class GameWindowController implements DisplayWindow {
                 viewCard.setImage(viewCard.getSmallCard());
                 mainPane.getChildren().remove(viewCard);
 //                putOnBattlefield(viewCard, false, false);
-                reArrangeBattlefield();
-                reArrangeHand(-1, 0, false);
+                Actions.reArrangeBattlefield(this);
+                Actions.reArrangeHand(this, -1, 0, false);
                 viewCard.setEffect(battlefieldBorder);
-                updateDeckView(false);
+                Actions.updateDeckView(this, false);
                 updateExileView(false);
-                updateGraveyardView(false);
+                Actions.updateGraveyardView(this, false);
             }
             if (yourMove) {
                 if (cardList.getListCastingStack().isEmpty()) {
@@ -700,7 +740,7 @@ public class GameWindowController implements DisplayWindow {
         Platform.runLater(() -> {
             int mulliganCount = 0;
             while (mulligan && mulliganCount < 7) {
-                drawCards(7, true);
+                Actions.drawCards(this, 7, true);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Do you want to mulligan?");
                 alert.setHeaderText(null);
@@ -743,7 +783,7 @@ public class GameWindowController implements DisplayWindow {
 //                        }
 //                        updateDeckView(false);
                     if (!yourTurn) {
-                        waitingForResponse();
+                        Actions.waitingForResponse(this);
                     } else {
                         resolveButton.setText("Next phase");
                     }
@@ -763,189 +803,7 @@ public class GameWindowController implements DisplayWindow {
         });
 
         //test view for opponents' cards
-        drawCards(7, false);
-    }
-
-    private void drawCards(int number, boolean hero) {
-        //1200 is the total width of your hand
-        //250 is the card width
-        List<ViewCard> listDeck;
-        List<ViewCard> listHand;
-        double layoutY;
-        if (hero) {
-            listDeck = cardList.getHeroListDeck();
-            listHand = cardList.getHeroListHand();
-            layoutY = 858 * ScreenUtils.WIDTH_MULTIPLIER;
-        } else {
-            listDeck = cardList.getOppListDeck();
-            listHand = cardList.getOppListHand();
-            layoutY = -275 * ScreenUtils.WIDTH_MULTIPLIER;
-        }
-        if (listDeck.size() - number < 0) {
-            System.out.println("You can't draw any more cards");
-            return;
-        }
-        double insetRight = 0;
-        double layoutX = 450 * ScreenUtils.WIDTH_MULTIPLIER;
-        int cardNumber = 0;
-
-        if (250 * (number + listHand.size()) > 1200) {
-            insetRight = (((250 * (number + listHand.size())) - 1200) / (number + listHand.size())) * ScreenUtils.WIDTH_MULTIPLIER;
-        }
-        if (!listHand.isEmpty()) {
-            reArrangeHand(insetRight, cardNumber, hero);
-            cardNumber = listHand.size();
-        }
-
-        //adding new cards
-        while (number > 0) {
-            ViewCard viewCard = listDeck.get(0).getCard(hero, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
-            viewCard.relocate((layoutX + (250 * ScreenUtils.WIDTH_MULTIPLIER * cardNumber) - (insetRight * cardNumber)), layoutY);
-            mainPane.getChildren().add(viewCard);
-            listHand.add(viewCard);
-            viewCard.setUltimatePosition(PositionType.HAND);
-            listDeck.remove(0);
-            if (!hero) {
-                viewCard.setRotate(180);
-            }
-            number--;
-            cardNumber++;
-        }
-        updateDeckView(hero);
-    }
-
-    private void reArrangeHand(double insetRight, int cardNumber, boolean hero) {//-1,0 for simply rearranging hand
-        List<ViewCard> listHand = (hero) ? cardList.getHeroListHand() : cardList.getOppListHand();
-        if (insetRight == -1) {
-            insetRight = 0;
-            if (250 * (listHand.size()) > 1200) {
-                insetRight = (((250 * (listHand.size())) - 1200) / (listHand.size())) * ScreenUtils.WIDTH_MULTIPLIER;
-            }
-        }
-
-        double layoutY = (hero) ? 858 * ScreenUtils.WIDTH_MULTIPLIER : -275 * ScreenUtils.WIDTH_MULTIPLIER;
-
-        mainPane.getChildren().removeAll(listHand);
-
-        for (ViewCard viewCard : listHand) {
-            viewCard.relocate((450 * ScreenUtils.WIDTH_MULTIPLIER + (250 * ScreenUtils.WIDTH_MULTIPLIER * cardNumber) - (insetRight * cardNumber)), layoutY);
-            mainPane.getChildren().add(viewCard);
-            cardNumber++;
-        }
-    }
-
-    private void putOnBattlefield(ViewCard viewCard, boolean skipMakingSmallCard, boolean hero) { //a card needs to be added to the battlefield list before calling this method
-        List<ViewCard> listBattlefield = (hero) ? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
-        if (!skipMakingSmallCard) {
-            viewCard.setImage(viewCard.getSmallCard());
-            viewCard.setEffect(battlefieldBorder);
-            viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
-            viewCard.setViewOrder(-1);
-            listBattlefield.add(viewCard);
-        }
-        double slotPositionX = 0;
-        double slotPositionY = 0;
-        int newRow = 0;
-        double nextLine = 0;
-        int cardTypeCount = 0;
-        switch (viewCard.getType().toLowerCase()) {
-            case "creature":
-                slotPositionX = 950 * ScreenUtils.WIDTH_MULTIPLIER;
-                slotPositionY = (hero) ? 500 * ScreenUtils.WIDTH_MULTIPLIER : 250 * ScreenUtils.WIDTH_MULTIPLIER;
-                newRow = 9;
-                nextLine = 50 * ScreenUtils.WIDTH_MULTIPLIER;
-                break;
-            case "land":
-                slotPositionX = 400 * ScreenUtils.WIDTH_MULTIPLIER;
-                slotPositionY = (hero) ? 720 * ScreenUtils.WIDTH_MULTIPLIER : 95 * ScreenUtils.WIDTH_MULTIPLIER;
-                newRow = 7;
-                nextLine = 20 * ScreenUtils.WIDTH_MULTIPLIER;
-                break;
-            case "artifact":
-            case "enchantment":
-                slotPositionX = 1250 * ScreenUtils.WIDTH_MULTIPLIER;
-                slotPositionY = (hero) ? 720 * ScreenUtils.WIDTH_MULTIPLIER : 95 * ScreenUtils.WIDTH_MULTIPLIER;
-                newRow = 5;
-                nextLine = 20 * ScreenUtils.WIDTH_MULTIPLIER;
-                break;
-            case "planeswalker":
-                slotPositionX = 150 * ScreenUtils.WIDTH_MULTIPLIER;
-                slotPositionY = (hero) ? 500 * ScreenUtils.WIDTH_MULTIPLIER : 250 * ScreenUtils.WIDTH_MULTIPLIER;
-                newRow = 3;
-                nextLine = 100 * ScreenUtils.WIDTH_MULTIPLIER;
-                break;
-        }
-
-        for (ViewCard checkedCard : listBattlefield) {
-            if (viewCard.getType().toLowerCase().equals(checkedCard.getType().toLowerCase())) {
-                cardTypeCount++;
-            } else if ((viewCard.getType().toLowerCase().equals("enchantment")) ||
-                    viewCard.getType().toLowerCase().equals("artifact")) {
-                if ((checkedCard.getType().toLowerCase().equals("enchantment")) ||
-                        checkedCard.getType().toLowerCase().equals("artifact")) {
-                    cardTypeCount++;
-                }
-            }
-        }
-
-        int slotCard = cardTypeCount % newRow;
-        if (cardTypeCount - ((cardTypeCount / newRow) * newRow) == 0) { //we want "newRow" number of cards, so we check if we are at the end and put one more card there if so
-            slotPositionY += nextLine * ((cardTypeCount - 1) / newRow);
-            slotCard = newRow;
-        } else {
-            slotPositionY += nextLine * (cardTypeCount / newRow);
-        }
-
-        viewCard.setCacheHint(CacheHint.SPEED); //not to leave the dropshadow trail behind
-        TranslateTransition tt = new TranslateTransition(Duration.millis(150), viewCard);
-        tt.setFromX(viewCard.getTranslateX());
-        tt.setFromY(viewCard.getTranslateY());
-        tt.setToX((slotPositionX + (Math.pow(-1, slotCard) * 130 * ((slotCard) / 2) * ScreenUtils.WIDTH_MULTIPLIER) - viewCard.getLayoutX()));
-        tt.setToY(slotPositionY - viewCard.getLayoutY());
-        tt.play();
-        viewCard.setCacheHint(CacheHint.QUALITY);
-//        viewCard.setTranslateX((slotPositionX + (Math.pow(-1, slotCard) * 130 * ((slotCard) / 2)) - viewCard.getLayoutX()));
-//        viewCard.setTranslateY(slotPositionY - viewCard.getLayoutY());
-    }
-
-    private void reArrangeBattlefield() {
-        if (cardList.getHeroListBattlefield().size() > 0) {
-            mainPane.getChildren().removeAll(cardList.getHeroListBattlefield());
-            List<ViewCard> tempList = new ArrayList<>(cardList.getHeroListBattlefield());
-            cardList.getHeroListBattlefield().clear();
-            for (ViewCard viewCard : tempList) {
-                mainPane.getChildren().add(viewCard);
-                cardList.getHeroListBattlefield().add(viewCard);
-                putOnBattlefield(viewCard, true, true);
-            }
-        }
-
-        if (cardList.getOppListBattlefield().size() > 0) {
-            mainPane.getChildren().removeAll(cardList.getOppListBattlefield());
-            List<ViewCard> tempList = new ArrayList<>(cardList.getOppListBattlefield());
-            cardList.getOppListBattlefield().clear();
-            for (ViewCard viewCard : tempList) {
-                mainPane.getChildren().add(viewCard);
-                cardList.getOppListBattlefield().add(viewCard);
-                putOnBattlefield(viewCard, true, false);
-            }
-        }
-    }
-
-    private void castToStack(ViewCard viewCard) {
-        viewCard.setUltimatePosition(PositionType.CAST);
-        cardList.getListCastingStack().add(viewCard);
-        TranslateTransition tt = new TranslateTransition(Duration.millis(250), viewCard);
-        tt.setFromX(viewCard.getTranslateX());
-        tt.setFromY(viewCard.getTranslateY());
-        viewCard.setEffect(null);
-        tt.setToX(100 * ScreenUtils.WIDTH_MULTIPLIER - ((cardList.getListCastingStack().size() % 2) * (75 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutX());
-        tt.setToY(50 * ScreenUtils.WIDTH_MULTIPLIER + ((cardList.getListCastingStack().size() - 1) * (50 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutY());
-        tt.play();
-        reArrangeHand(-1, 0, !viewCard.isOpponentsCard());
-        viewCard.setViewOrder((-cardList.getListCastingStack().size()) - 4);
-//        viewCard.setTranslateX(50 + ((cardList.getListCastingStack().size() % 2) * (25)) - viewCard.getLayoutX());
-//        viewCard.setTranslateY(50 + ((cardList.getListCastingStack().size() - 1) *50) - viewCard.getLayoutY());
+        Actions.drawCards(this, 7, false);
     }
 
     private void moveToHand(ViewCard viewCard, boolean hero) {
@@ -959,31 +817,14 @@ public class GameWindowController implements DisplayWindow {
 //        tt.setToY(0);
 //        tt.play();
         viewCard.getCard(hero, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
-        reArrangeHand(-1, 0, hero);
+        Actions.reArrangeHand(this, -1, 0, hero);
         viewCard.setTranslateX(0);
         viewCard.setTranslateY(0);
     }
 
-    private void moveToGraveyard(ViewCard viewCard, boolean hero) {
-        List<ViewCard> listGraveyard = (hero) ? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
-        resetCardState(viewCard);
-        viewCard.setUltimatePosition(PositionType.GRAVEYARD);
-        listGraveyard.add(viewCard);
-        updateGraveyardView(hero);
-//        TranslateTransition tt = new TranslateTransition(Duration.millis(1275), viewCard);
-//        tt.setFromX(viewCard.getTranslateX());
-//        tt.setFromY(viewCard.getTranslateY());
-//        viewCard.setEffect(null);
-//        tt.setToX(0);
-//        tt.setToY(0);
-//        tt.play();
-        viewCard.getCard(true, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
-//        reArrangeHand(-1, 0,true);
-    }
-
     private void moveToExile(ViewCard viewCard, boolean hero) {
         List<ViewCard> listExile = (hero) ? cardList.getHeroListExile() : cardList.getOppListExile();
-        resetCardState(viewCard);
+        Actions.resetCardState(this, viewCard);
         viewCard.setUltimatePosition(PositionType.EXILE);
         listExile.add(viewCard);
         updateExileView(hero);
@@ -996,32 +837,6 @@ public class GameWindowController implements DisplayWindow {
 //        tt.play();
         viewCard.getCard(true, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
 //        reArrangeHand(-1, 0,true);
-    }
-
-    private void updateDeckView(boolean hero) {
-        List<ViewCard> listDeck = (hero) ? cardList.getHeroListDeck() : cardList.getOppListDeck();
-        ImageView deckIV = (hero) ? heroDeckIV : oppDeckIV;
-        Text deckCardsNumber = (hero) ? heroDeckCardsNumber : oppDeckCardsNumber;
-        if (listDeck.size() == 0) {
-            deckIV.setImage(null);
-            return;
-        }
-        deckCardsNumber.setText(Integer.toString(listDeck.size()));
-        BufferedImage backBuffered = SwingFXUtils.fromFXImage(listDeck.get(0).getActiveImage(), null);
-        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * ScreenUtils.WIDTH_MULTIPLIER), 100, Scalr.OP_ANTIALIAS);
-        deckIV.setImage(SwingFXUtils.toFXImage(backBuffered, null));
-    }
-
-    private void updateGraveyardView(boolean hero) {
-        List<ViewCard> listGraveyard = (hero) ? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
-        ImageView graveyardIV = (hero) ? heroGraveyardIV : oppGraveyardIV;
-        if (listGraveyard.size() == 0) {
-            graveyardIV.setImage(null);
-            return;
-        }
-        BufferedImage backBuffered = SwingFXUtils.fromFXImage(listGraveyard.get(listGraveyard.size() - 1).getCardImg(), null);
-        backBuffered = Scalr.resize(backBuffered, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (120 * ScreenUtils.WIDTH_MULTIPLIER), 100, Scalr.OP_ANTIALIAS);
-        graveyardIV.setImage(SwingFXUtils.toFXImage(backBuffered, null));
     }
 
     private void updateExileView(boolean hero) {
@@ -1083,62 +898,6 @@ public class GameWindowController implements DisplayWindow {
         return -1;
     }
 
-    private int setCountersDialog() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-
-        GridPane changeCounters = new GridPane();
-        changeCounters.setAlignment(Pos.CENTER);
-        Label lifeLabel = new Label();
-        lifeLabel.setText("Set counters:");
-        changeCounters.add(lifeLabel, 0, 0);
-
-        HBox xHbox = new HBox();
-        xHbox.setAlignment(Pos.CENTER);
-        Text countersText = new Text();
-        countersText.setText("0");
-        xHbox.setSpacing(20);
-
-        Button minusBTN = new Button();
-        minusBTN.setDisable(true);
-        minusBTN.setText(" < ");
-        minusBTN.setOnMouseClicked(e -> {
-            int counters = Integer.parseInt(countersText.getText());
-            counters -= 1;
-            countersText.setText(String.valueOf(counters));
-            if (counters == 0) {
-                minusBTN.setDisable(true);
-            }
-        });
-        Button plusBTN = new Button();
-        plusBTN.setText(" > ");
-        plusBTN.setOnMouseClicked(e -> {
-            int counters = Integer.parseInt(countersText.getText());
-            counters += 1;
-            countersText.setText(String.valueOf(counters));
-            minusBTN.setDisable(false);
-        });
-
-        xHbox.getChildren().setAll(minusBTN, countersText, plusBTN);
-        changeCounters.add(xHbox, 0, 1);
-
-        ButtonType okBTN = new ButtonType("Set counters");
-        ButtonType closeButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().setAll(okBTN, closeButton);
-
-        changeCounters.setVgap(10);
-        changeCounters.setHgap(10);
-        changeCounters.setPadding(new Insets(25, 25, 25, 25));
-
-        dialog.getDialogPane().setContent(changeCounters);
-        dialog.initOwner(mainPane.getScene().getWindow());
-        dialog.initStyle(StageStyle.UNDECORATED);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == okBTN) {
-            return Integer.parseInt(countersText.getText());
-        } else return -1;
-    }
-
     private String changeLifeDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
 
@@ -1190,90 +949,6 @@ public class GameWindowController implements DisplayWindow {
             chatMessages.add("Your life total is " + lifeDialogText.getText() + ".");
             return lifeDialogText.getText();
         } else return yourLifeTXT.getText();
-    }
-
-    private void addTokenDialog() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-
-        int rightColumnWidth = 100;
-
-        GridPane addTokenPane = new GridPane();
-        addTokenPane.setAlignment(Pos.CENTER);
-        Label lifeLabel = new Label();
-        lifeLabel.setText("Add a token:");
-        addTokenPane.add(lifeLabel, 0, 0);
-        addTokenPane.setHgap(20);
-        addTokenPane.setVgap(20);
-        addTokenPane.add(new Text("Attack:"), 0, 1);
-        addTokenPane.add(new Text("Toughness:"), 0, 2);
-        addTokenPane.add(new Text("Token color:"), 0, 3);
-        addTokenPane.add(new Text("Token type: "), 0, 4);
-        addTokenPane.add(new Text("Additional text: "), 0, 5);
-        addTokenPane.add(new Text("Number of tokens: "), 0, 6);
-
-        ObservableList<Integer> options = FXCollections.observableArrayList(
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
-        );
-        ComboBox<Integer> cbAttack = new ComboBox<>(options);
-        cbAttack.getSelectionModel().selectFirst();
-        cbAttack.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(cbAttack, 1, 1);
-
-        ComboBox<Integer> cbTough = new ComboBox<>(options);
-        cbTough.getSelectionModel().selectFirst();
-        cbTough.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(cbTough, 1, 2);
-
-        ComboBox<String> cbColor = new ComboBox<>(FXCollections.observableArrayList(
-                "White", "Blue", "Black", "Red", "Green", "Multicolor", "Colorless"
-        ));
-        cbColor.getSelectionModel().selectFirst();
-        cbColor.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(cbColor, 1, 3);
-
-        ComboBox<String> cbType = new ComboBox<>(FXCollections.observableArrayList(
-                "Creature", "Planeswalker", "Artifact", "Enchantment", "Land"
-        ));
-        cbType.getSelectionModel().selectFirst();
-        cbType.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(cbType, 1, 4);
-
-        TextField additionalText = new TextField();
-        additionalText.setText("");
-        additionalText.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(additionalText, 1, 5);
-
-        Spinner<Integer> noCopies = new Spinner<>();
-        noCopies.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1));
-        noCopies.setPrefWidth(rightColumnWidth);
-        addTokenPane.add(noCopies, 1, 6);
-
-
-        ButtonType okBTN = new ButtonType("Add token(-s)");
-        ButtonType closeButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().setAll(okBTN, closeButton);
-
-        addTokenPane.setVgap(10);
-        addTokenPane.setHgap(10);
-        addTokenPane.setPadding(new Insets(25, 25, 25, 25));
-
-        dialog.getDialogPane().setContent(addTokenPane);
-        dialog.initOwner(mainPane.getScene().getWindow());
-        dialog.initStyle(StageStyle.UNDECORATED);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == okBTN) {
-            socketMessenger.getSender().println("TOKEN:ADD:"
-                    + cbAttack.getValue() + ":" + cbTough.getValue() + ":" + cbColor.getValue() + ":" + cbType.getValue()
-                    + ":" + additionalText.getText() + ":" + noCopies.getValue() + ":" + new Random().nextInt());
-            for (int i = 0; i < noCopies.getValue(); i++) {
-                addToken(cbAttack.getValue(), cbTough.getValue(), cbColor.getValue(), cbType.getValue(), additionalText.getText(), true);
-            }
-            boolean multiple = noCopies.getValue() > 1;
-            chatMessages.add("You add " + noCopies.getValue() + " " + (multiple ? "copies" : "copy") + " of " + cbColor.getValue() + " " +
-                    cbType.getValue() + (multiple ? "s" : "") +
-                    ((additionalText.getText().equals("")) ? (" without a text.") : (" with text: " + additionalText.getText() + ".")));
-        }
     }
 
     private List<Object> getListPos(String message) {
@@ -1359,7 +1034,7 @@ public class GameWindowController implements DisplayWindow {
             }
             List<ViewCard> listDeck = (hero) ? cardList.getHeroListDeck() : cardList.getOppListDeck();
             Text deckCardsNumber = (hero) ? heroDeckCardsNumber : oppDeckCardsNumber;
-            resetCardState(viewCard);
+            Actions.resetCardState(this, viewCard);
             viewCard.setUltimatePosition(PositionType.DECK);
             listContainingCard.remove(viewCard);
             if (!listDeck.contains(viewCard)) {
@@ -1368,539 +1043,12 @@ public class GameWindowController implements DisplayWindow {
             if (mainPane.getChildren().contains(viewCard)) {
                 mainPane.getChildren().remove(viewCard);
             }
-            reArrangeHand(-1, 0, hero);
-            updateDeckView(hero);
+            Actions.reArrangeHand(this, -1, 0, hero);
+            Actions.updateDeckView(this, hero);
             updateExileView(hero);
-            updateGraveyardView(hero);
+            Actions.updateGraveyardView(this, hero);
             deckCardsNumber.setText(Integer.toString(listDeck.size()));
         }
-    }
-
-    private void resetCardState(ViewCard viewCard) {
-        if (cardList.getHeroListBattlefield().contains(viewCard)) {
-            cardList.getHeroListBattlefield().remove(viewCard);
-            reArrangeBattlefield();
-        } else if (cardList.getHeroListHand().contains(viewCard)) {
-            cardList.getHeroListHand().remove(viewCard);
-            reArrangeHand(-1, 0, true);
-        }
-        for (List<ViewCard> list : cardList.getHeroLists()) {
-            list.remove(viewCard);
-        }
-        for (List<ViewCard> list : cardList.getOppLists()) {
-            list.remove(viewCard);
-        }
-
-        if (popupPane != null) {
-            popupPane.getChildren().remove(viewCard);
-        }
-
-        mainPane.getChildren().remove(viewCard);
-        RotateTransition rt = new RotateTransition(Duration.millis(15), viewCard);
-        viewCard.setTranslateX(0);
-        viewCard.setTranslateY(0);
-        viewCard.setViewOrder(viewCard.getCustomViewOrder());
-        viewCard.setEffect(null);
-        viewCard.setCounters(-1);
-        viewCard.setRotate(0);
-        viewCard.setTapped(false);
-        rightClickMenu.getItems().clear();
-    }
-
-    private void printNewView(List<ViewCard> list) {
-        if (list.size() == 0) {
-            return;
-        }
-        int rowCards = 25;
-        int marginStackPane = 25;
-        popupPane = new StackPane();
-
-        popupPane.setAlignment(Pos.TOP_LEFT);
-
-        printNewViewStage = new Stage();
-        printNewViewStage.setTitle("Cards in the deck");
-        printNewViewStage.setScene(new Scene(popupPane, 1085 * ScreenUtils.WIDTH_MULTIPLIER, 900 * ScreenUtils.WIDTH_MULTIPLIER));
-
-        for (ViewCard viewCard : list) { //printing deck
-            viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * ScreenUtils.WIDTH_MULTIPLIER);
-            StackPane.setMargin(viewCard, new Insets(marginStackPane * ScreenUtils.WIDTH_MULTIPLIER, 0, 0, rowCards)); //sets the place where the card image will be printed
-            popupPane.getChildren().add(viewCard);
-            marginStackPane += 35; //changing horizontal space
-            if (marginStackPane % 550 == 0) { //checking if we are at the bottom
-                rowCards += 260; //changing vertical space
-                marginStackPane = 25; //starting from the top
-            }
-        }
-        printNewViewStage.initModality(Modality.APPLICATION_MODAL); //this is the only window you can use
-        printNewViewStage.initOwner(mainPane.getScene().getWindow());
-        printNewViewStage.show();
-    }
-
-    private void settingUpGameControls() {
-        mainPane.setBackground(new Background(new BackgroundImage(new Image("file:background-top.jpg"),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
-
-//        gamePane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        //adding preview
-        previewIV.relocate(1565 * ScreenUtils.WIDTH_MULTIPLIER, 80 * ScreenUtils.WIDTH_MULTIPLIER);
-        previewIV.setViewOrder(-4);
-        mainPane.getChildren().add(previewIV);
-
-        //adding chat
-        chatView.relocate(1580 * ScreenUtils.WIDTH_MULTIPLIER, 101 * ScreenUtils.WIDTH_MULTIPLIER);
-        chatView.setPrefWidth(320 * ScreenUtils.WIDTH_MULTIPLIER); //previewIV is 350x495
-        chatView.setPrefHeight(350 * ScreenUtils.WIDTH_MULTIPLIER); //was 453
-        mainPane.getChildren().add(chatView);
-        chatView.setItems(chatMessages);
-        chatView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> stringListView) {
-                return new ListCell<String>() {
-
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setStyle("-fx-font-weight: normal");
-                        setTextFill(Color.BLACK);
-                        if (empty || item == null) {
-                            setGraphic(null);
-                            setText(null);
-                        } else {
-                            setMinWidth(stringListView.getWidth() - 15 * ScreenUtils.WIDTH_MULTIPLIER);
-                            setMaxWidth(stringListView.getWidth() - 15 * ScreenUtils.WIDTH_MULTIPLIER);
-                            setPrefWidth(stringListView.getWidth() - 15 * ScreenUtils.WIDTH_MULTIPLIER);
-                            setWrapText(true);
-                            if (getItem().contains("You: ") || getItem().contains("Opponent: ")) {
-                                setStyle("-fx-font-weight: 900");
-                                setTextFill(Color.DEEPSKYBLUE);
-                                setText(item);
-                            } else if (getItem().contains("RE:")) {
-                                setStyle("-fx-font-weight: 900");
-                                setText(item.replace("RE:", ""));
-                                if (getItem().endsWith("your turn.")) {
-                                    setTextFill(Color.RED);
-                                }
-                            } else if (getItem().contains("TIP: ")) {
-                                setTextFill(Color.DARKORANGE);
-                                setText("\t" + item);
-                            } else {
-                                setText("\t" + item);
-                            }
-                        }
-                    }
-                };
-            }
-        });
-        chatView.setStyle("-fx-background-color: transparent;");
-        chatView.setMouseTransparent(true);
-        chatView.setFocusTraversable(false);
-        chatView.setOpacity(0.4);
-        chatView.setViewOrder(-3);
-        chatView.getItems().addListener((ListChangeListener<String>) change -> chatView.scrollTo(chatMessages.size() - 1));
-
-        //adding chat send message
-        chatField = new TextField();
-        chatField.setPrefWidth(250 * ScreenUtils.WIDTH_MULTIPLIER);
-        chatField.relocate(1580 * ScreenUtils.WIDTH_MULTIPLIER, 501 * ScreenUtils.WIDTH_MULTIPLIER);
-        chatField.setOpacity(0.4);
-        chatField.setOnAction(e -> {
-            if (!chatField.getText().equals("")) {
-                chatMessages.add("You: " + chatField.getText());
-                socketMessenger.getSender().println("CHAT:" + chatField.getText() + ":" + new Random().nextInt());
-                chatField.setText("");
-            }
-        });
-        mainPane.getChildren().add(chatField);
-
-        Button sendChatBtn = new Button("Send");
-        sendChatBtn.relocate(1850 * ScreenUtils.WIDTH_MULTIPLIER, 501 * ScreenUtils.WIDTH_MULTIPLIER);
-        mainPane.getChildren().add(sendChatBtn);
-        sendChatBtn.setOnAction(e -> {
-            if (!chatField.getText().equals("")) {
-                chatMessages.add("You: " + chatField.getText());
-                socketMessenger.getSender().println("CHAT:" + chatField.getText() + ":" + new Random().nextInt());
-                chatField.setText("");
-            }
-        });
-
-        //setting up turns text
-        Text turnText = yourTurnText;
-        int textRelocate = 1720;
-        for (int i = 0; i < 2; i++) {
-            turnText.prefWidth(150 * ScreenUtils.WIDTH_MULTIPLIER);
-            turnText.setTextAlignment(TextAlignment.CENTER);
-            turnText.setViewOrder(-2);
-            turnText.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * ScreenUtils.WIDTH_MULTIPLIER));
-            turnText.setFill(Color.DARKRED);
-            turnText.setEffect(battlefieldBorder);
-            turnText.relocate(textRelocate * ScreenUtils.WIDTH_MULTIPLIER, 600 * ScreenUtils.WIDTH_MULTIPLIER);
-            turnText = opponentsTurnText;
-            textRelocate = 1670;
-        }
-
-        //setting up buttons for scry
-        scryDrawSpinner = new Spinner<>();
-        scryDrawSpinner.relocate(1820 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
-        scryDrawSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 60, 1));
-        scryDrawSpinner.setPrefWidth(60);
-        scryDrawSpinner.setEditable(true);
-        mainPane.getChildren().add(scryDrawSpinner);
-        Button scryButton = new Button("Scry");
-        scryButton.relocate(1720 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
-        scryButton.setOnAction(e -> {
-            if (cardList.getHeroListDeck().size() == 0) {
-                return;
-            }
-            for (int i = 0; i < scryDrawSpinner.getValue(); i++) {
-                cardList.getHeroListDeck().get(i).setVisibleToYou();
-            }
-            updateDeckView(true);
-            socketMessenger.getSender().println("SCRY:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
-            chatMessages.add((scryDrawSpinner.getValue() > 1) ? ("You scried " + scryDrawSpinner.getValue() + " cards.") : "You scried one card.");
-            scryDrawSpinner.getValueFactory().setValue(1);
-        });
-        mainPane.getChildren().add(scryButton);
-        //setting up buttons for draw card
-        Button drawCardBtn = new Button("Draw");
-        drawCardBtn.relocate(1620 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
-        drawCardBtn.setOnAction(e -> {
-            socketMessenger.getSender().println("DRAW:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
-            chatMessages.add((scryDrawSpinner.getValue() > 1) ? ("You draw " + scryDrawSpinner.getValue() + " cards.") : "You draw a card.");
-            drawCards(scryDrawSpinner.getValue(), true);
-            scryDrawSpinner.getValueFactory().setValue(1);
-        });
-        mainPane.getChildren().add(drawCardBtn);
-
-        //setting up reveal hand
-        Button revealBtn = new Button("Reveal");
-        revealBtn.relocate(1950 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
-        revealBtn.setOnAction(e -> {
-            Dialog<ButtonType> dialog = new Dialog<>();
-
-            GridPane revealPane = new GridPane();
-            revealPane.setAlignment(Pos.CENTER);
-            Label revealText = new Label();
-            revealText.setText("What do you want to reveal to your opponent?");
-            revealPane.add(revealText, 0, 0);
-
-            ToggleGroup group = new ToggleGroup();
-            RadioButton rb1 = new RadioButton("Hand");
-            rb1.setToggleGroup(group);
-            rb1.setSelected(true);
-            RadioButton rb2 = new RadioButton("Deck");
-            rb2.setToggleGroup(group);
-            RadioButton rb3 = new RadioButton("All");
-            rb3.setToggleGroup(group);
-            RadioButton rb4 = new RadioButton("X cards from the deck's top:");
-            rb4.setToggleGroup(group);
-            HBox rbHbox = new HBox();
-            rbHbox.setSpacing(20);
-            rbHbox.getChildren().addAll(rb1, rb2, rb3);
-            revealPane.add(rbHbox, 0, 1);
-            revealPane.add(rb4, 0, 2);
-            Spinner<Integer> noCards = new Spinner<>();
-            noCards.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 60, 1));
-            revealPane.add(noCards, 0, 3);
-
-
-            ButtonType okBTN = new ButtonType("Reveal");
-            ButtonType closeButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().setAll(okBTN, closeButton);
-
-            revealPane.setVgap(10);
-            revealPane.setHgap(10);
-            revealPane.setPadding(new Insets(25, 25, 25, 25));
-
-            dialog.getDialogPane().setContent(revealPane);
-            dialog.initOwner(mainPane.getScene().getWindow());
-            dialog.initStyle(StageStyle.UNDECORATED);
-
-            Optional<ButtonType> result = dialog.showAndWait();
-            if (result.isPresent() && result.get() == okBTN) {
-                String choice = ((RadioButton) group.getSelectedToggle()).getText();
-                StringBuilder revealString = new StringBuilder();
-                if (choice.equals("Hand")) {
-                    revealString.append("REVEAL_HAND");
-                    for (ViewCard viewCard : cardList.getHeroListHand()) {
-                        revealString.append(":").append(viewCard.getTitle());
-                    }
-                    socketMessenger.getSender().println(revealString.toString() + ":" + new Random().nextInt());
-                    chatMessages.add("You revealed your hand.");
-                } else if (choice.equals("Deck")) {
-                    revealString.append("REVEAL_DECK");
-                    for (ViewCard viewCard : cardList.getHeroListDeck()) {
-                        revealString.append(":").append(viewCard.getTitle());
-                    }
-                    socketMessenger.getSender().println(revealString.toString() + ":" + new Random().nextInt());
-                    chatMessages.add("You revealed your deck.");
-                } else if (choice.equals("All")) {
-                    revealString.append("REVEAL_ALL");
-                    for (ViewCard viewCard : cardList.getHeroListHand()) {
-                        revealString.append(":").append(viewCard.getTitle());
-                    }
-                    revealString.append("%");
-                    for (ViewCard viewCard : cardList.getHeroListDeck()) {
-                        revealString.append(":").append(viewCard.getTitle());
-                    }
-                    socketMessenger.getSender().println(revealString.toString() + ":" + new Random().nextInt());
-                    chatMessages.add("You revealed your hand and your deck.");
-                } else if (choice.equals("X cards from the deck's top:")) {
-                    int number = noCards.getValue();
-                    if (number > cardList.getHeroListDeck().size()) {
-                        chatMessages.add("You want to reveal more cards than you have in your deck! Change the settings and try again.");
-                        return;
-                    }
-                    revealString.append("REVEAL_X").append(":").append(number);
-                    for (int i = 0; i < number; i++) {
-                        revealString.append(":").append(cardList.getHeroListDeck().get(i).getTitle());
-                    }
-                    socketMessenger.getSender().println(revealString.toString() + ":" + new Random().nextInt());
-                    chatMessages.add("You revealed " + number + " cards from the top of your deck.");
-                }
-            }
-        });
-        mainPane.getChildren().add(revealBtn);
-
-        //setting up untap all
-        Button untapAll = new Button("Untap all");
-        untapAll.relocate(1640 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER); //2075,650
-        untapAll.setOnAction(e -> {
-            for (ViewCard viewCard : cardList.getHeroListBattlefield()) {
-                untapCard(viewCard, true, true);
-            }
-            socketMessenger.getSender().println("UNTAPALL:" + new Random().nextInt());
-            chatMessages.add("You untapped all cards.");
-        });
-        mainPane.getChildren().add(untapAll);
-
-        //sideboardBtn
-        Button sideboardBtn = new Button("Sideboard");
-        sideboardBtn.relocate(1955 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
-        sideboardBtn.setOnAction(e -> {
-            printNewView(cardList.getHeroListSideboard());
-        });
-        mainPane.getChildren().add(sideboardBtn);
-
-        //skip turn button
-        Button skipTurnBtn = new Button("Skip turn");
-        skipTurnBtn.relocate(1800 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
-
-        skipTurnBtn.setOnAction(e -> {
-            if (!yourTurn) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setHeaderText(null);
-                alert.setContentText("You can't skip turn when it's not your turn.");
-                alert.initOwner(mainPane.getScene().getWindow());
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.show();
-                return;
-            }
-            if (!cardList.getListCastingStack().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setHeaderText(null);
-                alert.setContentText("You can't skip turn if you have cards in the casting stack!" +
-                        "\nPlease resolve all cards and then you can skip turn.");
-                alert.initOwner(mainPane.getScene().getWindow());
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.show();
-                return;
-            }
-            chatMessages.add("RE:You decided to skip your turn.");
-            socketMessenger.getSender().println("CRITICAL:SKIP_TURN:" + new Random().nextInt());
-            listPhases.get(phasesIterator).setEffect(battlefieldBorder);
-            phasesIterator = 5;
-            listPhases.get(phasesIterator).setEffect(handBorder);
-            mainPane.getChildren().removeAll(attackAll, unblockAll);
-            resolve(true);
-        });
-        mainPane.getChildren().add(skipTurnBtn);
-
-        //setting up cointoss button
-        Button coinTossBtn = new Button("Coin");
-        coinTossBtn.relocate(2110 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
-        coinTossBtn.setOnAction(e -> {
-            String coin = (new Random().nextBoolean()) ? "HEADS" : "TAILS";
-            socketMessenger.getSender().println("COINTOSS:" + coin + ":" + new Random().nextInt());
-            chatMessages.add("You tossed a coin. It's " + coin + ".");
-        });
-        mainPane.getChildren().add(coinTossBtn);
-
-        //settingup forfeit button
-        Button forfeitBtn = new Button("Quit");
-        forfeitBtn.relocate(2110 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
-        forfeitBtn.setStyle("-fx-background-color: linear-gradient(#636363, #4a4a4a);" +
-                "-fx-background-radius: 5;" +
-                "-fx-background-insets: 0;" +
-                "-fx-text-fill: white;");
-        forfeitBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Are you sure?");
-            alert.setHeaderText(null);
-            alert.setContentText("Do you really want to quit the game?");
-            alert.initOwner(mainPane.getScene().getWindow());
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.initStyle(StageStyle.UNDECORATED);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                System.out.println("You quit. Opponent wins the game.");
-                socketMessenger.getSender().println("CRITICAL:QUIT:" + new Random().nextInt());
-                chatMessages.add("RE:You decided to quit the game.");
-                alert.setTitle("Game Over");
-                alert.setContentText("You lost the game.");
-                alert.getButtonTypes().remove(ButtonType.CANCEL);
-                alert.showAndWait();
-                goToSideboard();
-//                try {
-//                    socket.close();
-//                } catch (IOException ioe) {
-//                    System.out.println("Couldn't close the socket correctly");
-//                    ioe.printStackTrace();
-//                }
-//                System.exit(0);
-            }
-        });
-        mainPane.getChildren().add(forfeitBtn);
-
-        //setting up button for shuffling deck
-        Button shuffleDeckBtn = new Button("Shuffle deck");
-        shuffleDeckBtn.relocate(2075 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER); //1620,725
-        shuffleDeckBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(null);
-            alert.setHeaderText(null);
-            alert.setContentText("You shouldn't shuffle if it wasn't triggered by a card.\nDo you really want to do it?");
-            alert.initStyle(StageStyle.UNDECORATED);
-            alert.initOwner(mainPane.getScene().getWindow());
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                socketMessenger.getSender().println("SHUFFLE:" + new Random().nextInt());
-                chatMessages.add("You shuffled your deck.");
-                for (ViewCard viewCard : cardList.getHeroListDeck()) {
-                    viewCard.setInvisibleToYou();
-                }
-                Collections.shuffle(cardList.getHeroListDeck());
-                updateDeckView(true);
-            }
-        });
-        mainPane.getChildren().add(shuffleDeckBtn);
-
-        //setting up token button
-        Button addTokenBtn = new Button("Add token");
-        addTokenBtn.relocate(1965 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
-        addTokenBtn.setOnAction(e -> {
-            addTokenDialog();
-        });
-        mainPane.getChildren().add(addTokenBtn);
-
-        //setting up resolve button
-        resolveButton = new Button("Resolve");
-        resolveButton.relocate(1630 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
-        resolveButton.setPrefWidth(85);
-        resolveButton.setOnMouseEntered(e -> {
-            if (yourMove) {
-                resolveButton.setStyle("-fx-background-color: linear-gradient(#ff5400, #be1d00);" +
-                        "-fx-background-radius: 5;" +
-                        "-fx-background-insets: 0;" +
-                        "-fx-text-fill: white;");
-            }
-        });
-        resolveButton.setOnMouseExited(e -> {
-            if (yourMove) {
-                resolveButton.setStyle(resolveDefBtnStyle);
-            }
-        });
-        resolveButton.setOnMousePressed(e -> {
-            if (yourMove) {
-                resolveButton.setStyle("-fx-background-color: linear-gradient(#C44100, #a31800);" +
-                        "-fx-background-radius: 5;" +
-                        "-fx-background-insets: 0;" +
-                        "-fx-text-fill: white;");
-            }
-        });
-        resolveButton.setOnAction(e -> {
-            resolve(false);
-        });
-        resolveButton.prefWidth(250 * ScreenUtils.WIDTH_MULTIPLIER);
-        mainPane.getChildren().add(resolveButton);
-
-        //setting up extend/contract button
-        extendContractBTNS = new Button();
-        extendContractBTNS.setText("<");
-        extendContractBTNS.relocate(1890 * ScreenUtils.WIDTH_MULTIPLIER, 850 * ScreenUtils.WIDTH_MULTIPLIER);
-        extendContractBTNS.setOnMousePressed(e -> {
-            moveButtons();
-        });
-        mainPane.getChildren().add(extendContractBTNS);
-
-        //attack/block buttons
-        attackAll = new Button("Attack all");
-        unblockAll = new Button("Clear blocks");
-        attackAll.setOnMousePressed(e -> {
-            if (!cardList.getHeroListBattlefield().isEmpty()) {
-                for (ViewCard viewCard : cardList.getHeroListBattlefield()) {
-                    if (viewCard.getType().toLowerCase().equals("creature")) {
-                        viewCard.setEffect(highlightBorder);
-                        tapCard(viewCard, true, true);
-                    }
-                }
-                socketMessenger.getSender().println("ATTACK_ALL:" + new Random().nextInt());
-            }
-        });
-        unblockAll.setOnMousePressed(e -> {
-            if (!cardList.getHeroListBattlefield().isEmpty()) {
-                mainPane.getChildren().removeAll(attackBlockList);
-                attackBlockList.clear();
-                blockingCard = null;
-                attackBlock = null;
-                for (ViewCard viewCard : cardList.getHeroListBattlefield()) {
-                    if (viewCard.getType().toLowerCase().equals("creature")) {
-                        viewCard.setEffect(battlefieldBorder);
-                    }
-                }
-                socketMessenger.getSender().println("UNBLOCK_ALL:" + new Random().nextInt());
-            }
-        });
-        attackAll.relocate(1800 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
-        unblockAll.relocate(1800 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
-
-        //fixing size all buttons
-        Collections.addAll(buttonsList, coinTossBtn, skipTurnBtn, unblockAll, attackAll, forfeitBtn, untapAll, sideboardBtn, scryDrawSpinner, drawCardBtn, scryButton, shuffleDeckBtn, resolveButton, addTokenBtn, revealBtn);
-        buttonsList.forEach(node -> {
-            node.setViewOrder(-2);
-            node.setScaleX(2 * ScreenUtils.WIDTH_MULTIPLIER);
-            node.setScaleY(2 * ScreenUtils.WIDTH_MULTIPLIER);
-        });
-        sendChatBtn.setViewOrder(-2);
-        sendChatBtn.setScaleX(1);
-        sendChatBtn.setScaleY(1);
-//        int phaseLocation = 10;
-
-        //adding phases in the middle
-        GridPane phasesGrid = new GridPane();
-        phasesGrid.prefWidth(1920 * ScreenUtils.WIDTH_MULTIPLIER);
-        phasesGrid.relocate(0 * ScreenUtils.WIDTH_MULTIPLIER, 455 * ScreenUtils.WIDTH_MULTIPLIER);
-        phasesGrid.setViewOrder(1);
-        ColumnConstraints column = new ColumnConstraints();
-        column.setPrefWidth((double) 1920 * ScreenUtils.WIDTH_MULTIPLIER / 6);
-        column.setHalignment(HPos.CENTER);
-        int textColumn = 0;
-        for (Text text : listPhases) {
-            text.prefWidth((double) 1920 * ScreenUtils.WIDTH_MULTIPLIER / listPhases.size());
-            text.setTextAlignment(TextAlignment.CENTER);
-            text.setViewOrder(1);
-            phasesGrid.getColumnConstraints().add(column);
-            text.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 20 * ScreenUtils.WIDTH_MULTIPLIER));
-            text.setFill(Color.WHITE);
-            text.setEffect(battlefieldBorder);
-            phasesGrid.add(text, textColumn, 0);
-            textColumn++;
-        }
-        listPhases.get(0).setEffect(handBorder);
-        mainPane.getChildren().add(phasesGrid);
     }
 
     private void settingUpView(boolean hero) {
@@ -1927,7 +1075,7 @@ public class GameWindowController implements DisplayWindow {
         mainPane.getChildren().add(deckCardsNumber);
 
         //setting up deck view
-        updateDeckView(hero);
+        Actions.updateDeckView(this, hero);
         deckIV.relocate(25 * ScreenUtils.WIDTH_MULTIPLIER, ivHeight);
         deckIV.setOnMouseEntered(e -> {
             previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(listDeck.get(0).getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null));
@@ -1938,7 +1086,7 @@ public class GameWindowController implements DisplayWindow {
             deckIV.setEffect(null);
         });
         deckIV.setOnMouseClicked(e -> {
-            printNewView(listDeck);
+            Actions.printNewView(this, listDeck);
         });
         mainPane.getChildren().add(deckIV);
 
@@ -1955,7 +1103,7 @@ public class GameWindowController implements DisplayWindow {
             graveyardIV.setEffect(null);
         });
         graveyardIV.setOnMouseClicked(e -> {
-            printNewView(listGraveyard);
+            Actions.printNewView(this, listGraveyard);
         });
         mainPane.getChildren().add(graveyardIV);
 
@@ -1979,7 +1127,7 @@ public class GameWindowController implements DisplayWindow {
             exileIV.setEffect(null);
         });
         exileIV.setOnMouseClicked(e -> {
-            printNewView(listExile);
+            Actions.printNewView(this, listExile);
         });
         mainPane.getChildren().add(exileIV);
         Text exileText = new Text();
@@ -2094,29 +1242,29 @@ public class GameWindowController implements DisplayWindow {
                     viewCard.setOnContextMenuRequested(ContextMenuEvent -> {
                         MenuItem copyCard = new MenuItem("Take it");
                         copyCard.setOnAction(cAction -> {
-                            if(!viewCard.isVisibleToYou()) {
+                            if (!viewCard.isVisibleToYou()) {
                                 return;
                             }
-                            List<ViewCard> list = findListFromViewCard(viewCard,false);
+                            List<ViewCard> list = findListFromViewCard(viewCard, false);
                             int position = list.indexOf(viewCard);
                             String listString = returnStringFromList(list);
-                            socketMessenger.getSender().println("STEAL_CARD:"+listString+":"+position + ":" + new Random().nextInt());
+                            socketMessenger.getSender().println("STEAL_CARD:" + listString + ":" + position + ":" + new Random().nextInt());
 
-                            chatMessages.add("RE:You stole " + viewCard.getTitle()+".");
+                            chatMessages.add("RE:You stole " + viewCard.getTitle() + ".");
 
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
 //                            moveToExile(viewCard,false);
-                            updateGraveyardView(false);
-                            updateDeckView(false);
-                            reArrangeHand(-1, 0, false);
-                            reArrangeBattlefield();
+                            Actions.updateGraveyardView(this, false);
+                            Actions.updateDeckView(this, false);
+                            Actions.reArrangeHand(this, -1, 0, false);
+                            Actions.reArrangeBattlefield(this);
 
                             ViewCard newCard = new ViewCard(Database.getInstance().getCard(viewCard.getTitle()));
                             newCard.setOpponentsCard(false);
-                            cardList.getHeroListDeck().add(0,newCard);
+                            cardList.getHeroListDeck().add(0, newCard);
                             newCard.setUltimatePosition(PositionType.DECK);
                             bringCardToGame(newCard, true);
-                            drawCards(1,true);
+                            Actions.drawCards(this, 1, true);
                         });
                         rightClickMenu.getItems().setAll(copyCard);
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
@@ -2193,7 +1341,7 @@ public class GameWindowController implements DisplayWindow {
                     chatMessages.add("You changed " + viewCard.getTitle() + "'s type from " +
                             viewCard.getType() + " to " + newType + ".");
                     viewCard.setType(newType);
-                    reArrangeBattlefield();
+                    Actions.reArrangeBattlefield(this);
                 }
             });
             if (!viewCard.isTransform()) {
@@ -2205,8 +1353,8 @@ public class GameWindowController implements DisplayWindow {
                 }
                 socketMessenger.getSender().println("CRITICAL:TRANSFORM:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
                 chatMessages.add("RE:You transform " + viewCard.getTitle() + ".");
-                castAbTr(viewCard, "Transform", "");
-                waitingForResponse();
+                Actions.castAbTr(this, viewCard, "Transform", "");
+                Actions.waitingForResponse(this);
             });
             reveal.setOnAction(cAction -> {
                 reveal(viewCard);
@@ -2219,8 +1367,8 @@ public class GameWindowController implements DisplayWindow {
                 if (abilityString != null) {
                     socketMessenger.getSender().println("CRITICAL:ABILITY:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + abilityString + ":" + new Random().nextInt());
                     chatMessages.add("RE:You activated ability of " + viewCard.getTitle() + ".");
-                    castAbTr(viewCard, "Ability", abilityString);
-                    waitingForResponse();
+                    Actions.castAbTr(this, viewCard, "Ability", abilityString);
+                    Actions.waitingForResponse(this);
                 }
             });
 
@@ -2243,23 +1391,23 @@ public class GameWindowController implements DisplayWindow {
                             }
                             socketMessenger.getSender().println("MOVEBATTLEFIELD:HAND:" + cardList.getHeroListHand().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             cardList.getHeroListBattlefield().add(viewCard);
-                            reArrangeBattlefield();
-                            reArrangeHand(-1, 0, true);
+                            Actions.reArrangeBattlefield(this);
+                            Actions.reArrangeHand(this, -1, 0, true);
                             viewCard.setEffect(battlefieldBorder);
                             cAction.consume();
                         });
                         moveGraveyard.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEGRAVEYARD:HAND:" + cardList.getHeroListHand().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setVisibleToYou();
                             viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             cardList.getHeroListGraveyard().add(viewCard);
-                            updateGraveyardView(true);
-                            reArrangeHand(-1, 0, true);
+                            Actions.updateGraveyardView(this, true);
+                            Actions.reArrangeHand(this, -1, 0, true);
                             cAction.consume();
                         });
                         moveExile.setOnAction(cAction -> {
@@ -2269,11 +1417,11 @@ public class GameWindowController implements DisplayWindow {
                             } else {
                                 chatMessages.add("You move [UNKNOWN] to the exile.");
                             }
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.EXILE);
                             cardList.getHeroListExile().add(viewCard);
                             updateExileView(true);
-                            reArrangeHand(-1, 0, true);
+                            Actions.reArrangeHand(this, -1, 0, true);
                             cAction.consume();
                         });
                         rightClickMenu.getItems().setAll(moveBattlefield, moveDeck, moveGraveyard, moveExile, reveal);
@@ -2288,10 +1436,10 @@ public class GameWindowController implements DisplayWindow {
                             viewCard.getType().toLowerCase().equals("creature")) { //attack phase
                         if (!viewCard.getEffect().equals(highlightBorder)) {
                             viewCard.setEffect(highlightBorder);
-                            tapCard(viewCard, true, true);
+                            Actions.tapCard(this, viewCard, true, true);
                             socketMessenger.getSender().println("ATTACK:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
                         } else {
-                            untapCard(viewCard, true, false);
+                            Actions.untapCard(this, viewCard, true, false);
                             socketMessenger.getSender().println("ATTACK_NOT:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
                         }
                     } else if (phasesIterator == 2 && !yourTurn && yourMove &&
@@ -2303,7 +1451,7 @@ public class GameWindowController implements DisplayWindow {
                             double dragDeltaY = viewCard.getLayoutY()
                                     + viewCard.getTranslateY()
                                     + (60 * ScreenUtils.WIDTH_MULTIPLIER);
-                            Line line = createLine();
+                            Line line = Actions.createLine(this);
                             line.setStartX(dragDeltaX);
                             line.setStartY(dragDeltaY);
 //                        line.setEndX(dragDeltaX+100);
@@ -2318,9 +1466,9 @@ public class GameWindowController implements DisplayWindow {
                         }
                     } else {
                         if (!viewCard.isTapped()) {
-                            tapCard(viewCard, true, false);
+                            Actions.tapCard(this, viewCard, true, false);
                         } else {
-                            untapCard(viewCard, true, false);
+                            Actions.untapCard(this, viewCard, true, false);
                         }
                     }
                 } else if (e.getButton() == MouseButton.SECONDARY) { //right click on the battlefield
@@ -2336,7 +1484,7 @@ public class GameWindowController implements DisplayWindow {
                         moveHand.setOnAction(cAction -> { //move to hand
                             socketMessenger.getSender().println("MOVEHAND:BATTLEFIELD:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             moveToHand(viewCard, true);
                             viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
@@ -2344,26 +1492,26 @@ public class GameWindowController implements DisplayWindow {
                         moveGraveyard.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEGRAVEYARD:BATTLEFIELD:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setVisibleToYou();
                             viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             cardList.getHeroListGraveyard().add(viewCard);
-                            updateGraveyardView(true);
-                            reArrangeBattlefield();
+                            Actions.updateGraveyardView(this, true);
+                            Actions.reArrangeBattlefield(this);
                             cAction.consume();
                         });
                         moveExile.setOnAction(cAction -> {
                             chatMessages.add("You move " + viewCard.getTitle() + " to the exile.");
                             socketMessenger.getSender().println("MOVEEXILE:BATTLEFIELD:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.EXILE);
                             cardList.getHeroListExile().add(viewCard);
                             updateExileView(true);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             cAction.consume();
                         });
                         addCounters.setOnAction(cAction -> {
-                            int counters = setCountersDialog();
+                            int counters = Actions.setCountersDialog(mainPane);
                             if (counters >= 0) {
                                 int index = cardList.getHeroListBattlefield().indexOf(viewCard);
                                 socketMessenger.getSender().println("COUNTERS:" + index + ":" + counters + ":" + new Random().nextInt());
@@ -2388,42 +1536,42 @@ public class GameWindowController implements DisplayWindow {
                             }
                             socketMessenger.getSender().println("MOVEBATTLEFIELD:DECK:" + cardList.getHeroListDeck().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
-                            updateDeckView(true);
+                            Actions.updateDeckView(this, true);
                             cardList.getHeroListBattlefield().add(viewCard);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             viewCard.setEffect(battlefieldBorder);
                             cAction.consume();
                         });
                         moveGraveyard.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEGRAVEYARD:DECK:" + cardList.getHeroListDeck().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setVisibleToYou();
                             viewCard.setUltimatePosition(PositionType.GRAVEYARD);
-                            updateDeckView(true);
+                            Actions.updateDeckView(this, true);
                             cardList.getHeroListGraveyard().add(viewCard);
-                            updateGraveyardView(true);
+                            Actions.updateGraveyardView(this, true);
                             cAction.consume();
                         });
                         moveExile.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEEXILE:DECK:" + cardList.getHeroListDeck().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the exile.");
-                            resetCardState(viewCard);
-                            updateDeckView(true);
+                            Actions.resetCardState(this, viewCard);
+                            Actions.updateDeckView(this, true);
 
                             viewCard.setUltimatePosition(PositionType.EXILE);
                             cardList.getHeroListExile().add(viewCard);
                             updateExileView(true);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             cAction.consume();
                         });
                         moveHand.setOnAction(cAction -> { //move to hand
                             socketMessenger.getSender().println("MOVEHAND:DECK:" + cardList.getHeroListDeck().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand.");
-                            resetCardState(viewCard);
-                            updateDeckView(true);
+                            Actions.resetCardState(this, viewCard);
+                            Actions.updateDeckView(this, true);
                             moveToHand(viewCard, true);
                             viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
@@ -2440,8 +1588,8 @@ public class GameWindowController implements DisplayWindow {
                         moveHand.setOnAction(cAction -> { //move to hand
                             socketMessenger.getSender().println("MOVEHAND:GRAVEYARD:" + cardList.getHeroListGraveyard().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand.");
-                            resetCardState(viewCard);
-                            updateGraveyardView(true);
+                            Actions.resetCardState(this, viewCard);
+                            Actions.updateGraveyardView(this, true);
                             moveToHand(viewCard, true);
                             viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
@@ -2453,23 +1601,23 @@ public class GameWindowController implements DisplayWindow {
                             }
                             socketMessenger.getSender().println("MOVEBATTLEFIELD:GRAVEYARD:" + cardList.getHeroListGraveyard().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
-                            updateGraveyardView(true);
+                            Actions.updateGraveyardView(this, true);
                             cardList.getHeroListBattlefield().add(viewCard);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             viewCard.setEffect(battlefieldBorder);
                             cAction.consume();
                         });
                         moveExile.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEEXILE:GRAVEYARD:" + cardList.getHeroListGraveyard().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the exile.");
-                            resetCardState(viewCard);
-                            updateGraveyardView(true);
+                            Actions.resetCardState(this, viewCard);
+                            Actions.updateGraveyardView(this, true);
                             viewCard.setUltimatePosition(PositionType.EXILE);
                             cardList.getHeroListExile().add(viewCard);
                             updateExileView(true);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             cAction.consume();
                         });
 //                            moveDeck.setOnAction(cAction -> { already set up universal?
@@ -2487,7 +1635,7 @@ public class GameWindowController implements DisplayWindow {
                         moveHand.setOnAction(cAction -> { //move to hand
                             socketMessenger.getSender().println("MOVEHAND:EXILE:" + cardList.getHeroListExile().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             updateExileView(true);
                             moveToHand(viewCard, true);
                             viewCard.setUltimatePosition(PositionType.HAND);
@@ -2500,27 +1648,27 @@ public class GameWindowController implements DisplayWindow {
                             }
                             socketMessenger.getSender().println("MOVEBATTLEFIELD:EXILE:" + cardList.getHeroListExile().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " onto the battlefield.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setUltimatePosition(PositionType.BATTLEFIELD);
                             updateExileView(true);
                             cardList.getHeroListBattlefield().add(viewCard);
-                            reArrangeBattlefield();
+                            Actions.reArrangeBattlefield(this);
                             viewCard.setEffect(battlefieldBorder);
                             cAction.consume();
                         });
                         moveGraveyard.setOnAction(cAction -> {
                             socketMessenger.getSender().println("MOVEGRAVEYARD:EXILE:" + cardList.getHeroListExile().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to the graveyard.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             viewCard.setVisibleToYou();
                             updateExileView(true);
                             cardList.getHeroListGraveyard().add(viewCard);
-                            updateGraveyardView(true);
+                            Actions.updateGraveyardView(this, true);
                             viewCard.setUltimatePosition(PositionType.GRAVEYARD);
                             cAction.consume();
                         });
                         exileShow.setOnAction(cAction -> {
-                            if(viewCard.isVisibleToYou()) {
+                            if (viewCard.isVisibleToYou()) {
                                 return;
                             }
                             viewCard.setVisibleToYou();
@@ -2529,7 +1677,7 @@ public class GameWindowController implements DisplayWindow {
                             updateExileView(true);
                             viewCard.getCard(viewCard.isVisibleToYou(), viewCard.isVisibleToRival(), 250 * ScreenUtils.WIDTH_MULTIPLIER);
                         });
-                        rightClickMenu.getItems().setAll(reveal, moveDeck, moveHand, moveBattlefield, moveGraveyard,exileShow);
+                        rightClickMenu.getItems().setAll(reveal, moveDeck, moveHand, moveBattlefield, moveGraveyard, exileShow);
                         rightClickMenu.show(viewCard, e.getScreenX(), e.getScreenY());
                     });
                 }
@@ -2558,7 +1706,7 @@ public class GameWindowController implements DisplayWindow {
                         moveHand.setOnAction(cAction -> { //move to hand
                             socketMessenger.getSender().println("MOVEHAND:SIDEBOARD:" + cardList.getHeroListSideboard().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                             chatMessages.add("You move " + viewCard.getTitle() + " to your hand from the sideboard.");
-                            resetCardState(viewCard);
+                            Actions.resetCardState(this, viewCard);
                             moveToHand(viewCard, true);
                             viewCard.setUltimatePosition(PositionType.HAND);
                             cAction.consume();
@@ -2604,7 +1752,7 @@ public class GameWindowController implements DisplayWindow {
                         //cards that go on the battlefield
                         socketMessenger.getSender().println("PLAY:" + cardList.getHeroListHand().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                         chatMessages.add("You played " + viewCard.getTitle() + ".");
-                        putOnBattlefield(viewCard, false, true);
+                        Actions.putOnBattlefield(this, viewCard, false, true);
                     } else { //
                         // TODO: do split cards
                         //cards that are castable, sorceries and instants
@@ -2614,12 +1762,12 @@ public class GameWindowController implements DisplayWindow {
 //                            scaleTrans.play();
                         socketMessenger.getSender().println("CRITICAL:CAST:" + cardList.getHeroListHand().indexOf(viewCard) + ":" + viewCard.getTitle() + ":" + new Random().nextInt());
                         chatMessages.add("RE:You cast " + viewCard.getTitle() + ".");
-                        castToStack(viewCard);
+                        Actions.castToStack(this, viewCard);
                         //====CRITICAL====
-                        waitingForResponse();
+                        Actions.waitingForResponse(this);
                     }
                     cardList.getHeroListHand().remove(viewCard);
-                    reArrangeHand(-1, 0, true);
+                    Actions.reArrangeHand(this, -1, 0, true);
                 } else {
                     TranslateTransition tt = new TranslateTransition(Duration.millis(75), viewCard);
                     tt.setFromX(viewCard.getTranslateX());
@@ -2633,182 +1781,6 @@ public class GameWindowController implements DisplayWindow {
             viewCard.setDragging(false);
             e.consume();
         });
-    }
-
-    private void addToken(int attack, int defense, String colorString, String type, String additionalText, boolean hero) {
-        Color color;
-        switch (colorString) {
-            case "White":
-                color = Color.WHITE;
-                break;
-            case "Blue":
-                color = Color.DARKBLUE;
-                break;
-            case "Black":
-                color = Color.BLACK;
-                break;
-            case "Red":
-                color = Color.DARKRED;
-                break;
-            case "Green":
-                color = Color.DARKGREEN;
-                break;
-            case "Multicolor":
-                color = Color.WHEAT;
-                break;
-            case "Colorless":
-                color = Color.GRAY;
-                break;
-            default:
-                color = Color.LIGHTGRAY;
-                break;
-
-        }
-        Token token = new Token(attack, defense, color, type, additionalText);
-        token.setOnMouseEntered(e -> previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(token.getCardImg(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null)));
-        token.setOnMouseExited(e -> previewIV.setImage(null));
-        token.setUltimatePosition(PositionType.BATTLEFIELD);
-        token.setEffect(battlefieldBorder);
-
-        if (hero) {
-            token.setOnMousePressed(e -> {
-                RotateTransition rt = new RotateTransition(Duration.millis(15), token);
-//            MenuItem highlight = new MenuItem("Highlight");
-//            MenuItem removeHighlight = new MenuItem("Remove highlight");
-                MenuItem addCounters = new MenuItem("Add counters");
-                MenuItem destroy = new MenuItem("Destroy");
-                MenuItem ability = new MenuItem("Activate ability");
-                if (e.getButton() == MouseButton.SECONDARY) { //right click on the battlefield
-                    token.setOnContextMenuRequested(contextMenuEvent -> { //showing context menu, just a test for now
-//                        highlight.setOnAction(cAction -> {
-//                            token.setEffect(new DropShadow(BlurType.GAUSSIAN, Color.rgb(((int) (Math.random() * 156)), (int) (Math.random() * 156), (int) (Math.random() * 156), 1), 10, 0.9, 0, 0));
-//                            cAction.consume();
-//                        });
-//                        removeHighlight.setOnAction(cAction -> {
-//                            token.setEffect(battlefieldBorder);
-//                            cAction.consume();
-//                        });
-                        ability.setOnAction(cAction -> {
-                            if (!yourMove) {
-                                return;
-                            }
-                            socketMessenger.getSender().println("CRITICAL:ABILITY:" + cardList.getHeroListBattlefield().indexOf(token) + ":" + ":" + new Random().nextInt());
-                            chatMessages.add("RE:You activated ability of " + token.getTitle() + ".");
-                            castAbTr(token, "Ability", "");
-                            waitingForResponse();
-                        });
-                        destroy.setOnAction(cAction -> {
-                            socketMessenger.getSender().println("TOKEN:REMOVE:" + cardList.getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
-                            chatMessages.add("You removed " + token.getTitle() + " from the battlefield.");
-                            Platform.runLater(() -> removeToken(token, true));
-                        });
-
-                        addCounters.setOnAction(cAction -> {
-                            int counters = setCountersDialog();
-                            if (counters > 0) {
-                                int index = cardList.getHeroListBattlefield().indexOf(token);
-                                socketMessenger.getSender().println("COUNTERS:" + index + ":" + counters + ":" + new Random().nextInt());
-                                chatMessages.add("You set " + counters + ((counters > 1) ? " counters" : " counter") + " to " + token.getTitle());
-                                token.setCounters(counters);
-                            }
-                        });
-                        rightClickMenu.getItems().setAll(ability, addCounters, destroy);
-                        rightClickMenu.show(token, e.getScreenX(), e.getScreenY());
-                    });
-                }
-                if (!yourMove) {
-                    return;
-                }
-
-                if (e.getButton() == MouseButton.PRIMARY) { //left click on the battlefield
-                    ColorAdjust tappedColor = new ColorAdjust();
-                    tappedColor.setBrightness(-0.35);
-                    if (phasesIterator == 2 && yourTurn && yourMove) { //attack phase
-                        if (!token.getEffect().equals(highlightBorder)) {
-                            token.setEffect(highlightBorder);
-                            tapCard(token, true, true);
-                            socketMessenger.getSender().println("ATTACK:" + cardList.getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
-                        } else {
-                            untapCard(token, true, false);
-                            socketMessenger.getSender().println("ATTACK_NOT:" + cardList.getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
-                        }
-                    } else if (phasesIterator == 2 && !yourTurn && yourMove) { //block phase
-                        if (!token.getEffect().equals(handBorder)) {
-                            double dragDeltaX = token.getLayoutX()
-                                    + token.getTranslateX()
-                                    + (60 * ScreenUtils.WIDTH_MULTIPLIER);
-                            double dragDeltaY = token.getLayoutY()
-                                    + token.getTranslateY()
-                                    + (60 * ScreenUtils.WIDTH_MULTIPLIER);
-                            Line line = createLine();
-                            line.setStartX(dragDeltaX);
-                            line.setStartY(dragDeltaY);
-//                        line.setEndX(dragDeltaX+100);
-//                        line.setEndY(dragDeltaY+100);
-                            attackBlock = line;
-                            blockingCard = token;
-                            token.setEffect(handBorder);
-                        } else {
-                            token.setEffect(battlefieldBorder);
-                            attackBlock = null;
-                            blockingCard = null;
-                        }
-                    } else {
-                        if (!token.isTapped()) {
-                            tapCard(token, true, false);
-                        } else {
-                            untapCard(token, true, false);
-                        }
-                    }
-                }
-            });
-        } else { //not hero token
-            token.setOnMousePressed(e -> {
-                if (phasesIterator != 2) {
-                    if (token.getEffect().equals(battlefieldBorder)) {
-                        token.setEffect(highlightBorder);
-                        socketMessenger.getSender().println("HIGHLIGHT:" + cardList.getOppListBattlefield().indexOf(token) + ":" + new Random().nextInt());
-                    } else {
-                        token.setEffect(battlefieldBorder);
-                        socketMessenger.getSender().println("HIGHLIGHT_NOT:" + cardList.getOppListBattlefield().indexOf(token) + ":" + new Random().nextInt());
-                    }
-                } else if (phasesIterator == 2 && !yourTurn && yourMove) {
-                    if (attackBlock != null) {
-                        System.out.println(token.getLayoutX()
-                                + token.getTranslateX()
-                                + (60 * ScreenUtils.WIDTH_MULTIPLIER));
-                        System.out.println(token.getLayoutY()
-                                + token.getTranslateY()
-                                + (60 * ScreenUtils.WIDTH_MULTIPLIER));
-                        attackBlock.setEndX(token.getLayoutX()
-                                + token.getTranslateX()
-                                + (60 * ScreenUtils.WIDTH_MULTIPLIER));
-                        attackBlock.setEndY(token.getLayoutY()
-                                + token.getTranslateY()
-                                + (60 * ScreenUtils.WIDTH_MULTIPLIER));
-                        attackBlockList.add(attackBlock);
-                        mainPane.getChildren().add(attackBlock);
-                        socketMessenger.getSender().println("BLOCK:" +
-                                cardList.getHeroListBattlefield().indexOf(blockingCard) + ":" +
-                                cardList.getOppListBattlefield().indexOf(token) + ":" +
-                                new Random().nextInt());
-                        attackBlock = null;
-                        blockingCard = null;
-                    }
-                }
-            });
-        }
-        token.setViewOrder(-2);
-        mainPane.getChildren().add(token);
-        putOnBattlefield(token, false, hero);
-        uglyTokenSolution.add(token);
-    }
-
-    private void removeToken(Token token, boolean hero) {
-        List<ViewCard> listBattlefield = (hero) ? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
-        listBattlefield.remove(token);
-        reArrangeBattlefield();
-        mainPane.getChildren().remove(token);
     }
 
     private void moveButtons() {
@@ -2843,182 +1815,7 @@ public class GameWindowController implements DisplayWindow {
         chatMessages.add("You revealed " + viewCard.getTitle() + " to your opponent.");
     }
 
-    private void castAbTr(ViewCard viewCard, String text, String additionalText) {
-        Ability abilityVC = viewCard.createAbility(text, additionalText);
-        abilityVC.relocate(viewCard.getLayoutX() + viewCard.getTranslateX() + (60 * ScreenUtils.WIDTH_MULTIPLIER),
-                viewCard.getLayoutY() + viewCard.getTranslateY() + (60 * ScreenUtils.WIDTH_MULTIPLIER));
-        mainPane.getChildren().add(abilityVC);
-        castToStack(abilityVC);
-    }
-
-    private void tapCard(ViewCard viewCard, boolean hero, boolean attack) {
-        if (!viewCard.isTapped()) {
-            if (hero && !attack) {
-                socketMessenger.getSender().println("TAP:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
-                chatMessages.add("You tapped " + viewCard.getTitle() + ".");
-            }
-            ColorAdjust tappedColor = new ColorAdjust();
-            tappedColor.setBrightness(-0.35);
-            RotateTransition rt = new RotateTransition(Duration.millis(45), viewCard);
-            rt.setByAngle(25);
-            rt.play();
-            viewCard.setTapped(true);
-            tappedColor.setInput(viewCard.getEffect());
-            viewCard.setEffect(tappedColor);
-        }
-    }
-
-    private void untapCard(ViewCard viewCard, boolean hero, boolean untapAll) {
-        if (viewCard.isTapped()) {
-            if (hero && !untapAll) {
-                socketMessenger.getSender().println("UNTAP_:" + cardList.getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
-                chatMessages.add("You untapped " + viewCard.getTitle() + ".");
-            }
-            RotateTransition rt = new RotateTransition(Duration.millis(45), viewCard);
-            rt.setByAngle(-25);
-            rt.play();
-            viewCard.setTapped(false);
-            viewCard.setEffect(battlefieldBorder);
-        }
-    }
-
-    private void resolve(boolean skipTurn) {
-        if (cardList.getListCastingStack().isEmpty()) {
-            if (!skipTurn) {
-                socketMessenger.getSender().println("CRITICAL:END_TURN" + ":" + new Random().nextInt());
-                chatMessages.add("RE:You decided to go to the next phase.");
-            }
-            int checkPhase = phasesIterator;
-            boolean turn = yourTurn;
-            if (turn) {
-                waitingForResponse();
-            }
-            if (!turn) {
-                nextPhase();
-            }
-            if (!turn && checkPhase != (listPhases.size() - 1)) { //we flip the situation if there is end of turn
-                waitingForResponse();
-            }
-        } else {
-            String endString = "";
-            ViewCard lastCardInStack = cardList.getListCastingStack().get(cardList.getListCastingStack().size() - 1);
-            if (lastCardInStack.getType().equals("Ability")) {
-                mainPane.getChildren().remove(lastCardInStack);
-                if (((Ability) lastCardInStack).getText().equals("Transform")) {
-                    endString = "TRANSFORM:";
-                    ((Ability) lastCardInStack).getViewCard().transform();
-                }
-            } else if (lastCardInStack.getType().toLowerCase().equals("sorcery") ||
-                    lastCardInStack.getType().toLowerCase().equals("instant")) {
-                moveToGraveyard(lastCardInStack, !lastCardInStack.isOpponentsCard());
-            } else {
-                putOnBattlefield(lastCardInStack, false, !lastCardInStack.isOpponentsCard());
-            }
-            socketMessenger.getSender().println("CRITICAL:RESOLVE:" + endString + ":" + new Random().nextInt());
-            chatMessages.add("RE:You resolved " + lastCardInStack.getTitle() + ".");
-            cardList.getListCastingStack().remove(cardList.getListCastingStack().size() - 1);
-            yourMove = !yourMove;
-            disableEnableBtns();
-            waitingForResponse();
-        }
-    }
-
-    private void nextPhase() {
-        listPhases.get(phasesIterator).setEffect(battlefieldBorder);
-        if (phasesIterator < (listPhases.size() - 1)) {
-            phasesIterator++;
-        } else if (phasesIterator == (listPhases.size() - 1)) { //end of turn
-            yourTurn = !yourTurn;
-            if (yourTurn) {
-                chatMessages.add("RE:It's your turn.");
-            } else {
-                chatMessages.add("RE:It's not your turn.");
-            }
-            phasesIterator = 0;
-            mainPane.getChildren().remove(yourTurn ? opponentsTurnText : yourTurnText);
-            mainPane.getChildren().add(yourTurn ? yourTurnText : opponentsTurnText);
-            List<Tooltip> phasesTooltip = (yourTurn) ? phasesTooltipYourTurn : phasesTooltipNotYourTurn;
-            for (int i = 0; i < phasesTooltip.size(); i++) {
-                Tooltip.install(listPhases.get(i), phasesTooltip.get(i));
-            }
-        }
-        chatMessages.add("You go to the next phase: " + listPhases.get(phasesIterator).getText() + ".");
-        if (phasesIterator == 2) {
-            mainPane.getChildren().add(yourTurn ? attackAll : unblockAll);
-            removeBorders();
-        }
-        if (phasesIterator == 3) {
-            attackBlock = null;
-            blockingCard = null;
-            mainPane.getChildren().removeAll(attackAll, unblockAll);
-        }
-        if (phasesIterator == 4) {
-            mainPane.getChildren().removeAll(attackBlockList);
-            attackBlockList.clear();
-            removeBorders();
-        }
-        chatMessages.add(yourTurn ? phasesTooltipYourTurn.get(phasesIterator).getText() : phasesTooltipNotYourTurn.get(phasesIterator).getText());
-        listPhases.get(phasesIterator).setEffect(handBorder);
-    }
-
-    private void waitingForResponse() {
-        resolveButton.setText("Waiting...");
-        yourMove = false;
-        disableEnableBtns();
-    }
-
-    private void disableEnableBtns() {
-        for (Node node : buttonsList) {
-            node.setDisable(!yourMove);
-            if (node.equals(resolveButton)) {
-                if (yourMove) {
-                    resolveButton.setStyle("-fx-background-color: linear-gradient(#ff5400, #be1d00);" +
-                            "-fx-background-radius: 5;" +
-                            "-fx-background-insets: 0;" +
-                            "-fx-text-fill: white;");
-                } else {
-                    resolveButton.setStyle(null);
-                }
-            }
-        }
-    }
-
-    private Line createLine() {
-        Line line = new Line();
-        line.setViewOrder(-5);
-        line.setStrokeWidth(3);
-        line.setStroke(Color.BLACK);
-        line.setStrokeLineCap(StrokeLineCap.BUTT);
-        line.getStrokeDashArray().setAll(10.0, 5.0);
-        line.setEffect(handBorder);
-        line.setMouseTransparent(true);
-        return line;
-    }
-
-    private void removeBorders() {
-        for (ViewCard card : cardList.getHeroListBattlefield()) {
-            if (card.isTapped()) {
-                ColorAdjust tappedColor = new ColorAdjust();
-                tappedColor.setBrightness(-0.35);
-                tappedColor.setInput(battlefieldBorder);
-                card.setEffect(tappedColor);
-            } else {
-                card.setEffect(battlefieldBorder);
-            }
-        }
-        for (ViewCard card : cardList.getOppListBattlefield()) {
-            if (card.isTapped()) {
-                ColorAdjust tappedColor = new ColorAdjust();
-                tappedColor.setBrightness(-0.35);
-                tappedColor.setInput(battlefieldBorder);
-                card.setEffect(tappedColor);
-            } else {
-                card.setEffect(battlefieldBorder);
-            }
-        }
-    }
-
-    private void goToSideboard() {
+    public void goToSideboard() {
         DisplayContext context = new DisplayContext();
         context.setNewWindow(new Sideboard(yourDeck, socketMessenger));
         context.showNewWindow(this);
@@ -3121,43 +1918,43 @@ public class GameWindowController implements DisplayWindow {
     }
 
     private List<ViewCard> findListFromViewCard(ViewCard viewCard, boolean hero) {
-        List<ViewCard> list = hero? cardList.getHeroListHand() : cardList.getOppListHand();
-        if(cardList.getHeroListDeck().contains(viewCard) || cardList.getOppListDeck().contains(viewCard)) {
-            list = hero? cardList.getHeroListDeck() : cardList.getOppListDeck();
-        } else if(cardList.getHeroListBattlefield().contains(viewCard) || cardList.getOppListBattlefield().contains(viewCard)) {
-            list = hero? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
-        } else if(cardList.getHeroListGraveyard().contains(viewCard) || cardList.getOppListGraveyard().contains(viewCard)) {
-            list = hero? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
-        } else if(cardList.getHeroListExile().contains(viewCard) || cardList.getOppListExile().contains(viewCard)) {
-            list = hero? cardList.getHeroListExile() : cardList.getOppListExile();
+        List<ViewCard> list = hero ? cardList.getHeroListHand() : cardList.getOppListHand();
+        if (cardList.getHeroListDeck().contains(viewCard) || cardList.getOppListDeck().contains(viewCard)) {
+            list = hero ? cardList.getHeroListDeck() : cardList.getOppListDeck();
+        } else if (cardList.getHeroListBattlefield().contains(viewCard) || cardList.getOppListBattlefield().contains(viewCard)) {
+            list = hero ? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
+        } else if (cardList.getHeroListGraveyard().contains(viewCard) || cardList.getOppListGraveyard().contains(viewCard)) {
+            list = hero ? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
+        } else if (cardList.getHeroListExile().contains(viewCard) || cardList.getOppListExile().contains(viewCard)) {
+            list = hero ? cardList.getHeroListExile() : cardList.getOppListExile();
         }
         return list;
     }
 
     private String returnStringFromList(List<ViewCard> list) {
         String listString = "HAND";
-        if(list.equals(cardList.getHeroListDeck()) || list.equals(cardList.getOppListDeck())) {
+        if (list.equals(cardList.getHeroListDeck()) || list.equals(cardList.getOppListDeck())) {
             listString = "DECK";
-        } else if(list.equals(cardList.getHeroListBattlefield()) || list.equals(cardList.getOppListBattlefield())) {
+        } else if (list.equals(cardList.getHeroListBattlefield()) || list.equals(cardList.getOppListBattlefield())) {
             listString = "BATTLEFIELD";
-        } else if(list.equals(cardList.getHeroListGraveyard()) || list.equals(cardList.getOppListGraveyard())) {
+        } else if (list.equals(cardList.getHeroListGraveyard()) || list.equals(cardList.getOppListGraveyard())) {
             listString = "GRAVEYARD";
-        } else if(list.equals(cardList.getHeroListExile()) || list.equals(cardList.getOppListExile())) {
+        } else if (list.equals(cardList.getHeroListExile()) || list.equals(cardList.getOppListExile())) {
             listString = "EXILE";
         }
         return listString;
     }
 
     private List<ViewCard> returnListFromString(String listString, boolean hero) {
-        List<ViewCard> list = hero? cardList.getHeroListHand() : cardList.getOppListHand();
-        if(listString.equals("DECK")) {
-            list = hero? cardList.getHeroListDeck() : cardList.getOppListDeck();
-        } else if(listString.equals("BATTLEFIELD")) {
-            list = hero? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
-        } else if(listString.equals("GRAVEYARD")) {
-            list = hero? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
-        } else if(listString.equals("EXILE")) {
-            list = hero? cardList.getHeroListExile() : cardList.getOppListExile();
+        List<ViewCard> list = hero ? cardList.getHeroListHand() : cardList.getOppListHand();
+        if (listString.equals("DECK")) {
+            list = hero ? cardList.getHeroListDeck() : cardList.getOppListDeck();
+        } else if (listString.equals("BATTLEFIELD")) {
+            list = hero ? cardList.getHeroListBattlefield() : cardList.getOppListBattlefield();
+        } else if (listString.equals("GRAVEYARD")) {
+            list = hero ? cardList.getHeroListGraveyard() : cardList.getOppListGraveyard();
+        } else if (listString.equals("EXILE")) {
+            list = hero ? cardList.getHeroListExile() : cardList.getOppListExile();
         }
         return list;
     }
