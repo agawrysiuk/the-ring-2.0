@@ -142,11 +142,11 @@ public class GameWindowViewResolver {
         Button scryButton = new Button("Scry");
         scryButton.relocate(1720 * ScreenUtils.WIDTH_MULTIPLIER, 650 * ScreenUtils.WIDTH_MULTIPLIER);
         scryButton.setOnAction(e -> {
-            if (controller.getCardList().getHeroListDeck().size() == 0) {
+            if (controller.getCardList().getDeck(true).size() == 0) {
                 return;
             }
             for (int i = 0; i < scryDrawSpinner.getValue(); i++) {
-                controller.getCardList().getHeroListDeck().get(i).setVisibleToYou();
+                controller.getCardList().getDeck(true).get(i).setVisibleToYou();
             }
             Actions.updateDeckView(controller, true);
             controller.getSocketMessenger().getSender().println("SCRY:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
@@ -215,38 +215,38 @@ public class GameWindowViewResolver {
                 StringBuilder revealString = new StringBuilder();
                 if (choice.equals("Hand")) {
                     revealString.append("REVEAL_HAND");
-                    for (ViewCard viewCard : controller.getCardList().getHeroListHand()) {
+                    for (ViewCard viewCard : controller.getCardList().getHand(true)) {
                         revealString.append(":").append(viewCard.getTitle());
                     }
                     controller.getSocketMessenger().getSender().println(revealString.toString() + ":" + new Random().nextInt());
                     controller.getChatMessages().add("You revealed your hand.");
                 } else if (choice.equals("Deck")) {
                     revealString.append("REVEAL_DECK");
-                    for (ViewCard viewCard : controller.getCardList().getHeroListDeck()) {
+                    for (ViewCard viewCard : controller.getCardList().getDeck(true)) {
                         revealString.append(":").append(viewCard.getTitle());
                     }
                     controller.getSocketMessenger().getSender().println(revealString.toString() + ":" + new Random().nextInt());
                     controller.getChatMessages().add("You revealed your deck.");
                 } else if (choice.equals("All")) {
                     revealString.append("REVEAL_ALL");
-                    for (ViewCard viewCard : controller.getCardList().getHeroListHand()) {
+                    for (ViewCard viewCard : controller.getCardList().getHand(true)) {
                         revealString.append(":").append(viewCard.getTitle());
                     }
                     revealString.append("%");
-                    for (ViewCard viewCard : controller.getCardList().getHeroListDeck()) {
+                    for (ViewCard viewCard : controller.getCardList().getDeck(true)) {
                         revealString.append(":").append(viewCard.getTitle());
                     }
                     controller.getSocketMessenger().getSender().println(revealString.toString() + ":" + new Random().nextInt());
                     controller.getChatMessages().add("You revealed your hand and your deck.");
                 } else if (choice.equals("X cards from the deck's top:")) {
                     int number = noCards.getValue();
-                    if (number > controller.getCardList().getHeroListDeck().size()) {
+                    if (number > controller.getCardList().getDeck(true).size()) {
                         controller.getChatMessages().add("You want to reveal more cards than you have in your deck! Change the settings and try again.");
                         return;
                     }
                     revealString.append("REVEAL_X").append(":").append(number);
                     for (int i = 0; i < number; i++) {
-                        revealString.append(":").append(controller.getCardList().getHeroListDeck().get(i).getTitle());
+                        revealString.append(":").append(controller.getCardList().getDeck(true).get(i).getTitle());
                     }
                     controller.getSocketMessenger().getSender().println(revealString.toString() + ":" + new Random().nextInt());
                     controller.getChatMessages().add("You revealed " + number + " cards from the top of your deck.");
@@ -259,7 +259,7 @@ public class GameWindowViewResolver {
         Button untapAll = new Button("Untap all");
         untapAll.relocate(1640 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER); //2075,650
         untapAll.setOnAction(e -> {
-            for (ViewCard viewCard : controller.getCardList().getHeroListBattlefield()) {
+            for (ViewCard viewCard : controller.getCardList().getBattlefield(true)) {
                 Actions.untapCard(controller, viewCard, true, true);
             }
             controller.getSocketMessenger().getSender().println("UNTAPALL:" + new Random().nextInt());
@@ -271,7 +271,7 @@ public class GameWindowViewResolver {
         Button sideboardBtn = new Button("Sideboard");
         sideboardBtn.relocate(1955 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
         sideboardBtn.setOnAction(e -> {
-            Actions.printNewView(controller, controller.getCardList().getHeroListSideboard());
+            Actions.printNewView(controller, controller.getCardList().getSideboard(true));
         });
         controller.getMainPane().getChildren().add(sideboardBtn);
 
@@ -279,8 +279,8 @@ public class GameWindowViewResolver {
         controller.setAttackAll(new Button("Attack all"));
         controller.setUnblockAll(new Button("Clear blocks"));
         controller.getAttackAll().setOnMousePressed(e -> {
-            if (!controller.getCardList().getHeroListBattlefield().isEmpty()) {
-                for (ViewCard viewCard : controller.getCardList().getHeroListBattlefield()) {
+            if (!controller.getCardList().getBattlefield(true).isEmpty()) {
+                for (ViewCard viewCard : controller.getCardList().getBattlefield(true)) {
                     if (viewCard.getType().toLowerCase().equals("creature")) {
                         viewCard.setEffect(controller.getHighlightBorder());
                         Actions.tapCard(controller, viewCard, true, true);
@@ -290,12 +290,12 @@ public class GameWindowViewResolver {
             }
         });
         controller.getUnblockAll().setOnMousePressed(e -> {
-            if (!controller.getCardList().getHeroListBattlefield().isEmpty()) {
+            if (!controller.getCardList().getBattlefield(true).isEmpty()) {
                 controller.getMainPane().getChildren().removeAll(controller.getAttackBlockList());
                 controller.getAttackBlockList().clear();
                 controller.setBlockingCard(null);
                 controller.setAttackBlock(null);
-                for (ViewCard viewCard : controller.getCardList().getHeroListBattlefield()) {
+                for (ViewCard viewCard : controller.getCardList().getBattlefield(true)) {
                     if (viewCard.getType().toLowerCase().equals("creature")) {
                         viewCard.setEffect(controller.getBattlefieldBorder());
                     }
@@ -322,7 +322,7 @@ public class GameWindowViewResolver {
                 alert.show();
                 return;
             }
-            if (!controller.getCardList().getListCastingStack().isEmpty()) {
+            if (!controller.getCardList().getCastingStack().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Warning!");
                 alert.setHeaderText(null);
@@ -403,10 +403,10 @@ public class GameWindowViewResolver {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 controller.getSocketMessenger().getSender().println("SHUFFLE:" + new Random().nextInt());
                 controller.getChatMessages().add("You shuffled your deck.");
-                for (ViewCard viewCard : controller.getCardList().getHeroListDeck()) {
+                for (ViewCard viewCard : controller.getCardList().getDeck(true)) {
                     viewCard.setInvisibleToYou();
                 }
-                Collections.shuffle(controller.getCardList().getHeroListDeck());
+                Collections.shuffle(controller.getCardList().getDeck(true));
                 Actions.updateDeckView(controller, true);
             }
         });

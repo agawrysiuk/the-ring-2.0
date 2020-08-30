@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
 import org.imgscalr.Scalr;
 import pl.agawrysiuk.display.screens.game.GameWindowController;
 import pl.agawrysiuk.display.screens.game.components.Ability;
-import pl.agawrysiuk.display.screens.game.components.PositionType;
+import pl.agawrysiuk.game.board.PositionType;
 import pl.agawrysiuk.display.screens.game.components.Token;
 import pl.agawrysiuk.display.screens.game.components.ViewCard;
 import pl.agawrysiuk.display.utils.ScreenUtils;
@@ -46,7 +46,7 @@ import java.util.Random;
 public class Actions {
 
     public static void updateDeckView(GameWindowController controller, boolean hero) {
-        List<ViewCard> listDeck = (hero) ? controller.getCardList().getHeroListDeck() : controller.getCardList().getOppListDeck();
+        List<ViewCard> listDeck = (hero) ? controller.getCardList().getDeck(true) : controller.getCardList().getDeck(false);
         ImageView deckIV = (hero) ? controller.getHeroDeckIV() : controller.getOppDeckIV();
         Text deckCardsNumber = (hero) ? controller.getHeroDeckCardsNumber() : controller.getOppDeckCardsNumber();
         if (listDeck.size() == 0) {
@@ -66,12 +66,12 @@ public class Actions {
         List<ViewCard> listHand;
         double layoutY;
         if (hero) {
-            listDeck = controller.getCardList().getHeroListDeck();
-            listHand = controller.getCardList().getHeroListHand();
+            listDeck = controller.getCardList().getDeck(true);
+            listHand = controller.getCardList().getHand(true);
             layoutY = 858 * ScreenUtils.WIDTH_MULTIPLIER;
         } else {
-            listDeck = controller.getCardList().getOppListDeck();
-            listHand = controller.getCardList().getOppListHand();
+            listDeck = controller.getCardList().getDeck(false);
+            listHand = controller.getCardList().getHand(false);
             layoutY = -275 * ScreenUtils.WIDTH_MULTIPLIER;
         }
         if (listDeck.size() - number < 0) {
@@ -108,7 +108,7 @@ public class Actions {
     }
 
     public static void reArrangeHand(GameWindowController controller, double insetRight, int cardNumber, boolean hero) {//-1,0 for simply rearranging hand
-        List<ViewCard> listHand = (hero) ? controller.getCardList().getHeroListHand() : controller.getCardList().getOppListHand();
+        List<ViewCard> listHand = (hero) ? controller.getCardList().getHand(true) : controller.getCardList().getHand(false);
         if (insetRight == -1) {
             insetRight = 0;
             if (250 * (listHand.size()) > 1200) {
@@ -130,7 +130,7 @@ public class Actions {
     public static void untapCard(GameWindowController controller, ViewCard viewCard, boolean hero, boolean untapAll) {
         if (viewCard.isTapped()) {
             if (hero && !untapAll) {
-                controller.getSocketMessenger().getSender().println("UNTAP_:" + controller.getCardList().getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
+                controller.getSocketMessenger().getSender().println("UNTAP_:" + controller.getCardList().getBattlefield(true).indexOf(viewCard) + ":" + new Random().nextInt());
                 controller.getChatMessages().add("You untapped " + viewCard.getTitle() + ".");
             }
             RotateTransition rt = new RotateTransition(Duration.millis(45), viewCard);
@@ -173,7 +173,7 @@ public class Actions {
     public static void tapCard(GameWindowController controller, ViewCard viewCard, boolean hero, boolean attack) {
         if (!viewCard.isTapped()) {
             if (hero && !attack) {
-                controller.getSocketMessenger().getSender().println("TAP:" + controller.getCardList().getHeroListBattlefield().indexOf(viewCard) + ":" + new Random().nextInt());
+                controller.getSocketMessenger().getSender().println("TAP:" + controller.getCardList().getBattlefield(true).indexOf(viewCard) + ":" + new Random().nextInt());
                 controller.getChatMessages().add("You tapped " + viewCard.getTitle() + ".");
             }
             ColorAdjust tappedColor = new ColorAdjust();
@@ -188,7 +188,7 @@ public class Actions {
     }
 
     public static void resolve(GameWindowController controller, boolean skipTurn) {
-        if (controller.getCardList().getListCastingStack().isEmpty()) {
+        if (controller.getCardList().getCastingStack().isEmpty()) {
             if (!skipTurn) {
                 controller.getSocketMessenger().getSender().println("CRITICAL:END_TURN" + ":" + new Random().nextInt());
                 controller.getChatMessages().add("RE:You decided to go to the next phase.");
@@ -206,7 +206,7 @@ public class Actions {
             }
         } else {
             String endString = "";
-            ViewCard lastCardInStack = controller.getCardList().getListCastingStack().get(controller.getCardList().getListCastingStack().size() - 1);
+            ViewCard lastCardInStack = controller.getCardList().getCastingStack().get(controller.getCardList().getCastingStack().size() - 1);
             if (lastCardInStack.getType().equals("Ability")) {
                 controller.getMainPane().getChildren().remove(lastCardInStack);
                 if (((Ability) lastCardInStack).getText().equals("Transform")) {
@@ -221,7 +221,7 @@ public class Actions {
             }
             controller.getSocketMessenger().getSender().println("CRITICAL:RESOLVE:" + endString + ":" + new Random().nextInt());
             controller.getChatMessages().add("RE:You resolved " + lastCardInStack.getTitle() + ".");
-            controller.getCardList().getListCastingStack().remove(controller.getCardList().getListCastingStack().size() - 1);
+            controller.getCardList().getCastingStack().remove(controller.getCardList().getCastingStack().size() - 1);
             controller.setYourMove(!controller.isYourMove());
             disableEnableBtns(controller);
             waitingForResponse(controller);
@@ -391,13 +391,13 @@ public class Actions {
                             if (!controller.isYourMove()) {
                                 return;
                             }
-                            controller.getSocketMessenger().getSender().println("CRITICAL:ABILITY:" + controller.getCardList().getHeroListBattlefield().indexOf(token) + ":" + ":" + new Random().nextInt());
+                            controller.getSocketMessenger().getSender().println("CRITICAL:ABILITY:" + controller.getCardList().getBattlefield(true).indexOf(token) + ":" + ":" + new Random().nextInt());
                             controller.getChatMessages().add("RE:You activated ability of " + token.getTitle() + ".");
                             castAbTr(controller, token, "Ability", "");
                             waitingForResponse(controller);
                         });
                         destroy.setOnAction(cAction -> {
-                            controller.getSocketMessenger().getSender().println("TOKEN:REMOVE:" + controller.getCardList().getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
+                            controller.getSocketMessenger().getSender().println("TOKEN:REMOVE:" + controller.getCardList().getBattlefield(true).indexOf(token) + ":" + new Random().nextInt());
                             controller.getChatMessages().add("You removed " + token.getTitle() + " from the battlefield.");
                             Platform.runLater(() -> removeToken(controller, token, true));
                         });
@@ -405,7 +405,7 @@ public class Actions {
                         addCounters.setOnAction(cAction -> {
                             int counters = setCountersDialog(controller.getMainPane());
                             if (counters > 0) {
-                                int index = controller.getCardList().getHeroListBattlefield().indexOf(token);
+                                int index = controller.getCardList().getBattlefield(true).indexOf(token);
                                 controller.getSocketMessenger().getSender().println("COUNTERS:" + index + ":" + counters + ":" + new Random().nextInt());
                                 controller.getChatMessages().add("You set " + counters + ((counters > 1) ? " counters" : " counter") + " to " + token.getTitle());
                                 token.setCounters(counters);
@@ -426,10 +426,10 @@ public class Actions {
                         if (!token.getEffect().equals(controller.getHighlightBorder())) {
                             token.setEffect(controller.getHighlightBorder());
                             tapCard(controller, token, true, true);
-                            controller.getSocketMessenger().getSender().println("ATTACK:" + controller.getCardList().getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
+                            controller.getSocketMessenger().getSender().println("ATTACK:" + controller.getCardList().getBattlefield(true).indexOf(token) + ":" + new Random().nextInt());
                         } else {
                             untapCard(controller, token, true, false);
-                            controller.getSocketMessenger().getSender().println("ATTACK_NOT:" + controller.getCardList().getHeroListBattlefield().indexOf(token) + ":" + new Random().nextInt());
+                            controller.getSocketMessenger().getSender().println("ATTACK_NOT:" + controller.getCardList().getBattlefield(true).indexOf(token) + ":" + new Random().nextInt());
                         }
                     } else if (controller.getPhasesIterator() == 2 && !controller.isYourTurn() && controller.isYourMove()) { //block phase
                         if (!token.getEffect().equals(controller.getHandBorder())) {
@@ -466,10 +466,10 @@ public class Actions {
                 if (controller.getPhasesIterator() != 2) {
                     if (token.getEffect().equals(controller.getBattlefieldBorder())) {
                         token.setEffect(controller.getHighlightBorder());
-                        controller.getSocketMessenger().getSender().println("HIGHLIGHT:" + controller.getCardList().getOppListBattlefield().indexOf(token) + ":" + new Random().nextInt());
+                        controller.getSocketMessenger().getSender().println("HIGHLIGHT:" + controller.getCardList().getBattlefield(false).indexOf(token) + ":" + new Random().nextInt());
                     } else {
                         token.setEffect(controller.getBattlefieldBorder());
-                        controller.getSocketMessenger().getSender().println("HIGHLIGHT_NOT:" + controller.getCardList().getOppListBattlefield().indexOf(token) + ":" + new Random().nextInt());
+                        controller.getSocketMessenger().getSender().println("HIGHLIGHT_NOT:" + controller.getCardList().getBattlefield(false).indexOf(token) + ":" + new Random().nextInt());
                     }
                 } else if (controller.getPhasesIterator() == 2 && !controller.isYourTurn() && controller.isYourMove()) {
                     if (controller.getAttackBlock() != null) {
@@ -488,8 +488,8 @@ public class Actions {
                         controller.getAttackBlockList().add(controller.getAttackBlock());
                         controller.getMainPane().getChildren().add(controller.getAttackBlock());
                         controller.getSocketMessenger().getSender().println("BLOCK:" +
-                                controller.getCardList().getHeroListBattlefield().indexOf(controller.getBlockingCard()) + ":" +
-                                controller.getCardList().getOppListBattlefield().indexOf(token) + ":" +
+                                controller.getCardList().getBattlefield(true).indexOf(controller.getBlockingCard()) + ":" +
+                                controller.getCardList().getBattlefield(false).indexOf(token) + ":" +
                                 new Random().nextInt());
                         controller.setAttackBlock(null);
                         controller.setBlockingCard(null);
@@ -554,7 +554,7 @@ public class Actions {
     }
 
     private void removeBorders(GameWindowController controller) {
-        for (ViewCard card : controller.getCardList().getHeroListBattlefield()) {
+        for (ViewCard card : controller.getCardList().getBattlefield(true)) {
             if (card.isTapped()) {
                 ColorAdjust tappedColor = new ColorAdjust();
                 tappedColor.setBrightness(-0.35);
@@ -564,7 +564,7 @@ public class Actions {
                 card.setEffect(controller.getBattlefieldBorder());
             }
         }
-        for (ViewCard card : controller.getCardList().getOppListBattlefield()) {
+        for (ViewCard card : controller.getCardList().getBattlefield(false)) {
             if (card.isTapped()) {
                 ColorAdjust tappedColor = new ColorAdjust();
                 tappedColor.setBrightness(-0.35);
@@ -577,7 +577,7 @@ public class Actions {
     }
 
     public static void moveToGraveyard(GameWindowController controller, ViewCard viewCard, boolean hero) {
-        List<ViewCard> listGraveyard = (hero) ? controller.getCardList().getHeroListGraveyard() : controller.getCardList().getOppListGraveyard();
+        List<ViewCard> listGraveyard = (hero) ? controller.getCardList().getGraveyard(true) : controller.getCardList().getGraveyard(false);
         resetCardState(controller, viewCard);
         viewCard.setUltimatePosition(PositionType.GRAVEYARD);
         listGraveyard.add(viewCard);
@@ -594,11 +594,11 @@ public class Actions {
     }
 
     public static void resetCardState(GameWindowController controller, ViewCard viewCard) {
-        if (controller.getCardList().getHeroListBattlefield().contains(viewCard)) {
-            controller.getCardList().getHeroListBattlefield().remove(viewCard);
+        if (controller.getCardList().getBattlefield(true).contains(viewCard)) {
+            controller.getCardList().getBattlefield(true).remove(viewCard);
             reArrangeBattlefield(controller);
-        } else if (controller.getCardList().getHeroListHand().contains(viewCard)) {
-            controller.getCardList().getHeroListHand().remove(viewCard);
+        } else if (controller.getCardList().getHand(true).contains(viewCard)) {
+            controller.getCardList().getHand(true).remove(viewCard);
             reArrangeHand(controller, -1, 0, true);
         }
         for (List<ViewCard> list : controller.getCardList().getHeroLists()) {
@@ -625,31 +625,31 @@ public class Actions {
     }
 
     public static void reArrangeBattlefield(GameWindowController controller) {
-        if (controller.getCardList().getHeroListBattlefield().size() > 0) {
-            controller.getMainPane().getChildren().removeAll(controller.getCardList().getHeroListBattlefield());
-            List<ViewCard> tempList = new ArrayList<>(controller.getCardList().getHeroListBattlefield());
-            controller.getCardList().getHeroListBattlefield().clear();
+        if (controller.getCardList().getBattlefield(true).size() > 0) {
+            controller.getMainPane().getChildren().removeAll(controller.getCardList().getBattlefield(true));
+            List<ViewCard> tempList = new ArrayList<>(controller.getCardList().getBattlefield(true));
+            controller.getCardList().getBattlefield(true).clear();
             for (ViewCard viewCard : tempList) {
                 controller.getMainPane().getChildren().add(viewCard);
-                controller.getCardList().getHeroListBattlefield().add(viewCard);
+                controller.getCardList().getBattlefield(true).add(viewCard);
                 putOnBattlefield(controller, viewCard, true, true);
             }
         }
 
-        if (controller.getCardList().getOppListBattlefield().size() > 0) {
-            controller.getMainPane().getChildren().removeAll(controller.getCardList().getOppListBattlefield());
-            List<ViewCard> tempList = new ArrayList<>(controller.getCardList().getOppListBattlefield());
-            controller.getCardList().getOppListBattlefield().clear();
+        if (controller.getCardList().getBattlefield(false).size() > 0) {
+            controller.getMainPane().getChildren().removeAll(controller.getCardList().getBattlefield(false));
+            List<ViewCard> tempList = new ArrayList<>(controller.getCardList().getBattlefield(false));
+            controller.getCardList().getBattlefield(false).clear();
             for (ViewCard viewCard : tempList) {
                 controller.getMainPane().getChildren().add(viewCard);
-                controller.getCardList().getOppListBattlefield().add(viewCard);
+                controller.getCardList().getBattlefield(false).add(viewCard);
                 putOnBattlefield(controller, viewCard, true, false);
             }
         }
     }
 
     public static void putOnBattlefield(GameWindowController controller, ViewCard viewCard, boolean skipMakingSmallCard, boolean hero) { //a card needs to be added to the battlefield list before calling this method
-        List<ViewCard> listBattlefield = (hero) ? controller.getCardList().getHeroListBattlefield() : controller.getCardList().getOppListBattlefield();
+        List<ViewCard> listBattlefield = (hero) ? controller.getCardList().getBattlefield(true) : controller.getCardList().getBattlefield(false);
         if (!skipMakingSmallCard) {
             viewCard.setImage(viewCard.getSmallCard());
             viewCard.setEffect(controller.getBattlefieldBorder());
@@ -732,22 +732,22 @@ public class Actions {
 
     public static void castToStack(GameWindowController controller, ViewCard viewCard) {
         viewCard.setUltimatePosition(PositionType.CAST);
-        controller.getCardList().getListCastingStack().add(viewCard);
+        controller.getCardList().getCastingStack().add(viewCard);
         TranslateTransition tt = new TranslateTransition(Duration.millis(250), viewCard);
         tt.setFromX(viewCard.getTranslateX());
         tt.setFromY(viewCard.getTranslateY());
         viewCard.setEffect(null);
-        tt.setToX(100 * ScreenUtils.WIDTH_MULTIPLIER - ((controller.getCardList().getListCastingStack().size() % 2) * (75 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutX());
-        tt.setToY(50 * ScreenUtils.WIDTH_MULTIPLIER + ((controller.getCardList().getListCastingStack().size() - 1) * (50 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutY());
+        tt.setToX(100 * ScreenUtils.WIDTH_MULTIPLIER - ((controller.getCardList().getCastingStack().size() % 2) * (75 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutX());
+        tt.setToY(50 * ScreenUtils.WIDTH_MULTIPLIER + ((controller.getCardList().getCastingStack().size() - 1) * (50 * ScreenUtils.WIDTH_MULTIPLIER)) - viewCard.getLayoutY());
         tt.play();
         reArrangeHand(controller, -1, 0, !viewCard.isOpponentsCard());
-        viewCard.setViewOrder((-controller.getCardList().getListCastingStack().size()) - 4);
+        viewCard.setViewOrder((-controller.getCardList().getCastingStack().size()) - 4);
 //        viewCard.setTranslateX(50 + ((cardList.getListCastingStack().size() % 2) * (25)) - viewCard.getLayoutX());
 //        viewCard.setTranslateY(50 + ((cardList.getListCastingStack().size() - 1) *50) - viewCard.getLayoutY());
     }
 
     public static void removeToken(GameWindowController controller, Token token, boolean hero) {
-        List<ViewCard> listBattlefield = (hero) ? controller.getCardList().getHeroListBattlefield() : controller.getCardList().getOppListBattlefield();
+        List<ViewCard> listBattlefield = (hero) ? controller.getCardList().getBattlefield(true) : controller.getCardList().getBattlefield(false);
         listBattlefield.remove(token);
         reArrangeBattlefield(controller);
         controller.getMainPane().getChildren().remove(token);
@@ -810,7 +810,7 @@ public class Actions {
     }
 
     public static void updateGraveyardView(GameWindowController controller, boolean hero) {
-        List<ViewCard> listGraveyard = (hero) ? controller.getCardList().getHeroListGraveyard() : controller.getCardList().getOppListGraveyard();
+        List<ViewCard> listGraveyard = (hero) ? controller.getCardList().getGraveyard(true) : controller.getCardList().getGraveyard(false);
         ImageView graveyardIV = (hero) ? controller.getHeroGraveyardIV() : controller.getOppGraveyardIV();
         if (listGraveyard.size() == 0) {
             graveyardIV.setImage(null);

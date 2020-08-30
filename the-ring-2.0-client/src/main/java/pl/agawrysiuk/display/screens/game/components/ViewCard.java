@@ -13,6 +13,7 @@ import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import pl.agawrysiuk.db.Database;
 import pl.agawrysiuk.display.utils.ScreenUtils;
+import pl.agawrysiuk.game.board.PositionType;
 import pl.agawrysiuk.model.Card;
 
 import java.awt.*;
