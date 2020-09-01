@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @UtilityClass
-public class Actions {
+public class Activity {
 
     public static void updateDeckView(GameWindowController controller, boolean hero) {
         List<ViewCard> listDeck = (hero) ? controller.getCardList().getDeck(true) : controller.getCardList().getDeck(false);
@@ -86,7 +86,7 @@ public class Actions {
             insetRight = (((250 * (number + listHand.size())) - 1200) / (number + listHand.size())) * ScreenUtils.WIDTH_MULTIPLIER;
         }
         if (!listHand.isEmpty()) {
-            Actions.reArrangeHand(controller, insetRight, cardNumber, hero);
+            Activity.reArrangeHand(controller, insetRight, cardNumber, hero);
             cardNumber = listHand.size();
         }
 

@@ -148,7 +148,7 @@ public class GameWindowViewResolver {
             for (int i = 0; i < scryDrawSpinner.getValue(); i++) {
                 controller.getCardList().getDeck(true).get(i).setVisibleToYou();
             }
-            Actions.updateDeckView(controller, true);
+            Activity.updateDeckView(controller, true);
             controller.getSocketMessenger().getSender().println("SCRY:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
             controller.getChatMessages().add((scryDrawSpinner.getValue() > 1) ? ("You scried " + scryDrawSpinner.getValue() + " cards.") : "You scried one card.");
             scryDrawSpinner.getValueFactory().setValue(1);
@@ -160,7 +160,7 @@ public class GameWindowViewResolver {
         drawCardBtn.setOnAction(e -> {
             controller.getSocketMessenger().getSender().println("DRAW:" + scryDrawSpinner.getValue() + ":" + new Random().nextInt());
             controller.getChatMessages().add((scryDrawSpinner.getValue() > 1) ? ("You draw " + scryDrawSpinner.getValue() + " cards.") : "You draw a card.");
-            Actions.drawCards(controller, scryDrawSpinner.getValue(), true);
+            Activity.drawCards(controller, scryDrawSpinner.getValue(), true);
             scryDrawSpinner.getValueFactory().setValue(1);
         });
         controller.getMainPane().getChildren().add(drawCardBtn);
@@ -260,7 +260,7 @@ public class GameWindowViewResolver {
         untapAll.relocate(1640 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER); //2075,650
         untapAll.setOnAction(e -> {
             for (ViewCard viewCard : controller.getCardList().getBattlefield(true)) {
-                Actions.untapCard(controller, viewCard, true, true);
+                Activity.untapCard(controller, viewCard, true, true);
             }
             controller.getSocketMessenger().getSender().println("UNTAPALL:" + new Random().nextInt());
             controller.getChatMessages().add("You untapped all cards.");
@@ -271,7 +271,7 @@ public class GameWindowViewResolver {
         Button sideboardBtn = new Button("Sideboard");
         sideboardBtn.relocate(1955 * ScreenUtils.WIDTH_MULTIPLIER, 725 * ScreenUtils.WIDTH_MULTIPLIER);
         sideboardBtn.setOnAction(e -> {
-            Actions.printNewView(controller, controller.getCardList().getSideboard(true));
+            Activity.printNewView(controller, controller.getCardList().getSideboard(true));
         });
         controller.getMainPane().getChildren().add(sideboardBtn);
 
@@ -283,7 +283,7 @@ public class GameWindowViewResolver {
                 for (ViewCard viewCard : controller.getCardList().getBattlefield(true)) {
                     if (viewCard.getType().toLowerCase().equals("creature")) {
                         viewCard.setEffect(controller.getHighlightBorder());
-                        Actions.tapCard(controller, viewCard, true, true);
+                        Activity.tapCard(controller, viewCard, true, true);
                     }
                 }
                 controller.getSocketMessenger().getSender().println("ATTACK_ALL:" + new Random().nextInt());
@@ -339,7 +339,7 @@ public class GameWindowViewResolver {
             controller.setPhasesIterator(5);
             controller.getListPhases().get(controller.getPhasesIterator()).setEffect(controller.getHandBorder());
             controller.getMainPane().getChildren().removeAll(controller.getAttackAll(), controller.getUnblockAll());
-            Actions.resolve(controller, true);
+            Activity.resolve(controller, true);
         });
         controller.getMainPane().getChildren().add(skipTurnBtn);
 
@@ -407,7 +407,7 @@ public class GameWindowViewResolver {
                     viewCard.setInvisibleToYou();
                 }
                 Collections.shuffle(controller.getCardList().getDeck(true));
-                Actions.updateDeckView(controller, true);
+                Activity.updateDeckView(controller, true);
             }
         });
         controller.getMainPane().getChildren().add(shuffleDeckBtn);
@@ -416,7 +416,7 @@ public class GameWindowViewResolver {
         Button addTokenBtn = new Button("Add token");
         addTokenBtn.relocate(1965 * ScreenUtils.WIDTH_MULTIPLIER, 800 * ScreenUtils.WIDTH_MULTIPLIER);
         addTokenBtn.setOnAction(e -> {
-            Actions.addTokenDialog(controller);
+            Activity.addTokenDialog(controller);
         });
         controller.getMainPane().getChildren().add(addTokenBtn);
 
@@ -446,7 +446,7 @@ public class GameWindowViewResolver {
             }
         });
         controller.getResolveButton().setOnAction(e -> {
-            Actions.resolve(controller, false);
+            Activity.resolve(controller, false);
         });
         controller.getResolveButton().prefWidth(250 * ScreenUtils.WIDTH_MULTIPLIER);
         controller.getMainPane().getChildren().add(controller.getResolveButton());
