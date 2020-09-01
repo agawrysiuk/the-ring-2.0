@@ -17,4 +17,6 @@ import pl.agawrysiuk.game.board.CardList;
 public class Player {
     private final int id;
     private final CardList cards;
+    //todo implement turn-only characteristics
+    private int lifeLostThisTurn;
 }

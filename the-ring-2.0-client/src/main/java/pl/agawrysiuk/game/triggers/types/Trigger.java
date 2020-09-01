@@ -7,4 +7,5 @@ package pl.agawrysiuk.game.triggers.types;
  */
 
 public enum Trigger {
+    OPPONENT_LOST_LIFE
 }
