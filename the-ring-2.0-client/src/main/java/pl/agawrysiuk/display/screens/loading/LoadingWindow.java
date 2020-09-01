@@ -107,7 +107,7 @@ public class LoadingWindow implements DisplayWindow {
 
     private List<DeckSimpleDto> downloadDecks() throws IOException {
         String jsonDecks = socketMessenger.getReceiver().readLine();
-        if (jsonDecks.equals(MessageCode.DATABASE_ISSUE.toString())) {
+        if (jsonDecks.equals("DATABASE_ISSUE")) {
             throw new IOException();
         }
         return new ObjectMapper().readValue(jsonDecks, new TypeReference<>(){});

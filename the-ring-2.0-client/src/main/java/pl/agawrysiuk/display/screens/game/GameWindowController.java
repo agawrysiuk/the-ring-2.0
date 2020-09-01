@@ -1785,7 +1785,7 @@ public class GameWindowController implements DisplayWindow {
         });
     }
 
-    private void moveButtons() {
+    public void moveButtons() {
         extendContractBTNS.setDisable(true);
         double translation = (buttonsRelocated) ? -270 * ScreenUtils.WIDTH_MULTIPLIER : 270 * ScreenUtils.WIDTH_MULTIPLIER;
         ParallelTransition pt = new ParallelTransition(); //all transitions at the same time

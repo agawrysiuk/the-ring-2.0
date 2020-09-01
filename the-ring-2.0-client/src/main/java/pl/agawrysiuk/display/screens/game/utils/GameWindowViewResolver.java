@@ -452,15 +452,15 @@ public class GameWindowViewResolver {
         controller.getMainPane().getChildren().add(controller.getResolveButton());
 
         //setting up extend/contract button
-        controller.setExtendContractBTNS(new Button();
+        controller.setExtendContractBTNS(new Button());
         controller.getExtendContractBTNS().setText("<");
         controller.getExtendContractBTNS().relocate(1890 * ScreenUtils.WIDTH_MULTIPLIER, 850 * ScreenUtils.WIDTH_MULTIPLIER);
         controller.getExtendContractBTNS().setOnMousePressed(e -> {
-            moveButtons();
+            controller.moveButtons();
         });
         controller.getMainPane().getChildren().add(controller.getExtendContractBTNS());
         //fixing size all buttons
-        Collections.addAll(controller.getButtonsList(), coinTossBtn, skipTurnBtn, controller.getUnblockAll(), controller.getAttackAll(), forfeitBtn, untapAll, sideboardBtn, scryDrawSpinner, drawCardBtn, scryButton, shuffleDeckBtn, resolveButton, addTokenBtn, revealBtn);
+        Collections.addAll(controller.getButtonsList(), coinTossBtn, skipTurnBtn, controller.getUnblockAll(), controller.getAttackAll(), forfeitBtn, untapAll, sideboardBtn, scryDrawSpinner, drawCardBtn, scryButton, shuffleDeckBtn, controller.getResolveButton(), addTokenBtn, revealBtn);
         controller.getButtonsList().forEach(node -> {
             node.setViewOrder(-2);
             node.setScaleX(2 * ScreenUtils.WIDTH_MULTIPLIER);
