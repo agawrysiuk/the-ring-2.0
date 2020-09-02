@@ -7,5 +7,5 @@ package pl.agawrysiuk.game.triggers.types;
  * The game looks for the specific class in Factory and calls it's method that needs to happen.
  */
 
-public enum Action {
+public enum Ability {
 }

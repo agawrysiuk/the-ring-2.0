@@ -3,9 +3,13 @@ package pl.agawrysiuk.game.board;
 import javafx.geometry.Side;
 import pl.agawrysiuk.display.screens.game.components.ViewCard;
 import pl.agawrysiuk.game.board.position.*;
+import pl.agawrysiuk.game.cards.commander.Commander;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CardList {
 
@@ -36,6 +40,8 @@ public class CardList {
 
     private final List<ViewCard> oppListSideboard = new ArrayList<>();
     private final List<List<ViewCard>> oppLists = new ArrayList<>();
+
+//    private final List<Commander> commanderList = new ArrayList<>();
 
     public List<ViewCard> getCastingStack() {
         return castingStack.getListCastingStack();
@@ -73,4 +79,10 @@ public class CardList {
     public List<List<ViewCard>> getOppLists() {
         return oppLists;
     }
+
+//    public List<ViewCard> getActiveCards() {
+//        return Stream.of(heroBattlefield.getListBattlefield(), oppBattlefield.getListBattlefield())
+//                .flatMap(Collection::stream)
+//                .collect(Collectors.toList());
+//    }
 }
