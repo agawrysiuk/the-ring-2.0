@@ -1,9 +1,10 @@
 package pl.agawrysiuk.game.players;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import pl.agawrysiuk.game.board.CardList;
+import pl.agawrysiuk.game.players.chars.TurnHistory;
 
 /**
  * Player gets unique id.
@@ -13,10 +14,9 @@ import pl.agawrysiuk.game.board.CardList;
 
 @Builder
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Player {
     private final int id;
     private final CardList cards;
-    //todo implement turn-only characteristics
-    private int lifeLostThisTurn;
+    private TurnHistory turnHistory;
 }

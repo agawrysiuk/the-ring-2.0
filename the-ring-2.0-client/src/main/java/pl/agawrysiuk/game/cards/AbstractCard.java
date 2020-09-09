@@ -18,4 +18,5 @@ public abstract class AbstractCard {
     }
     public abstract List<StaticAbility> getStaticAbilities();
     public abstract List<StaticAbility> getTemporaryAbilities();
+    public abstract void trigger(Trigger trigger);
 }
