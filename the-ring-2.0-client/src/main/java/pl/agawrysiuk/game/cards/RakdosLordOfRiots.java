@@ -22,9 +22,9 @@ public class RakdosLordOfRiots extends AbstractCard {
 
     private static final String CARD_TITLE ="Rakdos, Lord of Riots";
     @Getter
-    private static final List<StaticAbility> staticAbilities = new ArrayList<>();
+    private final List<StaticAbility> staticAbilities = new ArrayList<>();
     @Getter
-    private static final List<StaticAbility> temporaryAbilities = new ArrayList<>();
+    private final List<StaticAbility> temporaryAbilities = new ArrayList<>();
     private final HashMap<Trigger, Runnable> TRIGGERS = new HashMap<>();
 
     private boolean castable = false;

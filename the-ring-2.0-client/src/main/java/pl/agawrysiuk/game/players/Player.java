@@ -1,5 +1,6 @@
 package pl.agawrysiuk.game.players;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import pl.agawrysiuk.game.players.chars.TurnHistory;
 @Builder
 @Getter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Player {
     private final int id;
     private final CardList cards;
