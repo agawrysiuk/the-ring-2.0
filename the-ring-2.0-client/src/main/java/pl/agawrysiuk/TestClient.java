@@ -3,7 +3,6 @@ package pl.agawrysiuk;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.agawrysiuk.display.DisplayContext;
-import pl.agawrysiuk.display.screens.loading.LoadingWindow;
 import pl.agawrysiuk.display.test.TestInitializer;
 
 public class TestClient extends Application {

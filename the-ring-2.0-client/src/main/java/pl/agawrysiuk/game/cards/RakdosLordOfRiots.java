@@ -1,6 +1,10 @@
 package pl.agawrysiuk.game.cards;
 
+import javafx.scene.image.ImageView;
 import lombok.Getter;
+import org.json.JSONObject;
+import pl.agawrysiuk.game.cards.images.ImageDecoder;
+import pl.agawrysiuk.game.cards.images.ImageSize;
 import pl.agawrysiuk.game.triggers.types.StaticAbility;
 import pl.agawrysiuk.game.triggers.types.Trigger;
 
@@ -20,16 +24,23 @@ import java.util.List;
 
 public class RakdosLordOfRiots extends AbstractCard {
 
-    private static final String CARD_TITLE ="Rakdos, Lord of Riots";
+    @Getter
+    public static final String CARD_TITLE ="Rakdos, Lord of Riots";
+    private final String json;
     @Getter
     private final List<StaticAbility> staticAbilities = new ArrayList<>();
     @Getter
     private final List<StaticAbility> temporaryAbilities = new ArrayList<>();
     private final HashMap<Trigger, Runnable> TRIGGERS = new HashMap<>();
 
+    @Getter
+    private ImageView view;
+
     private boolean castable = false;
 
-    public RakdosLordOfRiots() {
+    public RakdosLordOfRiots(String json) {
+        this.json = json;
+        this.setView(ImageSize.LARGE);
         TRIGGERS.put(Trigger.OPPONENT_LOST_LIFE, this::afterOpponentsLostLife);
     }
 
@@ -51,6 +62,12 @@ public class RakdosLordOfRiots extends AbstractCard {
     @Override
     public void trigger(Trigger trigger) {
         TRIGGERS.get(trigger).run();
+    }
+
+    @Override
+    public void setView(ImageSize size) {
+        String imageBase64 = new JSONObject(this.json).getJSONObject("image_uris").getString(size.getName());
+        this.view = new ImageView(ImageDecoder.decodeImage(imageBase64));
     }
 
     private void afterOpponentsLostLife() {

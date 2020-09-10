@@ -1,6 +1,8 @@
 package pl.agawrysiuk.game.cards;
 
+import javafx.scene.image.ImageView;
 import lombok.Getter;
+import pl.agawrysiuk.game.cards.images.ImageSize;
 import pl.agawrysiuk.game.triggers.types.StaticAbility;
 import pl.agawrysiuk.game.triggers.types.Trigger;
 
@@ -19,4 +21,5 @@ public abstract class AbstractCard {
     public abstract List<StaticAbility> getStaticAbilities();
     public abstract List<StaticAbility> getTemporaryAbilities();
     public abstract void trigger(Trigger trigger);
+    public abstract void setView(ImageSize size);
 }
