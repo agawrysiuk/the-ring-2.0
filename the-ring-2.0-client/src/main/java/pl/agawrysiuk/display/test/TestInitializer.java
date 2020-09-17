@@ -26,15 +26,19 @@ import pl.agawrysiuk.display.screens.game.utils.Activity;
 import pl.agawrysiuk.display.utils.ScreenUtils;
 import pl.agawrysiuk.dto.CardDto;
 import pl.agawrysiuk.game.board.PositionType;
+import pl.agawrysiuk.game.cards.AbstractCard;
+import pl.agawrysiuk.game.cards.utils.AllCards;
+import pl.agawrysiuk.game.cards.utils.CardCreator;
 import pl.agawrysiuk.model.Card;
 import pl.agawrysiuk.model.Deck;
+import pl.agawrysiuk.utils.ApplicationUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class TestInitializer implements DisplayWindow {
 
-    private final static String TEST_DECK = "Rakdos, Lord of Riots";
+    private final static String CARD_TITLE = "Rakdos, Lord of Riots";
 
     @Getter
     private Pane mainPane = new Pane();
@@ -62,101 +66,19 @@ public class TestInitializer implements DisplayWindow {
     }
 
     private void createStartingDeck() {
-        CardDto dto = Database.getInstance().getNewDatabaseCards().get(TEST_DECK);
-        ViewCard viewCard = new ViewCard(new Card(dto.getTitle(), dto.getJson()));
-        viewCard.setOpponentsCard(false);
-        bringCardToGame(viewCard, true);
-        viewCard.getCard(true, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
+        try {
+            AbstractCard card = CardCreator.createCard(CARD_TITLE);
+            List<AbstractCard> list = new ArrayList<>();
+            list.add(card);
+            drawCards(list, true);
+        } catch (Exception e) {
+            //todo add logger
+            e.printStackTrace();
+            ApplicationUtils.closeApplication(23, "We couldn't load one of the cards.");
+        }
     }
 
-    private void bringCardToGame(ViewCard viewCard, boolean hero) {
-        viewCard.setCache(true);
-        viewCard.setCacheHint(CacheHint.QUALITY);
-        double viewOrder = viewCard.getViewOrder();
-        viewCard.setCustomViewOrder(viewOrder);
-
-        viewCard.setOnMouseEntered(e -> {
-            if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
-                viewCard.setViewOrder(-3);
-            }
-            previewIV.setImage(SwingFXUtils.toFXImage(Scalr.resize((SwingFXUtils.fromFXImage(viewCard.getActiveImage(), null)), Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, (int) (350 * ScreenUtils.WIDTH_MULTIPLIER), 0, Scalr.OP_ANTIALIAS), null));
-            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
-                viewCard.setEffect(Borders.handBorder);
-                if (!viewCard.isDragging()) {
-                    viewCard.setTranslateY(-135 * ScreenUtils.WIDTH_MULTIPLIER);
-                }
-            }
-            e.consume();
-        });
-
-        viewCard.setOnMouseExited(e -> {
-            if (!viewCard.getUltimatePosition().equals(PositionType.CAST)) {
-                viewCard.setViewOrder(viewOrder);
-            }
-            previewIV.setImage(null);
-            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
-                viewCard.setViewOrder(viewOrder);
-                viewCard.setEffect(null);
-                if (!viewCard.isDragging()) {
-                    viewCard.setTranslateY(0);
-                }
-            }
-            e.consume();
-        });
-
-        viewCard.setOnMousePressed(e -> {
-            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
-                if (e.getButton() == MouseButton.PRIMARY) {
-                    viewCard.setEffect(Borders.handBorder);
-                    viewCard.setDragging(true);
-                    viewCard.setPositionX(e.getSceneX());
-                    viewCard.setPositionY(e.getSceneY());
-                }
-                e.consume();
-            }
-            e.consume();
-        });
-
-        viewCard.setOnMouseDragged(e -> {
-            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
-                viewCard.setEffect(Borders.handBorder);
-                if (e.getSceneY() - viewCard.getPositionY() < -300 * ScreenUtils.WIDTH_MULTIPLIER) {
-                    viewCard.setEffect(Borders.handClickBorder);
-                } else {
-                    viewCard.setEffect(Borders.handBorder);
-                }
-                viewCard.setTranslateX(e.getSceneX() - viewCard.getPositionX());
-                viewCard.setTranslateY(e.getSceneY() - viewCard.getPositionY());
-            }
-            e.consume();
-        });
-
-        viewCard.setOnMouseReleased(e -> {
-            if (viewCard.getUltimatePosition().equals(PositionType.HAND)) {
-                viewCard.setEffect(null);
-                if (e.getSceneY() - viewCard.getPositionY() < -300 * ScreenUtils.WIDTH_MULTIPLIER) {
-                    if (viewCard.getType().toLowerCase().equals("land")) {
-                        // todo cards that are played
-                    } else {
-                        // todo cards that are casted
-                    }
-                    // todo rearrange hand when it's casted
-                } else {
-                    TranslateTransition tt = new TranslateTransition(Duration.millis(75), viewCard);
-                    tt.setFromX(viewCard.getTranslateX());
-                    tt.setFromY(viewCard.getTranslateY());
-                    viewCard.setEffect(null);
-                    tt.setToX(0);
-                    tt.setToY(0);
-                    tt.play();
-                }
-            }
-            viewCard.setDragging(false);
-            e.consume();
-        });
-    }
-
-    private void drawCards(List<ViewCard> cards, boolean hero) {
+    private void drawCards(List<AbstractCard> cards, boolean hero) {
         int number = cards.size();
         //1200 is the total width of your hand
         //250 is the card width
@@ -178,10 +100,10 @@ public class TestInitializer implements DisplayWindow {
 
         //adding new cards
         while (number > 0) {
-            ViewCard viewCard = cards.get(number - 1).getCard(hero, false, 250 * ScreenUtils.WIDTH_MULTIPLIER);
+            ImageView viewCard = cards.get(number - 1).getView();
             viewCard.relocate((layoutX + (250 * ScreenUtils.WIDTH_MULTIPLIER * cardNumber) - (insetRight * cardNumber)), layoutY);
             mainPane.getChildren().add(viewCard);
-            viewCard.setUltimatePosition(PositionType.HAND);
+            cards.get(number - 1).getCardMover().setPosition(PositionType.HAND);
             if (!hero) {
                 viewCard.setRotate(180);
             }
