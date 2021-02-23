@@ -29,6 +29,7 @@ public class CardsView {
     private TextField searchField;
     private Button searchButton;
     private Button addButton;
+    private Button addJsonButton;
     private ImageView image;
 
     private final ResourceBundle textResource = ResourceBundle
@@ -98,14 +99,14 @@ public class CardsView {
     }
 
     private HBox createAddButton() {
-        addButton = new Button(textResource.getString("button.add"));
+        addButton = new Button(textResource.getString("button.save"));
+        addJsonButton = new Button(textResource.getString("button.save.json"));
         HBox hBox = new HBox();
         hBox.setMinWidth(pane.getWidth());
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().add(addButton);
-        addButton.setOnMouseClicked(value -> {
-            cardsController.addCardToSqlFile();
-        });
+        hBox.getChildren().addAll(addButton, addJsonButton);
+        addButton.setOnMouseClicked(value -> cardsController.addCardToSqlFile());
+        addJsonButton.setOnMouseClicked(value -> cardsController.addCardToJsonFile());
         return hBox;
     }
 }

@@ -15,7 +15,7 @@ export class ImageStorageService {
 
   getCardImage(id: string) {
     return this.cardImages[id]
-      ? this.sanitize(this.cardImages[id])
+      ? new Promise((resolve) => resolve.apply(this.sanitize(this.cardImages[id]))) as Promise<string>
       : this.loadFile(id).then(file => this.sanitize(file.image_uris.normal));
   }
 
@@ -26,6 +26,6 @@ export class ImageStorageService {
   private loadFile(id: string) {
     console.log('Loading from file...')
     // return this.http.get('../../assets/data/cards/' + id + '.json').toPromise() as Promise<any>;
-    return this.http.get('../../assets/data/cards/cdd32ec2-02a8-41fc-bf45-c9585bb2b3ee.json').toPromise() as Promise<any>;
+    return this.http.get('../../assets/data/cards/594cb7dc-ea88-4909-ab40-1d40fecc9817.json').toPromise() as Promise<any>;
   }
 }

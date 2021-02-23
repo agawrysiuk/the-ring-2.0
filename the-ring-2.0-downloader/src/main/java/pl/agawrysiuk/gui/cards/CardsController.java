@@ -50,4 +50,9 @@ public class CardsController {
         CardDto selected = (CardDto) cardsView.getCardsTable().getSelectionModel().getSelectedItem();
         cardSaver.saveToSql(selected);
     }
+
+    public void addCardToJsonFile() {
+        CardDto selected = (CardDto) cardsView.getCardsTable().getSelectionModel().getSelectedItem();
+        cardSaver.saveToJson(selected);
+    }
 }

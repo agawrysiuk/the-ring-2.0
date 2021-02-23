@@ -27,7 +27,12 @@ public class CardSaver extends Saver {
 
     public void saveToSql(CardDto toSave) {
         try {
-            saveCard(toSave);
+            String fileName = createFileName(toSave.getTitle());
+            FileUtils.writeStringToFile(
+                    new File(fileName),
+                    createCardSql(toSave),
+                    Charset.defaultCharset(),
+                    true);
             log.info("Saved {} to sql file", toSave.getTitle());
         } catch (IOException e) {
             log.info("Couldn't write {}, to file", toSave.getTitle());
@@ -35,13 +40,18 @@ public class CardSaver extends Saver {
         }
     }
 
-    private void saveCard(CardDto selected) throws IOException {
-        String fileName = createFileName(selected.getTitle());
-        FileUtils.writeStringToFile(
-                new File(fileName),
-                createCardSql(selected),
-                Charset.defaultCharset(),
-                true);
+    public void saveToJson(CardDto toSave) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File(ScryfallUtils.getId(toSave.getJson()) + ".json"),
+                    createCardJson(toSave),
+                    Charset.defaultCharset(),
+                    true);
+            log.info("Saved {} to json file", toSave.getTitle());
+        } catch (IOException e) {
+            log.info("Couldn't write {}, to file", toSave.getTitle());
+            e.printStackTrace();
+        }
     }
 
     private String createFileName(String cardName) {
@@ -63,5 +73,9 @@ public class CardSaver extends Saver {
         sql = sql.replace(JSON_PLACEHOLDER, wrap(ScryfallUtils.encodeImagesInJson(selected.getJson())));
         sql = sql.concat(System.lineSeparator());
         return sql;
+    }
+
+    private String createCardJson(CardDto selected) throws IOException {
+        return ScryfallUtils.encodeImagesInJson(selected.getJson());
     }
 }
