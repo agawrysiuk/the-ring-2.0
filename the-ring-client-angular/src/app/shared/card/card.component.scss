@@ -1,0 +1,151 @@
+.img-wrapper {
+  width: fit-content;
+  height: fit-content;
+  position: relative;
+  margin: 15px;
+  border-radius: 20px;
+}
+
+.card-img {
+  display: block;
+  width: 400px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.img-wrapper-1 {
+  $border: 3px;
+  color: #FFF;
+  background: #000;
+  background-clip: padding-box;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -$border;
+    border-radius: inherit;
+    background: linear-gradient(
+        60deg,
+        hsl(224, 85%, 55%),
+        hsl(194, 70%, 61%)
+    );
+    background-size: 300% 300%;
+    background-position: 0 50%;
+    animation: moveGradient 2s alternate infinite;
+  }
+}
+
+.img-wrapper-2 {
+  $border: 3px;
+  color: #FFF;
+  background: #000;
+  background-clip: padding-box;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -$border;
+    border-radius: inherit;
+    filter: blur(4px);
+    background: linear-gradient(
+        60deg,
+        hsl(224, 85%, 55%),
+        hsl(194, 70%, 61%)
+    );
+    background-size: 300% 300%;
+    background-position: 0 50%;
+    animation: moveGradient 2s alternate infinite;
+  }
+}
+
+@keyframes moveGradient {
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.img-wrapper-3 {
+  $border: 5px;
+  color: #FFF;
+  background: #000;
+  background-clip: padding-box;
+
+  &:before {
+    --border: $border;
+    content: '';
+    position: absolute;
+    top: -$border;
+    right: -$border;
+    bottom: -$border;
+    left: -$border;
+    z-index: -1;
+    border-radius: inherit;
+    border: ($border * 3) solid hsl(224, 85%, 55%);
+    filter: blur(4px);
+    animation: changeColor-3 1s alternate infinite;
+  }
+}
+
+@keyframes changeColor-3 {
+  100% {
+    border-color: hsl(194, 70%, 61%);
+  }
+}
+
+.img-wrapper-4 {
+  $border: 5px;
+  color: #FFF;
+  background: #000;
+  background-clip: padding-box;
+
+  &:before {
+    --border: $border;
+    content: '';
+    position: absolute;
+    top: -$border;
+    right: -$border;
+    bottom: -$border;
+    left: -$border;
+    z-index: -1;
+    border-radius: inherit;
+    border: ($border * 3) solid hsl(0, 0%, 0%);
+  }
+}
+
+.img-wrapper-5 {
+  $border: 5px;
+  color: #FFF;
+  background: #000;
+  background-clip: padding-box;
+
+  &:before {
+    --border: $border;
+    content: '';
+    position: absolute;
+    top: -$border;
+    right: -$border;
+    bottom: -$border;
+    left: -$border;
+    z-index: -1;
+    border-radius: inherit;
+    border: ($border * 3) solid hsl(38, 70%, 61%);
+    filter: blur(4px);
+    animation: changeColor-5 1s alternate infinite;
+  }
+}
+
+@keyframes changeColor-5 {
+  100% {
+    border-color: hsl(0, 85%, 55%);
+  }
+}

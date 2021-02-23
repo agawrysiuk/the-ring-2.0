@@ -2,18 +2,20 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
-import {HomeComponent} from './pages/home/home.component';
+import {HomeComponent} from './modules/menu/pages/home/home.component';
 import {AppRoutingModule} from "./app-routing.module";
-import { CardComponent } from './shared/card/card.component';
-import { TestComponent } from './pages/test/test.component';
+import {CardComponent} from './shared/card/card.component';
 import {HttpClientModule} from "@angular/common/http";
+import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     CardComponent,
-    TestComponent
+
+    // test components
+    TestCardBoardersComponent
   ],
   imports: [
     BrowserModule,
@@ -21,7 +23,10 @@ import {HttpClientModule} from "@angular/common/http";
     HttpClientModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [
+    CardComponent
+  ]
 })
 export class AppModule {
 }

@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
-import {HomeComponent} from "./pages/home/home.component";
-import {TestComponent} from "./pages/test/test.component";
+import {RouterModule, Routes} from '@angular/router';
+import {HomeComponent} from "./modules/menu/pages/home/home.component";
+import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
 
 const routes: Routes = [
   {
@@ -14,8 +14,8 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'test',
-    component: TestComponent
+    path: 'test-card-boarders',
+    component: TestCardBoardersComponent
   }
 ];
 

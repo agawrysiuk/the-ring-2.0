@@ -1,10 +1,18 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'the-ring-client-angular';
+export class AppComponent implements OnInit, OnDestroy {
+
+  constructor() {
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+  }
 }
