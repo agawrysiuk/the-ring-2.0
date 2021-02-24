@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ImageStorageService} from "../../services/image-storage.service";
+import {CardStorageService} from "../../services/card-storage.service";
 
 @Component({
   selector: 'app-card',
@@ -15,7 +15,7 @@ export class CardComponent implements OnInit {
 
   public image;
 
-  constructor(private storage: ImageStorageService) {
+  constructor(private storage: CardStorageService) {
   }
 
   ngOnInit(): void {

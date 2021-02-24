@@ -107,4 +107,4 @@ cards.dat
 decks.dat
 settings.dat
 /database/cards/
-/data/cards/
+/the-ring-client-angular/src/assets/data/

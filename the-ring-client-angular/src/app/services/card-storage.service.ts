@@ -5,8 +5,9 @@ import {HttpClient} from "@angular/common/http";
 @Injectable({
   providedIn: 'root'
 })
-export class ImageStorageService {
+export class CardStorageService {
 
+  private readonly JSON_CARDS_PLACEMENT = '../../assets/data/json/cards/';
   private cardImages: { [key: string]: string; } = {};
 
   constructor(private sanitizer: DomSanitizer,
@@ -25,7 +26,7 @@ export class ImageStorageService {
 
   private loadFile(id: string) {
     console.log('Loading from file...')
-    // return this.http.get('../../assets/data/cards/' + id + '.json').toPromise() as Promise<any>;
-    return this.http.get('../../assets/data/cards/594cb7dc-ea88-4909-ab40-1d40fecc9817.json').toPromise() as Promise<any>;
+    // return this.http.get(this.JSON_CARDS_PLACEMENT + id + '.json').toPromise() as Promise<any>;
+    return this.http.get(this.JSON_CARDS_PLACEMENT + '/594cb7dc-ea88-4909-ab40-1d40fecc9817.json').toPromise() as Promise<any>;
   }
 }

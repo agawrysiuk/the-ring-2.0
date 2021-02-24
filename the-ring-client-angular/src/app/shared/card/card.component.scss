@@ -109,7 +109,6 @@
   background-clip: padding-box;
 
   &:before {
-    --border: $border;
     content: '';
     position: absolute;
     top: -$border;

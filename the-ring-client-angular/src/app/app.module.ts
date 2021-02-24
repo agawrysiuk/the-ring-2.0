@@ -7,6 +7,7 @@ import {AppRoutingModule} from "./app-routing.module";
 import {CardComponent} from './shared/card/card.component';
 import {HttpClientModule} from "@angular/common/http";
 import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
+import { TestBoardComponent } from './modules/test/pages/test-board/test-board.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,9 @@ import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/
     CardComponent,
 
     // test components
-    TestCardBoardersComponent
+    TestCardBoardersComponent,
+
+    TestBoardComponent
   ],
   imports: [
     BrowserModule,

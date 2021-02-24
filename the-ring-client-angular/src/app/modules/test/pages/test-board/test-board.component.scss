@@ -1,0 +1,53 @@
+.board-wrapper {
+  border: 1px solid #ff0000;
+  width: 1560px;
+  height: 960px;
+  overflow: hidden;
+  position: relative;
+}
+
+.board-container {
+  margin-top: 20px;
+  margin-left: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "board board"
+    "board board";
+  transition: all 0.2s linear;
+  transform-origin: top left;
+  transform: scale(0.5);
+}
+
+.board {
+  position: relative;
+  width: 1500px;
+  height: 900px;
+  background-color: #cccccc;
+  margin: 10px;
+
+  &:after {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    content: 'Board';
+  }
+}
+
+.zoom-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+  }
+}

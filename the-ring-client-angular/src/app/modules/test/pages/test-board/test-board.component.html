@@ -1,0 +1,16 @@
+<div class="board-wrapper">
+  <div #boardContainer class="board-container">
+    <div class="board"></div>
+    <div class="board"></div>
+    <div class="board"></div>
+    <div class="board"></div>
+  </div>
+  <div class="zoom-buttons">
+    <img src="assets/data/images/board/zoom-in.svg" (click)="zoom(false)" *ngIf="zoomedOut"/>
+    <img src="assets/data/images/board/zoom-out.svg" (click)="zoom(true)" *ngIf="!zoomedOut"/>
+    <img src="assets/data/images/board/left.svg" (click)="moveScreen(HORIZONTAL)" *ngIf="!zoomedOut && isMoveVisible('left')"/>
+    <img src="assets/data/images/board/right.svg" (click)="moveScreen(HORIZONTAL)" *ngIf="!zoomedOut && isMoveVisible('right')"/>
+    <img src="assets/data/images/board/top.svg" (click)="moveScreen(VERTICAL)" *ngIf="!zoomedOut && isMoveVisible('top')"/>
+    <img src="assets/data/images/board/bottom.svg" (click)="moveScreen(VERTICAL)" *ngIf="!zoomedOut && isMoveVisible('bottom')"/>
+  </div>
+</div>
