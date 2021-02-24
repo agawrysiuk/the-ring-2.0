@@ -17,8 +17,8 @@
     "board board"
     "board board";
   transition: all 0.2s linear;
-  transform-origin: top left;
-  transform: scale(0.5);
+  transform-origin: bottom left;
+  transform: scale(0.5) translate(0, -1840px);
 }
 
 .board {

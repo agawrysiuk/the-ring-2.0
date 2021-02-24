@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {availableCameraMoves, TOP_LEFT, translateStyles} from "./board-camera-utils";
+import {availableCameraMoves, BOTTOM_LEFT, TOP_LEFT, translateStyles} from "./board-camera-utils";
 
 @Component({
   selector: 'app-test-board',
@@ -10,7 +10,7 @@ export class TestBoardComponent implements OnInit {
 
   readonly HORIZONTAL = 'HORIZONTAL';
   readonly VERTICAL = 'VERTICAL';
-  readonly defaultPosition = TOP_LEFT;
+  readonly defaultPosition = BOTTOM_LEFT;
   @ViewChild('boardContainer') boardContainer: ElementRef;
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;
@@ -22,7 +22,7 @@ export class TestBoardComponent implements OnInit {
   }
 
   zoom(out: boolean) {
-    this.boardContainer.nativeElement.style.transform = out ? 'scale(0.5)' : 'scale(1.0)';
+    this.boardContainer.nativeElement.style.transform = out ? 'scale(0.5) translate(0, -1840px)' : 'scale(1.0) translate(0, -920px)';
     this.zoomedOut = out;
     this.position = this.defaultPosition;
   }
