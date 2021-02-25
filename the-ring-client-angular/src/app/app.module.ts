@@ -8,16 +8,17 @@ import {CardComponent} from './shared/card/card.component';
 import {HttpClientModule} from "@angular/common/http";
 import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
 import { TestBoardComponent } from './modules/test/pages/test-board/test-board.component';
+import { PlaymatComponent } from './shared/playmat/playmat.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     CardComponent,
+    PlaymatComponent,
 
     // test components
     TestCardBoardersComponent,
-
     TestBoardComponent
   ],
   imports: [

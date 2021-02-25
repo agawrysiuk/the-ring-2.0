@@ -1,9 +1,9 @@
 <div class="board-wrapper">
   <div #boardContainer class="board-container">
-    <div class="board"></div>
-    <div class="board"></div>
-    <div class="board"></div>
-    <div class="board"></div>
+    <app-playmat></app-playmat>
+    <app-playmat></app-playmat>
+    <app-playmat></app-playmat>
+    <app-playmat></app-playmat>
   </div>
   <div class="zoom-buttons">
     <img src="assets/data/images/board/zoom-in.svg" (click)="zoom(false)" *ngIf="zoomedOut"/>

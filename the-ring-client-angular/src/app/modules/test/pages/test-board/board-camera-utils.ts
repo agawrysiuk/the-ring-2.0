@@ -1,3 +1,6 @@
+const X_WIDTH = '-1520px';
+const Y_WIDTH = '-920px';
+
 export const TOP_LEFT = 'top-left';
 export const TOP_RIGHT = 'top-right';
 export const BOTTOM_LEFT = 'bottom-left';
@@ -6,13 +9,13 @@ export const BOTTOM_RIGHT = 'bottom-right';
 export const translateStyles = {
   'top-left': {
     HORIZONTAL: {
-      x: '-1520px',
+      x: X_WIDTH,
       y: '0',
       destination: 'top-right'
     },
     VERTICAL: {
       x: '0',
-      y: '-920px',
+      y: Y_WIDTH,
       destination: 'bottom-left'
     }
   },
@@ -23,15 +26,15 @@ export const translateStyles = {
       destination: 'top-left'
     },
     VERTICAL: {
-      x: '-1520px',
-      y: '-920px',
+      x: X_WIDTH,
+      y: Y_WIDTH,
       destination: 'bottom-right'
     }
   },
   'bottom-left': {
     HORIZONTAL: {
-      x: '-1520px',
-      y: '-920px',
+      x: X_WIDTH,
+      y: Y_WIDTH,
       destination: 'bottom-right'
     },
     VERTICAL: {
@@ -43,11 +46,11 @@ export const translateStyles = {
   'bottom-right': {
     HORIZONTAL: {
       x: '0',
-      y: '-920px',
+      y: Y_WIDTH,
       destination: 'bottom-left'
     },
     VERTICAL: {
-      x: '-1520px',
+      x: X_WIDTH,
       y: '0',
       destination: 'top-right'
     }

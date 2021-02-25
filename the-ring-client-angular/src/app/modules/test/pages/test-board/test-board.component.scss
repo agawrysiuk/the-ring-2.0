@@ -1,7 +1,7 @@
 .board-wrapper {
   border: 1px solid #ff0000;
-  width: 1560px;
-  height: 960px;
+  width: 1580px;
+  height: 980px;
   overflow: hidden;
   position: relative;
 }
@@ -12,31 +12,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "board board"
-    "board board";
+  gap: 0 0;
   transition: all 0.2s linear;
   transform-origin: bottom left;
-  transform: scale(0.5) translate(0, -1840px);
-}
-
-.board {
-  position: relative;
-  width: 1500px;
-  height: 900px;
-  background-color: #cccccc;
-  margin: 10px;
-
-  &:after {
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: auto;
-    content: 'Board';
-  }
 }
 
 .zoom-buttons {
