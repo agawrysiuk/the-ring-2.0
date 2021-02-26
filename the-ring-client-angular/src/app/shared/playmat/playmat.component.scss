@@ -15,16 +15,20 @@
     transform: translate(-50%, -50%);
     margin: auto;
     content: 'Board';
+    font-weight: bold;
+    font-size: 24px;
   }
 }
 
 .playmat-left {
+  order: 0;
   position: relative;
   width: 25%;
   height: 100%;
 }
 
 .playmat-right {
+  order: 1;
   position: relative;
   width: 75%;
   height: 100%;
@@ -54,6 +58,7 @@
 }
 
 .battlefield {
+  order: 1;
   height: calc(50% - 23px);
 }
 
