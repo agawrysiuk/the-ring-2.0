@@ -7,7 +7,7 @@ import {Component, OnInit} from '@angular/core';
 })
 export class TestHandComponent implements OnInit {
 
-  cardList: any[] = new Array(1).fill('');
+  cardList: any[] = new Array(7).fill('');
 
   constructor() {
   }

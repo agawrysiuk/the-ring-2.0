@@ -9,9 +9,14 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input()
   cardList: any[] = [];
+
   @ViewChild('handView')
   handView: ElementRef;
+  @ViewChild('handWrapper')
+  handWrapper: ElementRef;
+
   cardHandWidth: number = 300;
+  fullyVisible: boolean = true;
 
   constructor() {
   }
@@ -26,7 +31,7 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngAfterViewInit(): void {
-    const cardsInHand: HTMLElement[] = this.handView.nativeElement.children;
+    const cardsInHand: HTMLElement[] = this.handWrapper.nativeElement.children;
     const step = 100 / (cardsInHand.length + 1);
     let lastCardPosition = step;
     for (let i = 0; i < cardsInHand.length; i++) {
@@ -51,7 +56,7 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
     // const middle: number = Number((length / 2).toString(10).split('.')[0]);
     const middle: number = Math.floor(length / 2);
     const indexFromTheMiddle: number = index > (length - 1) / 2 ? length - 1 - index : index;
-    console.log('index: ' + index + ', indexFromTheMiddle: ' + indexFromTheMiddle + ', middle: ' + middle)
+    // console.log('index: ' + index + ', indexFromTheMiddle: ' + indexFromTheMiddle + ', middle: ' + middle)
     return 5 + maxTranslation - maxTranslation * (indexFromTheMiddle / middle);
   }
 
@@ -62,6 +67,11 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
     const maxRotation = 20;
     const transformationStep = index / (length - 1);
     return -maxRotation + transformationStep * maxRotation * 2;
+  }
+
+  changeVisibility(value: boolean) {
+    this.handView.nativeElement.style.transform = 'translate(calc(-50% - 150px), ' + (value ? 0 : this.cardHandWidth) + 'px)';
+    this.fullyVisible = value;
   }
 }
 

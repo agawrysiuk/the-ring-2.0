@@ -1,5 +1,7 @@
-<div class="hand-view">
-  <div #handView class="hand-wrapper">
+<img class="hand-visibility" src="assets/data/images/board/top.svg" (click)="changeVisibility(true)" *ngIf="!fullyVisible"/>
+<img class="hand-visibility" src="assets/data/images/board/bottom.svg" (click)="changeVisibility(false)" *ngIf="fullyVisible"/>
+<div class="hand-visibility" #handView class="hand-view">
+  <div #handWrapper class="hand-wrapper">
     <app-card *ngFor="let card of cardList" [isHandView]="true"
               [customStyles]="{width: cardHandWidth + 'px'}"></app-card>
   </div>
