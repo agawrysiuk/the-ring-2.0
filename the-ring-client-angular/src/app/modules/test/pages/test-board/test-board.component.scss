@@ -1,12 +1,12 @@
 .board-wrapper {
-  border: 1px solid #ff0000;
-  width: 1580px;
-  height: 980px;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   position: relative;
 }
 
 .board-container {
+  will-change: transform, opacity;
   margin-top: 20px;
   margin-left: 20px;
   display: grid;

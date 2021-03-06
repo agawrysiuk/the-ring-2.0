@@ -11,8 +11,8 @@ export class TestBoardComponent implements OnInit, AfterViewInit {
   readonly HORIZONTAL = 'HORIZONTAL';
   readonly VERTICAL = 'VERTICAL';
   readonly defaultPosition = BOTTOM_LEFT;
-  readonly unZoomedView = 'scale(0.5) translate(0, -1860px)';
-  readonly zoomedView = 'scale(1.0) translate(0, -920px)';
+  readonly unZoomedView = 'scale(0.5) translate(0%, -100%)';
+  readonly zoomedView = 'scale(1.0) translate(0, -50%)';
   @ViewChild('boardContainer') boardContainer: ElementRef;
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;

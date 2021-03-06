@@ -1,5 +1,5 @@
-const X_WIDTH = '-1520px';
-const Y_WIDTH = '-920px';
+const X_WIDTH = '-99%';
+const Y_WIDTH = '-50%';
 
 export const TOP_LEFT = 'top-left';
 export const TOP_RIGHT = 'top-right';
