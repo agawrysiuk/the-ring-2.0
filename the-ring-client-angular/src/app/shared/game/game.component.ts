@@ -1,12 +1,16 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {availableCameraMoves, BOTTOM_LEFT, translateStyles} from "./board-camera-utils";
+import {
+  availableCameraMoves,
+  BOTTOM_LEFT,
+  translateStyles
+} from "../../modules/test/pages/test-board/board-camera-utils";
 
 @Component({
-  selector: 'app-test-board',
-  templateUrl: './test-board.component.html',
-  styleUrls: ['./test-board.component.scss']
+  selector: 'app-game',
+  templateUrl: './game.component.html',
+  styleUrls: ['./game.component.scss']
 })
-export class TestBoardComponent implements OnInit, AfterViewInit {
+export class GameComponent implements OnInit, AfterViewInit {
 
   readonly HORIZONTAL = 'HORIZONTAL';
   readonly VERTICAL = 'VERTICAL';
@@ -16,6 +20,7 @@ export class TestBoardComponent implements OnInit, AfterViewInit {
   @ViewChild('boardContainer') boardContainer: ElementRef;
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;
+  cardList: any[] = new Array(7).fill('');
 
 
   constructor() {

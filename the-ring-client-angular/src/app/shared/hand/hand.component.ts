@@ -49,28 +49,29 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private getTranslation(index: number, length: number) {
-    const maxTranslation = 25;
+    const maxTranslation = 10;
+    const basicTranslation = 50;
     if (length === 1) {
-      return 5;
+      return basicTranslation;
     }
     // const middle: number = Number((length / 2).toString(10).split('.')[0]);
     const middle: number = Math.floor(length / 2);
     const indexFromTheMiddle: number = index > (length - 1) / 2 ? length - 1 - index : index;
     // console.log('index: ' + index + ', indexFromTheMiddle: ' + indexFromTheMiddle + ', middle: ' + middle)
-    return 5 + maxTranslation - maxTranslation * (indexFromTheMiddle / middle);
+    return basicTranslation + maxTranslation - maxTranslation * (indexFromTheMiddle / middle);
   }
 
   private getRotation(index: number, length: number) {
     if (length === 1) {
       return 0;
     }
-    const maxRotation = 20;
+    const maxRotation = 10;
     const transformationStep = index / (length - 1);
     return -maxRotation + transformationStep * maxRotation * 2;
   }
 
   changeVisibility(value: boolean) {
-    this.handView.nativeElement.style.transform = 'translate(calc(-50% - 150px), ' + (value ? 0 : this.cardHandWidth) + 'px)';
+    this.handView.nativeElement.style.transform = 'translate(calc(-50% - 150px), ' + (value ? 0 : this.cardHandWidth * 1.25) + 'px)';
     this.fullyVisible = value;
   }
 }

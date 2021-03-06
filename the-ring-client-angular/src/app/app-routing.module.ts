@@ -4,6 +4,7 @@ import {HomeComponent} from "./modules/menu/pages/home/home.component";
 import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
 import {TestBoardComponent} from "./modules/test/pages/test-board/test-board.component";
 import {TestHandComponent} from "./modules/test/pages/test-hand/test-hand.component";
+import {GameComponent} from "./shared/game/game.component";
 
 const routes: Routes = [
   {
@@ -14,6 +15,10 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },
+  {
+    path: 'game',
+    component: GameComponent
   },
 
   // tests
