@@ -1,5 +1,6 @@
-<div class="hand-view">
-  <div #handView class="hand-wrapper">
-    <app-card *ngFor="let card of cardList" [isHandView]="true" [customStyles]="{width: cardHandWidth + 'px'}"></app-card>
-  </div>
+<div class="test-hand-draw">
+  <input min="0" value="1" #cardNumber type="number"/>
+  <button (click)="draw(cardNumber.value)">Draw</button>
+  <button (click)="delete(cardNumber.value)">Delete</button>
 </div>
+<app-hand [cardList]="cardList"></app-hand>

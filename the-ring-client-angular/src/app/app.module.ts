@@ -10,6 +10,7 @@ import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/
 import { TestBoardComponent } from './modules/test/pages/test-board/test-board.component';
 import { PlaymatComponent } from './shared/playmat/playmat.component';
 import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.component';
+import { HandComponent } from './shared/hand/hand.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.comp
     // test components
     TestCardBoardersComponent,
     TestBoardComponent,
-    TestHandComponent
+    TestHandComponent,
+    HandComponent
   ],
   imports: [
     BrowserModule,

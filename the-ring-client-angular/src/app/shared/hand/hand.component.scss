@@ -1,0 +1,30 @@
+.hand-view {
+  position: fixed;
+  display: flex;
+  width: 75%;
+  max-width: 75%;
+  bottom: 0;
+  left: 50%;
+  align-content: center;
+  transform: translateX(calc(-50% - 150px));
+
+  .hand-wrapper {
+    position: relative;
+    width: 100%;
+
+    * {
+      position: relative;
+      overflow: hidden;
+      transform-origin: center;
+    }
+
+    *:last-child, *:hover {
+      overflow: visible;
+    }
+
+    *:hover {
+      transition: all 0.1s linear;
+      z-index: 200 !important;
+    }
+  }
+}
