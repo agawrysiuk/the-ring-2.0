@@ -9,6 +9,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/test-card-boarders.component";
 import { TestBoardComponent } from './modules/test/pages/test-board/test-board.component';
 import { PlaymatComponent } from './shared/playmat/playmat.component';
+import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { PlaymatComponent } from './shared/playmat/playmat.component';
 
     // test components
     TestCardBoardersComponent,
-    TestBoardComponent
+    TestBoardComponent,
+    TestHandComponent
   ],
   imports: [
     BrowserModule,

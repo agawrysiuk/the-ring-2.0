@@ -1,0 +1,5 @@
+<div class="hand-view">
+  <div #handView class="hand-wrapper">
+    <app-card *ngFor="let card of cardList" [isHandView]="true" [customStyles]="{width: cardHandWidth + 'px'}"></app-card>
+  </div>
+</div>

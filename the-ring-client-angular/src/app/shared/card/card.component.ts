@@ -16,6 +16,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   public customStyles: any = null;
   @Input()
   public isPlaymatView: boolean = false;
+  @Input()
+  public isHandView: boolean = false;
 
   @ViewChild('cardImg')
   cardImg: ElementRef;

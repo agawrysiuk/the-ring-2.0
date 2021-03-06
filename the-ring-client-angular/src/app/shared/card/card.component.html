@@ -1,4 +1,4 @@
-<div *ngIf="!isPlaymatView" class="img-wrapper img-wrapper-{{styleNumber}}">
+<div *ngIf="!isPlaymatView" [ngStyle]="{'margin': isHandView ? '0px' : '15px'}" class="img-wrapper img-wrapper-{{styleNumber}}">
   <img #cardImg class="card-img" [src]="image">
 </div>
 <div *ngIf="isPlaymatView" class="img-wrapper-playmat">
