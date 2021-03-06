@@ -1,9 +1,15 @@
 @import "assets/styles/loader";
 
+@font-face {
+  font-family: MTGFont;
+  src: url(/assets/fonts/mtg-font.ttf);
+}
+
 body {
-  overflow-x: hidden;
+  overflow: hidden;
   background: #222;
   margin: 0;
+  font-family: MTGFont;
 }
 
 .row {

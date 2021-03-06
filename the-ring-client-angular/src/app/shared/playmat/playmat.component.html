@@ -3,20 +3,30 @@
     <!--    left side -->
     <div #playmatLeft class="playmat-left column">
       <!--      left top -->
-      <div [ngStyle]="{'order': topView ? '1' : '0' }" class="planeswalkers">Planeswalkers</div>
+      <div [ngStyle]="{'order': topView ? '1' : '0' }" class="info-zone">
+        <p>Info zone</p>
+      </div>
       <!--      left bottom -->
       <div [ngStyle]="{'order': topView ? '0' : '1' }" class="row">
-        <div [ngStyle]="{'order': topView ? '2' : '0' }" class="library">Library</div>
-        <div [ngStyle]="{'order': topView ? '3' : '1' }" class="command-zone">Commander</div>
-        <div [ngStyle]="{'order': topView ? '0' : '2' }" class="graveyard">Graveyard</div>
-        <div [ngStyle]="{'order': topView ? '1' : '3' }" class="exile">Exile</div>
+        <div [ngStyle]="{'order': topView ? '2' : '0' }" class="library">
+          <app-card [customStyles]="{width: '140px', borderRadius: '3px'}"></app-card>
+          <p>Library</p>
+        </div>
+        <div [ngStyle]="{'order': topView ? '3' : '1' }" class="command-zone"><p>Commander</p></div>
+        <div [ngStyle]="{'order': topView ? '0' : '2' }" class="graveyard"><p>Graveyard</p></div>
+        <div [ngStyle]="{'order': topView ? '1' : '3' }" class="exile"><p>Exile</p></div>
       </div>
     </div>
     <!--    right side -->
     <div class="playmat-right column">
-      <div [ngStyle]="{'order': topView ? '2' : '0' }" class="combat-zone">Combat Zone</div>
-      <div class="battlefield">Battlefield</div>
-      <div [ngStyle]="{'order': topView ? '0' : '2' }" class="lands">Lands</div>
+      <div [ngStyle]="{'order': topView ? '2' : '0' }" class="combat-zone">
+        <p>Combat Zone</p>
+      </div>
+      <div class="battlefield"><p>Battlefield + Planeswalkers</p></div>
+      <div [ngStyle]="{'order': topView ? '0' : '2' }" class="lands">
+        <app-card [isPlaymatView]="true"></app-card>
+        <p>Lands</p>
+      </div>
     </div>
   </div>
 </div>
