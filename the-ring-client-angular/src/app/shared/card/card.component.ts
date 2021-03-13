@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {CardStorageService} from "../../services/card-storage.service";
+import {CardPreviewerService} from "../../services/card-previewer.service";
 
 @Component({
   selector: 'app-card',
@@ -25,7 +26,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   public image;
   private card: any;
 
-  constructor(private storage: CardStorageService) {
+  constructor(private storage: CardStorageService,
+              private cardPreviewerService: CardPreviewerService) {
     this.storage.getCard(this.id).then(card => this.card = card);
   }
 
@@ -42,5 +44,13 @@ export class CardComponent implements OnInit, AfterViewInit {
       this.cardImg.nativeElement.style.width = this.customStyles.width;
       this.cardImg.nativeElement.style.borderRadius = this.customStyles.borderRadius;
     }
+  }
+
+  showPreview() {
+    this.cardPreviewerService.previewer.next(this.image);
+  }
+
+  hidePreview() {
+    this.cardPreviewerService.previewer.next(null);
   }
 }

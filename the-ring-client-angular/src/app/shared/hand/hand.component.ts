@@ -72,14 +72,14 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   showCard($event: MouseEvent) {
-    this.focusedStyle = getComputedStyle(($event.target as HTMLElement)).getPropertyValue("transform");
-    console.log(this.focusedStyle);
-    ($event.target as HTMLElement).style.transform = "scale(0.75) translateY(20%)";
+    // this.focusedStyle = getComputedStyle(($event.target as HTMLElement)).getPropertyValue("transform");
+    // console.log(this.focusedStyle);
+    // ($event.target as HTMLElement).style.transform = "scale(0.75) translateY(20%)";
   }
 
   hideCard($event: MouseEvent) {
-    ($event.target as HTMLElement).style.transform = this.focusedStyle;
-    console.log(this.focusedStyle);
+    // ($event.target as HTMLElement).style.transform = this.focusedStyle;
+    // console.log(this.focusedStyle);
   }
 }
 

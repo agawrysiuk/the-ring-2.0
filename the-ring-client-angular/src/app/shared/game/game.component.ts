@@ -1,16 +1,18 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   availableCameraMoves,
   BOTTOM_LEFT,
   translateStyles
 } from "../../modules/test/pages/test-board/board-camera-utils";
+import {CardPreviewerService} from "../../services/card-previewer.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit, AfterViewInit {
+export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly HORIZONTAL = 'HORIZONTAL';
   readonly VERTICAL = 'VERTICAL';
@@ -21,8 +23,12 @@ export class GameComponent implements OnInit, AfterViewInit {
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;
 
+  previewedCard;
+  previewerSubscription: Subscription;
 
-  constructor() {
+
+  constructor(private cardPreviewerService: CardPreviewerService) {
+    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(card => this.previewedCard = card);
   }
 
   ngAfterViewInit(): void {
@@ -30,6 +36,10 @@ export class GameComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.previewerSubscription.unsubscribe();
   }
 
   zoom(out: boolean) {

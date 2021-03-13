@@ -1,7 +1,7 @@
-<div *ngIf="!isPlaymatView" [ngStyle]="{'margin': isHandView ? '0px' : '15px'}" class="img-wrapper img-wrapper-{{styleNumber}}">
+<div (mouseenter)="showPreview()" (mouseleave)="hidePreview()" *ngIf="!isPlaymatView" [ngStyle]="{'margin': isHandView ? '0px' : '15px'}" class="img-wrapper img-wrapper-{{styleNumber}}">
   <img #cardImg class="card-img" [src]="image">
 </div>
-<div *ngIf="isPlaymatView" class="img-wrapper-playmat">
+<div (mouseenter)="showPreview()" (mouseleave)="hidePreview()" *ngIf="isPlaymatView" class="img-wrapper-playmat">
   <div class="card-name">{{card?.name}}</div>
   <img class="card-img-playmat" [src]="image">
   <div class="card-stats">{{card?.power}} / {{card?.toughness}}</div>

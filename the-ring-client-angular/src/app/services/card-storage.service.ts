@@ -29,8 +29,14 @@ export class CardStorageService {
 
   private getCardImage(id: string, imageType: string, database: { [key: string]: string; }) {
     return database[id]
-      ? new Promise((resolve) => resolve.apply(this.sanitize(database[id]))) as Promise<string>
-      : this.loadCardFile(id).then(file => this.sanitize(file.image_uris[imageType]));
+      ? new Promise((resolve) => {
+        console.log('Loading ' + id + ' from database...')
+        resolve.apply(this.sanitize(database[id]));
+      }) as Promise<string>
+      : this.loadCardFile(id).then(file => {
+        database[id] = file.image_uris[imageType];
+        return this.sanitize(file.image_uris[imageType]);
+      });
   }
 
   private sanitize(base64Image: string) {

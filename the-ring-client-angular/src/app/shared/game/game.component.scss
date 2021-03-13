@@ -30,3 +30,13 @@
     cursor: pointer;
   }
 }
+
+.card-preview {
+  position: fixed;
+  right: 25px;
+  top: calc(50% - 340px);
+
+  img {
+    border-radius: 25px;
+  }
+}

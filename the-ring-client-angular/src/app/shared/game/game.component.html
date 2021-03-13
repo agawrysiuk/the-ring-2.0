@@ -1,17 +1,9 @@
 <div (wheel)="scroll($event)" class="board-wrapper">
   <div #boardContainer class="board-container">
-    <div class="player-wrapper">
       <app-player [topView]="true"></app-player>
-    </div>
-    <div class="player-wrapper">
       <app-player [topView]="true" [rightSideView]="true"></app-player>
-    </div>
-    <div class="player-wrapper">
       <app-player></app-player>
-    </div>
-    <div class="player-wrapper">
       <app-player [rightSideView]="true"></app-player>
-    </div>
   </div>
   <div class="zoom-buttons">
     <img src="assets/data/images/board/zoom-in.svg" (click)="zoom(false)" *ngIf="zoomedOut"/>
@@ -21,4 +13,7 @@
     <img src="assets/data/images/board/top.svg" (click)="moveScreen(VERTICAL)" *ngIf="!zoomedOut && isMoveVisible('top')"/>
     <img src="assets/data/images/board/bottom.svg" (click)="moveScreen(VERTICAL)" *ngIf="!zoomedOut && isMoveVisible('bottom')"/>
   </div>
+</div>
+<div *ngIf="previewedCard" class="card-preview">
+  <img [src]="previewedCard" />
 </div>
