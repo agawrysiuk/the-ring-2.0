@@ -6,6 +6,7 @@ import {
 } from "../../modules/test/pages/test-board/board-camera-utils";
 import {CardPreviewerService} from "../../services/card-previewer.service";
 import {Subscription} from "rxjs";
+import {CardStorageService} from "../../services/card-storage.service";
 
 @Component({
   selector: 'app-game',
@@ -27,8 +28,11 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   previewerSubscription: Subscription;
 
 
-  constructor(private cardPreviewerService: CardPreviewerService) {
-    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(card => this.previewedCard = card);
+  constructor(private cardStorageService: CardStorageService,
+              private cardPreviewerService: CardPreviewerService) {
+    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(card => {
+      this.cardStorageService.getNormalImage(card).then(preview => this.previewedCard = preview);
+    });
   }
 
   ngAfterViewInit(): void {

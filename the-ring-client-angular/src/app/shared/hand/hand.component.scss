@@ -7,14 +7,17 @@
   left: 50%;
   align-content: center;
   transition: all 0.2s linear;
-  z-index: 10000000;
+  z-index: 500;
+  pointer-events: none;
 
   .hand-wrapper {
     position: relative;
     width: 100%;
+    pointer-events: none;
 
     * {
       //will-change: transform, opacity;
+      pointer-events: all;
       position: relative;
       overflow: hidden;
       transform-origin: center;

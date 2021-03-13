@@ -5,6 +5,7 @@ import {TestCardBoardersComponent} from "./modules/test/pages/test-card-borders/
 import {TestBoardComponent} from "./modules/test/pages/test-board/test-board.component";
 import {TestHandComponent} from "./modules/test/pages/test-hand/test-hand.component";
 import {GameComponent} from "./shared/game/game.component";
+import {LoaderComponent} from "./shared/loader/loader.component";
 
 const routes: Routes = [
   {
@@ -19,6 +20,10 @@ const routes: Routes = [
   {
     path: 'game',
     component: GameComponent
+  },
+  {
+    path: 'loading',
+    component: LoaderComponent
   },
 
   // tests

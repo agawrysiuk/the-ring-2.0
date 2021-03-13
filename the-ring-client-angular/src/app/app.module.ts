@@ -13,6 +13,7 @@ import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.comp
 import { HandComponent } from './shared/hand/hand.component';
 import { GameComponent } from './shared/game/game.component';
 import { PlayerComponent } from './shared/player/player.component';
+import { LoaderComponent } from './shared/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { PlayerComponent } from './shared/player/player.component';
     TestHandComponent,
     HandComponent,
     GameComponent,
-    PlayerComponent
+    PlayerComponent,
+    LoaderComponent
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {CardStorageService} from "../../services/card-storage.service";
 import {CardPreviewerService} from "../../services/card-previewer.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-card',
@@ -10,7 +11,7 @@ import {CardPreviewerService} from "../../services/card-previewer.service";
 export class CardComponent implements OnInit, AfterViewInit {
 
   @Input()
-  public id: string;
+  public id: string = '594cb7dc-ea88-4909-ab40-1d40fecc9817';
   @Input()
   public styleNumber: number;
   @Input()
@@ -28,16 +29,14 @@ export class CardComponent implements OnInit, AfterViewInit {
 
   constructor(private storage: CardStorageService,
               private cardPreviewerService: CardPreviewerService) {
-    this.storage.getCard(this.id).then(card => this.card = card);
   }
 
   ngOnInit(): void {
-    if(this.isPlaymatView) {
-      this.storage.getArtCropImage(this.id).then(res => this.image = res);
-    } else {
-      this.storage.getNormalImage(this.id).then(res => this.image = res);
-    }
-  }
+    this.storage.getCard(this.id)
+      .then(card => this.card = card)
+      .then(card => this.image = this.isPlaymatView
+        ? this.card.image_uris.art_crop
+        : this.card.image_uris.normal);}
 
   ngAfterViewInit(): void {
     if(this.customStyles) {
@@ -47,7 +46,7 @@ export class CardComponent implements OnInit, AfterViewInit {
   }
 
   showPreview() {
-    this.cardPreviewerService.previewer.next(this.image);
+    this.cardPreviewerService.previewer.next(this.id);
   }
 
   hidePreview() {
