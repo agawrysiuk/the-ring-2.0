@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {availableCameraMoves, BOTTOM_LEFT, translateStyles} from "./board-camera-utils";
+import {availableCameraMoves, BOTTOM_LEFT, translateStyles} from "../../../menu/pages/game/model/board-camera-utils";
 
 @Component({
   selector: 'app-test-board',

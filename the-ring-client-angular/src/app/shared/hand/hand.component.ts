@@ -17,8 +17,6 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('handWrapper')
   handWrapper: ElementRef;
 
-  focusedStyle: string;
-
   constructor() {
   }
 

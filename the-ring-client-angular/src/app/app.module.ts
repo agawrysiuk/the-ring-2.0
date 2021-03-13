@@ -11,9 +11,9 @@ import { TestBoardComponent } from './modules/test/pages/test-board/test-board.c
 import { PlaymatComponent } from './shared/playmat/playmat.component';
 import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.component';
 import { HandComponent } from './shared/hand/hand.component';
-import { GameComponent } from './shared/game/game.component';
+import { GameComponent } from './modules/menu/pages/game/game.component';
 import { PlayerComponent } from './shared/player/player.component';
-import { LoaderComponent } from './shared/loader/loader.component';
+import { LoaderComponent } from './modules/menu/pages/loader/loader.component';
 
 @NgModule({
   declarations: [

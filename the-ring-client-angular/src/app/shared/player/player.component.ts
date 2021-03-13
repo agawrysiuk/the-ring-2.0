@@ -1,4 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Player} from "../../modules/menu/pages/game/model/player";
+import {Card} from "../../modules/menu/pages/game/model/card";
 
 @Component({
   selector: 'app-player',
@@ -11,11 +13,15 @@ export class PlayerComponent implements OnInit {
   public topView = false;
   @Input()
   public rightSideView = false;
-  cardList: any[] = new Array(7).fill('');
+  @Input()
+  public player: Player;
 
-  constructor() { }
+  cardList: Card[];
+
+  constructor() {}
 
   ngOnInit(): void {
+    this.cardList = this.player.hand;
   }
 
 }
