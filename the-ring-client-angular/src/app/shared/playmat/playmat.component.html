@@ -1,5 +1,6 @@
 <div #playmat class="playmat">
-  <div class="row">
+  <div [ngStyle]="{'order': topView ? '0' : '1' }"  class="hand-placeholder"></div>
+  <div [ngStyle]="{'order': topView ? '1' : '0' }"  class="row">
     <!--    left side -->
     <div #playmatLeft class="playmat-left column">
       <!--      left top -->

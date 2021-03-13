@@ -9,14 +9,15 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input()
   cardList: any[] = [];
+  @Input()
+  topView: boolean = false;
 
   @ViewChild('handView')
   handView: ElementRef;
   @ViewChild('handWrapper')
   handWrapper: ElementRef;
 
-  cardHandWidth: number = 300;
-  fullyVisible: boolean = true;
+  focusedStyle: string;
 
   constructor() {
   }
@@ -45,7 +46,7 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private getTransformation(index: number, length: number) {
-    return 'translateY(' + this.getTranslation(index, length) + '%) rotate(' + this.getRotation(index, length) + 'deg)';
+    return 'translateY(' + this.getTranslation(index, length) + '%) rotate(' + this.getRotation(index, length) + 'deg) scale(0.5)';
   }
 
   private getTranslation(index: number, length: number) {
@@ -70,9 +71,15 @@ export class HandComponent implements OnInit, AfterViewInit, OnChanges {
     return -maxRotation + transformationStep * maxRotation * 2;
   }
 
-  changeVisibility(value: boolean) {
-    this.handView.nativeElement.style.transform = 'translate(calc(-50% - 150px), ' + (value ? 0 : this.cardHandWidth * 1.25) + 'px)';
-    this.fullyVisible = value;
+  showCard($event: MouseEvent) {
+    this.focusedStyle = getComputedStyle(($event.target as HTMLElement)).getPropertyValue("transform");
+    console.log(this.focusedStyle);
+    ($event.target as HTMLElement).style.transform = "scale(0.75) translateY(20%)";
+  }
+
+  hideCard($event: MouseEvent) {
+    ($event.target as HTMLElement).style.transform = this.focusedStyle;
+    console.log(this.focusedStyle);
   }
 }
 

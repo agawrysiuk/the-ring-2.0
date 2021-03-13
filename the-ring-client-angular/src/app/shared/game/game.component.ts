@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, AfterViewInit {
   @ViewChild('boardContainer') boardContainer: ElementRef;
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;
-  cardList: any[] = new Array(7).fill('');
 
 
   constructor() {

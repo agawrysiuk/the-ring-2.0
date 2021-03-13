@@ -12,6 +12,7 @@ import { PlaymatComponent } from './shared/playmat/playmat.component';
 import { TestHandComponent } from './modules/test/pages/test-hand/test-hand.component';
 import { HandComponent } from './shared/hand/hand.component';
 import { GameComponent } from './shared/game/game.component';
+import { PlayerComponent } from './shared/player/player.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { GameComponent } from './shared/game/game.component';
     TestBoardComponent,
     TestHandComponent,
     HandComponent,
-    GameComponent
+    GameComponent,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,
