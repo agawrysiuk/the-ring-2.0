@@ -30,9 +30,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private cardStorageService: CardStorageService,
               private cardPreviewerService: CardPreviewerService) {
-    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(card => {
-      this.cardStorageService.getNormalImage(card).then(preview => this.previewedCard = preview);
-    });
+    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(preview => this.previewedCard = preview);
   }
 
   ngAfterViewInit(): void {

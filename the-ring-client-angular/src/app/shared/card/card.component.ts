@@ -46,7 +46,7 @@ export class CardComponent implements OnInit, AfterViewInit {
   }
 
   showPreview() {
-    this.cardPreviewerService.previewer.next(this.id);
+    this.cardPreviewerService.previewer.next(this.id ? this.card.image_uris.normal : null);
   }
 
   hidePreview() {
