@@ -25,6 +25,8 @@ export class ObjectCreatorService {
   }
 
   private createCards(hero: boolean) {
-    return new Array(100).fill(hero ? this.storage.getCard('594cb7dc-ea88-4909-ab40-1d40fecc9817') : new Card());
+    const card: Card = this.storage.getCard('594cb7dc-ea88-4909-ab40-1d40fecc9817');
+    card.owner = hero ? 'HERO' : 'OPPONENT';
+    return new Array(100).fill(hero ? card : new Card());
   }
 }

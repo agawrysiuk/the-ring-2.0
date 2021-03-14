@@ -17,14 +17,19 @@ export class CardStorageService {
 
   loadCards() {
     return this.loadCardFile('594cb7dc-ea88-4909-ab40-1d40fecc9817')
-      .then(result => this.cards['594cb7dc-ea88-4909-ab40-1d40fecc9817'] = this.sanitizeImages(result));
+      .then(result => this.cards['594cb7dc-ea88-4909-ab40-1d40fecc9817'] = result);
   }
 
   getCard(id: string) {
-    return this.cards[id];
+    return this.prepareCard(JSON.parse(JSON.stringify(this.cards[id])));
   }
 
-  sanitizeImages(card: any) {
+  private prepareCard(card: Card) {
+    this.sanitizeImages(card);
+    return card;
+  }
+
+  private sanitizeImages(card: Card) {
     const images = card.image_uris;
     for (let key in images) {
       images[key] = this.sanitize(images[key]);
@@ -32,12 +37,11 @@ export class CardStorageService {
     return card;
   }
 
-  sanitize(base64Image: string) {
+  private sanitize(base64Image: string) {
     return this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,' + base64Image);
   }
 
-  private loadCardFile(id: string, imageType?: string): Promise<Card> {
+  private loadCardFile(id: string): Promise<Card> {
     return this.http.get(this.JSON_CARDS_PLACEMENT + id + '.json').toPromise() as Promise<Card>;
-    // return this.http.get(this.JSON_CARDS_PLACEMENT + '/594cb7dc-ea88-4909-ab40-1d40fecc9817.json').toPromise() as Promise<any>;
   }
 }

@@ -1,7 +1,15 @@
-<div (mouseenter)="showPreview()" (mouseleave)="hidePreview()" *ngIf="!isPlaymatView" [ngStyle]="{'margin': isHandView ? '0px' : '15px'}" class="img-wrapper img-wrapper-{{styleNumber}}">
+<div *ngIf="!isPlaymatView"
+     (mouseenter)="showPreview()"
+     (mouseleave)="hidePreview()"
+     (click)="playIfAble()"
+     [ngStyle]="{'margin': isHandView ? '0px' : '15px'}"
+     class="img-wrapper img-wrapper-{{styleNumber}}">
   <img #cardImg class="card-img" [src]="image">
 </div>
-<div (mouseenter)="showPreview()" (mouseleave)="hidePreview()" *ngIf="isPlaymatView" class="img-wrapper-playmat">
+<div *ngIf="isPlaymatView"
+     (mouseenter)="showPreview()"
+     (mouseleave)="hidePreview()"
+     class="img-wrapper-playmat">
   <div class="card-name">{{card?.name}}</div>
   <img class="card-img-playmat" [src]="image">
   <div class="card-stats">{{card?.power}} / {{card?.toughness}}</div>

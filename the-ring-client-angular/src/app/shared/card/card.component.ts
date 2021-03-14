@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@a
 import {CardStorageService} from "../../services/card-storage.service";
 import {CardPreviewerService} from "../../services/card-previewer.service";
 import {Card} from "../../modules/menu/pages/game/model/card";
+import {GameService} from "../../services/game.service";
 
 @Component({
   selector: 'app-card',
@@ -27,7 +28,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   public image;
 
   constructor(private storage: CardStorageService,
-              private cardPreviewerService: CardPreviewerService) {
+              private cardPreviewerService: CardPreviewerService,
+              private gameService: GameService) {
   }
 
   ngOnInit(): void {
@@ -47,10 +49,23 @@ export class CardComponent implements OnInit, AfterViewInit {
   }
 
   showPreview() {
-    this.cardPreviewerService.previewer.next(this.card.id ? this.card.image_uris.normal : null);
+    if(this.card.id) {
+      this.styleNumber = 5;
+      this.cardPreviewerService.lookUp.next(this.card.image_uris.normal);
+    }
   }
 
   hidePreview() {
-    this.cardPreviewerService.previewer.next(null);
+    if(this.card.id) {
+      this.styleNumber = null;
+      this.cardPreviewerService.lookUp.next(null);
+    }
+  }
+
+  playIfAble() {
+    if(this.gameService.isOwner(this.card.owner)) {
+      this.gameService.prepareToPlay(this.card);
+      this.cardPreviewerService.lookUp.next(null);
+    }
   }
 }

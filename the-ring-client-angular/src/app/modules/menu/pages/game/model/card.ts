@@ -1,6 +1,7 @@
 export class Card {
   id: string;
   name: string;
+  owner: string;
   image_uris: {
     small: string;
     normal: string;

@@ -1,0 +1,12 @@
+<div *ngIf="previewedCard">
+  <div class="card-preview-container">
+    <div class="row">
+      <div class="card-prepare-image">
+        <img [src]="previewedCard.image_uris.normal" />
+      </div>
+      <div class="card-prepare-description">{{previewedCard.oracle_text}}</div>
+    </div>
+  </div>
+  <div class="card-preview" (click)="closePreview()">
+  </div>
+</div>

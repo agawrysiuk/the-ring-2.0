@@ -6,7 +6,8 @@ import {Subject} from "rxjs";
 })
 export class CardPreviewerService {
 
-  public previewer: Subject<any> = new Subject<any>();
+  public lookUp: Subject<any> = new Subject<any>();
+  public preview: Subject<any> = new Subject<any>();
 
   constructor() { }
 }

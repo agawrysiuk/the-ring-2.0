@@ -15,6 +15,7 @@
     <img src="../../../../../assets/data/images/board/bottom.svg" (click)="moveScreen(VERTICAL)" *ngIf="!zoomedOut && isMoveVisible('bottom')"/>
   </div>
 </div>
-<div *ngIf="previewedCard" class="card-preview">
-  <img [src]="previewedCard" />
+<div *ngIf="lookedUpCard" class="card-lookup">
+  <img [src]="lookedUpCard" />
 </div>
+<app-card-preview *ngIf="previewedCard" [previewedCard]="previewedCard" (previewCloser)="previewedCard = null"></app-card-preview>

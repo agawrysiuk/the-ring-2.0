@@ -14,6 +14,7 @@ import { HandComponent } from './shared/hand/hand.component';
 import { GameComponent } from './modules/menu/pages/game/game.component';
 import { PlayerComponent } from './shared/player/player.component';
 import { LoaderComponent } from './modules/menu/pages/loader/loader.component';
+import { CardPreviewComponent } from './shared/card-preview/card-preview.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { LoaderComponent } from './modules/menu/pages/loader/loader.component';
     HandComponent,
     GameComponent,
     PlayerComponent,
-    LoaderComponent
+    LoaderComponent,
+    CardPreviewComponent
   ],
   imports: [
     BrowserModule,

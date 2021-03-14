@@ -10,6 +10,7 @@ import {CardStorageService} from "../../../../services/card-storage.service";
 import {GameService} from "../../../../services/game.service";
 import {Router} from "@angular/router";
 import {Game} from "./model/game";
+import {Card} from "./model/card";
 
 @Component({
   selector: 'app-game',
@@ -27,7 +28,10 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   zoomedOut: boolean = true;
   position: string = this.defaultPosition;
 
-  previewedCard;
+  lookedUpCard: Card;
+  lookerSubscription: Subscription;
+
+  previewedCard: Card;
   previewerSubscription: Subscription;
 
   game: Game;
@@ -43,7 +47,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.game = this.gameService.game;
     this.gameService.drawCards(7);
-    this.previewerSubscription = this.cardPreviewerService.previewer.subscribe(preview => this.previewedCard = preview);
+    this.lookerSubscription = this.cardPreviewerService.lookUp.subscribe(preview => this.lookedUpCard = preview);
+    this.previewerSubscription = this.cardPreviewerService.preview.subscribe(preview => this.previewedCard = preview);
   }
 
   ngAfterViewInit(): void {
@@ -54,6 +59,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.lookerSubscription.unsubscribe();
     this.previewerSubscription.unsubscribe();
   }
 
