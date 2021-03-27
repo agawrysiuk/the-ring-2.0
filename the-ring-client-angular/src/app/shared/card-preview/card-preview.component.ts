@@ -21,4 +21,9 @@ export class CardPreviewComponent implements OnInit {
   closePreview() {
     this.previewCloser.emit(true);
   }
+
+  play() {
+    this.closePreview();
+
+  }
 }

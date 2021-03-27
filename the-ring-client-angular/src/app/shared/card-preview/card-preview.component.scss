@@ -14,15 +14,13 @@
   z-index: 1000;
   top: 50%;
   left: 50%;
-  width: 40%;
-  height: 50%;
-  background-color: #000000;
-  box-shadow: 0 0 10px 5px rgb(0 0 0);
+  width: 528px;
+  //background-color: #000000;
+  //box-shadow: 0 0 10px 5px rgb(0 0 0);
   transform: translate(-50%, -50%);
 
-  .row {
+  .column {
     $padding: 20px;
-    flex-wrap: nowrap;
 
     .card-prepare-image {
       height: 100%;
@@ -30,15 +28,33 @@
       img {
         padding: $padding;
         height: calc(100% - (2 * #{$padding}));
-        border-radius: 36px;
+        border-radius: 42px;
       }
     }
 
-    .card-prepare-description {
-      padding: $padding;
-      white-space: pre-wrap;
-      line-height: 1.5rem;
-      color: #FFFFFF;
+    $button-color1: hsl(38, 70%, 61%);
+    $button-color2: hsl(0, 85%, 55%);
+
+    button {
+      margin: auto auto 20px;
+      width: 200px;
+      background-color: transparent;
+      color: $button-color1;
+      border: 1px solid $button-color1;
+      padding: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button:hover {
+      background-color: #222222;
+    }
+
+    button:active {
+      color: $button-color2;
+      border: 1px solid $button-color2;
+      background-color: #222222;
     }
   }
 }
